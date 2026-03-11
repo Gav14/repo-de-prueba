@@ -58,4 +58,15 @@ public class AlumnoServiceImpl implements AlumnoService {
     public void delete(Alumno alumno) {
         this.alumnoRepository.delete(alumno);
     }
+
+    @Override
+    public boolean validarFormatoDni(String dni) {
+        if (dni == null) return false;
+        if (dni.length() != 8) return false; // o 9 si corresponde
+        for (int i = 0; i < dni.length(); i++) {
+            char c = dni.charAt(i);
+            if (c < '0' || c > '9') return false;
+        }
+        return true;
+    }
 }

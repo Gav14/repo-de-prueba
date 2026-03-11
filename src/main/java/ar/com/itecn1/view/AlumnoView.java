@@ -111,6 +111,13 @@ public class AlumnoView {
         System.out.print("Ingrese el DNI: ");
         String dni = scanner.nextLine();
 
+        if (!alumnoController.validarDni(dni)) {
+            System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
+            return;
+        }
+
         Alumno alumno = alumnoController.findByDni(dni);
 
         if (alumno == null) {
@@ -118,6 +125,8 @@ public class AlumnoView {
         } else {
             mostrarAlumno(alumno);
         }
+        System.out.println("Presione Enter para continuar...");
+        scanner.nextLine();
     }
 
     private void crearAlumno() {
@@ -125,6 +134,14 @@ public class AlumnoView {
 
         System.out.print("DNI: ");
         String dni = scanner.nextLine();
+
+        // Validar formato
+        if (!alumnoController.validarDni(dni)) {
+            System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine(); // Pausa para que vea el mensaje
+            return;
+        }
 
         if (alumnoController.findByDni(dni) != null) {
             System.out.println("Ese DNI ya está registrado.");
@@ -149,6 +166,8 @@ public class AlumnoView {
             alumnoController.createAlumno(alumno);
             System.out.println("Alumno registrado!");
         }
+        System.out.println("Presione Enter para continuar...");
+        scanner.nextLine();
     }
 
     private void actualizarAlumno() {
@@ -157,10 +176,19 @@ public class AlumnoView {
         System.out.print("Ingrese el DNI: ");
         String dni = scanner.nextLine();
 
+        if (!alumnoController.validarDni(dni)) {
+            System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
+            return;
+        }
+
         Alumno alumno = alumnoController.findByDni(dni);
 
         if (alumno == null) {
             System.out.println("Alumno no encontrado.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
             return;
         }
 
@@ -199,6 +227,8 @@ public class AlumnoView {
         } else {
             System.out.println("Actualización cancelada.");
         }
+        System.out.println("Presione Enter para continuar...");
+        scanner.nextLine();
     }
 
     private void eliminarAlumno() {
@@ -207,10 +237,19 @@ public class AlumnoView {
         System.out.print("Ingrese el DNI: ");
         String dni = scanner.nextLine();
 
+        if (!alumnoController.validarDni(dni)) {
+            System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
+            return;
+        }
+
         Alumno alumno = alumnoController.findByDni(dni);
 
         if (alumno == null) {
             System.out.println("Alumno no encontrado.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
             return;
         }
 
@@ -221,5 +260,17 @@ public class AlumnoView {
             alumnoController.deleteAlumno(alumno);
             System.out.println("Alumno eliminado!");
         }
+        System.out.println("Presione Enter para continuar...");
+        scanner.nextLine();
+    }
+
+    public boolean validarFormatoDni(String dni) {
+        if (dni == null) return false;
+        if (dni.length() != 8) return false; // Cambia a 9 si es necesario
+        for (int i = 0; i < dni.length(); i++) {
+            char c = dni.charAt(i);
+            if (c < '0' || c > '9') return false;
+        }
+        return true;
     }
 }

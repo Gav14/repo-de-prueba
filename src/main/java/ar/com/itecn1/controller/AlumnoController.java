@@ -9,10 +9,6 @@ import java.util.List;
 public class AlumnoController {
     private final AlumnoService alumnoService;
 
-    public boolean validarDni(String dni) {
-        return alumnoService.validarFormatoDni(dni);
-    }
-
     public AlumnoController() {
         this.alumnoService = new AlumnoServiceImpl();
     }
@@ -37,4 +33,7 @@ public class AlumnoController {
         this.alumnoService.delete(alumno);
     }
 
+    public boolean validarDni(String dni) {
+        return alumnoService.validarFormatoDni(dni);
+    }
 }

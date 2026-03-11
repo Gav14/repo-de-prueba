@@ -7,11 +7,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AlumnoRepositoryImpl implements AlumnoRepository {
+    private static AlumnoRepositoryImpl instancia;
     private final List<Alumno> alumnosDb;
 
-    public AlumnoRepositoryImpl() {
+    private AlumnoRepositoryImpl() {
         this.alumnosDb = new ArrayList<>();
         cargarDatos();
+    }
+
+    public static AlumnoRepositoryImpl getInstancia() {
+        if (instancia == null) {
+            instancia = new AlumnoRepositoryImpl();
+        }
+        return instancia;
     }
 
     private void cargarDatos(){

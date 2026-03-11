@@ -7,16 +7,36 @@ import ar.com.itecn1.service.AlumnoService;
 
 import java.util.List;
 
+import static ar.com.itecn1.repository.impl.AlumnoRepositoryImpl.getInstancia;
+
 public class AlumnoServiceImpl implements AlumnoService {
     private final AlumnoRepository alumnoRepository;
 
     public AlumnoServiceImpl() {
-        this.alumnoRepository = new AlumnoRepositoryImpl();
+        this.alumnoRepository = AlumnoRepositoryImpl.getInstancia();
     }
 
     @Override
     public Alumno findByDni(String dni) {
-       return this.alumnoRepository.findByDni(dni);
+        if (dni == null) {
+            System.out.println("Error: El DNI no puede ser nulo");
+            return null;
+        }
+
+        if (dni.length() != 8) {
+            System.out.println("Error: El DNI debe tener exactamente 8 dígitos");
+            return null;
+        }
+
+        for (int i = 0; i < dni.length(); i++) {
+            char c = dni.charAt(i);
+            if (c < '0' || c > '8') {
+                System.out.println("Error: El DNI solo puede contener números");
+                return null;
+            }
+        }
+
+        return this.alumnoRepository.findByDni(dni);
     }
 
     @Override

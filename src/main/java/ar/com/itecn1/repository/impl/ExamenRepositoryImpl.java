@@ -19,7 +19,7 @@ public class ExamenRepositoryImpl implements ExamenRepository {
 
     public ExamenRepositoryImpl() {
         this.examenDb = new ArrayList<>();
-        this.alumnoRepository = new AlumnoRepositoryImpl();
+        this.alumnoRepository = AlumnoRepositoryImpl.getInstancia();
         this.materiaRepository = new MateriaRepositoryImpl();
         cargarDatos();
     }

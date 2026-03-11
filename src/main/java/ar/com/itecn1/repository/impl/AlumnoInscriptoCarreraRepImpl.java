@@ -17,7 +17,7 @@ public class AlumnoInscriptoCarreraRepImpl implements AlumnoInscriptoCarreraRepo
 
     public AlumnoInscriptoCarreraRepImpl() {
         this.inscriptosDb = new ArrayList<>();
-        this.alumnoRepository = new AlumnoRepositoryImpl();
+        this.alumnoRepository = AlumnoRepositoryImpl.getInstancia();
         this.planEstudioRepository = new PlanEstudioRepositoryImpl();
         this.carreraRepository = new CarreraRepositoryImpl();
         cargarDatos();

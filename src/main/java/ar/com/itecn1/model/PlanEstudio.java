@@ -1,7 +1,6 @@
 package ar.com.itecn1.model;
 
 import lombok.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,23 +8,24 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@ToString
 public class PlanEstudio {
     private String nombre;
     private String titulo;
-    private String duracion;
-    private String anio;
+    private int duracion;
+    private int anio;
 
-    private List<Materia> materias;
-    private boolean activo;
+    @Builder.Default
+    private List<Materia> materias = new ArrayList<>();
 
-    public PlanEstudio(String nombre, String anio, String duracion, String titulo) {
+    @Builder.Default
+    private boolean activo = true;
+
+    public PlanEstudio(String nombre, int anio, int duracion, String titulo) {
         this.nombre = nombre;
         this.anio = anio;
         this.duracion = duracion;
         this.titulo = titulo;
-        materias = new ArrayList<>();
+        this.materias = new ArrayList<>();  // ✅ INICIALIZAR!
         this.activo = true;
     }
-
 }

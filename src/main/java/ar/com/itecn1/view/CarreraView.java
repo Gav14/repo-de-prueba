@@ -42,7 +42,7 @@ public class CarreraView {
                 case 3 -> crearCarrera();
                 case 4 -> actualizarCarrera();
                 case 5 -> eliminarCarrera();
-                case 6 -> continuar = false;
+                case 0 -> continuar = false;
                 default -> System.out.println("Ingrese una opción válida");
             }
         }
@@ -59,7 +59,7 @@ public class CarreraView {
         System.out.println("3. Registrar carrera");
         System.out.println("4. Actualizar datos de una carrera");
         System.out.println("5. Dar de baja una carrera");
-        System.out.println("6. Volver atrás");
+        System.out.println("0. Volver atrás");
         System.out.print("Seleccione una opción: ");
     }
 
@@ -305,7 +305,7 @@ public class CarreraView {
                 1. Agregar plan
                 2. Eliminar plan
                 3. Ver plan actual
-                4. Terminar gestión de Plan de Estudio"""
+                0. Terminar gestión de Plan de Estudio"""
             );
 
             System.out.print("Opción: ");
@@ -326,7 +326,7 @@ public class CarreraView {
                     }
                 }
 
-                case "4" -> gestionando = false;
+                case "0" -> gestionando = false;
 
                 default -> System.out.println("Opción no válida.");
             }

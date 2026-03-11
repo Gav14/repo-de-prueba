@@ -65,7 +65,7 @@ public class InicioView {
                     case 4:
                         menuConfiguracion();
                         break;
-                    case 5:
+                    case 0:
                         continuar = false;
                         System.out.println("Saliendo del sistema...");
                         break;
@@ -88,7 +88,7 @@ public class InicioView {
             System.out.println("\n--- GESTIÓN DE PERSONAS ---");
             System.out.println("1. Alumnos");
             System.out.println("2. Profesores");
-            System.out.println("3. Volver al menú principal");
+            System.out.println("0. Volver al menú principal");
             System.out.print("Seleccione: ");
 
             if (scanner.hasNextInt()) {
@@ -96,7 +96,7 @@ public class InicioView {
                 switch (op) {
                     case 1: this.alumnoView.iniciar(); break;
                     case 2: this.profesorView.iniciar(); break;
-                    case 3: volver = true; break;
+                    case 0: volver = true; break;
                     default: System.out.println("Opción inválida");
                 }
             } else { scanner.next(); }
@@ -111,7 +111,7 @@ public class InicioView {
             System.out.println("1. Carreras");
             System.out.println("2. Planes de Estudio");
             System.out.println("3. Materias");
-            System.out.println("4. Volver al menú principal");
+            System.out.println("0. Volver al menú principal");
             System.out.print("Seleccione: ");
 
             if (scanner.hasNextInt()) {
@@ -120,7 +120,7 @@ public class InicioView {
                     case 1: this.carreraView.iniciar(); break;
                     case 2: this.planEstudioView.iniciar(); break;
                     case 3: this.materiaView.iniciar(); break;
-                    case 4: volver = true; break;
+                    case 0: volver = true; break;
                     default: System.out.println("Opción inválida");
                 }
             } else { scanner.next(); }
@@ -134,7 +134,7 @@ public class InicioView {
             System.out.println("\n--- GESTIÓN DE CURSADA ---");
             System.out.println("1. Comisiones (Cursado actual)");
             System.out.println("2. Inscripciones a Carreras");
-            System.out.println("3. Volver al menú principal");
+            System.out.println("0. Volver al menú principal");
             System.out.print("Seleccione: ");
 
             if (scanner.hasNextInt()) {
@@ -142,7 +142,7 @@ public class InicioView {
                 switch (op) {
                     case 1: this.comisionView.iniciar(); break;
                     case 2: this.alumnoInscriptoCarreraView.iniciar(); break;
-                    case 3: volver = true; break;
+                    case 0: volver = true; break;
                     default: System.out.println("Opción inválida");
                 }
             } else { scanner.next(); }
@@ -157,7 +157,7 @@ public class InicioView {
             System.out.println("1. Cuatrimestres");
             System.out.println("2. Horarios");
             System.out.println("3. Módulos Horarios");
-            System.out.println("4. Volver al menú principal");
+            System.out.println("0. Volver al menú principal");
             System.out.print("Seleccione: ");
 
             if (scanner.hasNextInt()) {
@@ -166,7 +166,7 @@ public class InicioView {
                     case 1: this.cuatrimestreView.iniciar(); break;
                     case 2: this.horarioView.iniciar(); break;
                     case 3: this.moduloView.iniciar(); break;
-                    case 4: volver = true; break;
+                    case 0: volver = true; break;
                     default: System.out.println("Opción inválida");
                 }
             } else { scanner.next(); }
@@ -179,7 +179,7 @@ public class InicioView {
         System.out.println("2. Estructura Académica (Carreras, Planes, Materias)");
         System.out.println("3. Cursada e Inscripciones (Comisiones, Inscripcion a Carrera)");
         System.out.println("4. Configuración (Cuatrimestres, Horarios)");
-        System.out.println("5. Salir");
+        System.out.println("0. Salir");
         System.out.print("Seleccione una categoría: ");
     }
 }

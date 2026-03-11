@@ -29,7 +29,7 @@ public class MateriaView {
                 case 3 -> crearMateria();
                 case 4 -> actualizarMateria();
                 case 5 -> eliminarMateria();
-                case 6 -> continuar = false;
+                case 0 -> continuar = false;
                 default -> System.out.println("Ingrese una opción válida.");
             }
         }
@@ -42,7 +42,7 @@ public class MateriaView {
         System.out.println("3. Registrar materia");
         System.out.println("4. Actualizar materia");
         System.out.println("5. Eliminar materia");
-        System.out.println("6. Volver atrás");
+        System.out.println("0. Volver atrás");
     }
 
     // ============================================================
@@ -230,7 +230,7 @@ public class MateriaView {
             System.out.println("1. Agregar correlativa");
             System.out.println("2. Quitar correlativa");
             System.out.println("3. Ver correlativas");
-            System.out.println("4. Terminar gestión de Correlativas");
+            System.out.println("0. Terminar gestión de Correlativas");
 
             String opcion = scanner.nextLine();
 
@@ -238,7 +238,7 @@ public class MateriaView {
                 case "1" -> agregarCorrelativa(materiaActual);
                 case "2" -> quitarCorrelativa(materiaActual);
                 case "3" -> mostrarCorrelativas(materiaActual);
-                case "4" -> gestionando = false;
+                case "0" -> gestionando = false;
                 default -> System.out.println("Opción inválida.");
             }
         }

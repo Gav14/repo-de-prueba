@@ -36,7 +36,7 @@ public class AlumnoView {
                 case 3 -> crearAlumno();
                 case 4 -> actualizarAlumno();
                 case 5 -> eliminarAlumno();
-                case 6 -> continuar = false;
+                case 0 -> continuar = false;
                 default -> System.out.println("Ingrese una opción válida");
             }
         }
@@ -53,7 +53,7 @@ public class AlumnoView {
         System.out.println("3. Registrar alumno");
         System.out.println("4. Actualizar datos de un alumno");
         System.out.println("5. Dar de baja un alumno");
-        System.out.println("6. Volver atrás");
+        System.out.println("0. Volver atrás");
         System.out.print("Seleccione una opción: ");
     }
 

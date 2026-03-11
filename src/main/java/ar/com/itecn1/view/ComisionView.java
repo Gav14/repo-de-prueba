@@ -79,7 +79,7 @@ public class ComisionView {
                     if (com != null) listarHorarios(com);
                 }
                 case 10 -> actualizarComision();
-                case 11 -> continuar = false;
+                case 0 -> continuar = false;
                 default -> System.out.println("Ingrese una opción válida.");
             }
         }
@@ -97,7 +97,7 @@ public class ComisionView {
         System.out.println("8. Listar asistencias de una comisión");
         System.out.println("9. Listar horarios");
         System.out.println("10. Actualizar comisión");
-        System.out.println("11. Volver atrás");
+        System.out.println("0. Volver atrás");
         System.out.print("Seleccione opción: ");
     }
 
@@ -304,7 +304,7 @@ public class ComisionView {
             System.out.println("4. Cambiar profesor");
             System.out.println("5. Modificar horarios");
             System.out.println("6. Ver comisión");
-            System.out.println("7. Salir de actualización");
+            System.out.println("0. Salir de actualización");
             System.out.print("Opción: ");
 
             int opcion = leerEntero();
@@ -317,7 +317,7 @@ public class ComisionView {
                 case 5 -> gestionarHorarios(comision.getHorarios(),comision);
 //                case 5 -> modificarHorarios(comision);
                 case 6 -> mostrarComision(comision);
-                case 7 -> continuar = false;
+                case 0 -> continuar = false;
                 default -> System.out.println("Opción inválida.");
             }
         }
@@ -373,7 +373,7 @@ public class ComisionView {
             switch (opcion) {
                 case 1 -> agregarHorarioAComision(comision);
                 case 2 -> eliminarHorarioDeComision(comision);
-                case 4 -> seguir = false;
+                case 0 -> seguir = false;
                 default -> System.out.println("Opción inválida.");
             }
         }
@@ -818,7 +818,7 @@ public class ComisionView {
             System.out.println("1. Seleccionar horarios");
             System.out.println("2. Quitar horario");
             System.out.println("3. Ver horarios seleccionados");
-            System.out.println("4. Terminar gestión");
+            System.out.println("0. Terminar gestión");
             System.out.print("Opción: ");
 
             String opcion = scanner.nextLine().trim();
@@ -897,7 +897,7 @@ public class ComisionView {
                     if (horarios.isEmpty()) System.out.println("No hay horarios.");
                     else horarios.forEach(h -> System.out.println(" - ID: " + h.getId() + " | " + h.getDia() + " | De: " + h.getModulo().getInicio() + " a " + h.getModulo().getFin()));
                 }
-                case "4" -> gestionando = false;
+                case "0" -> gestionando = false;
                 default -> System.out.println("Opción inválida.");
             }
         }
@@ -915,7 +915,7 @@ public class ComisionView {
             System.out.println("2. Cambiar nota a un examen");
             System.out.println("3. Eliminar examen");
             System.out.println("4. Ver exámenes");
-            System.out.println("5. Terminar gestión");
+            System.out.println("0. Terminar gestión");
             System.out.print("Opción: ");
 
             String opcion = scanner.nextLine().trim();
@@ -1054,7 +1054,7 @@ public class ComisionView {
                     if (examenes.isEmpty()) System.out.println("No hay exámenes.");
                     else examenes.forEach(e -> System.out.println(" - ID: " + e.getId() + " | Tipo: " + e.getTipo() + " | Nota: " + e.getNota() + " | Fecha: " + e.getFecha() + " | ALUMNO: "+ e.getAlumno().getNombre() + " "+ e.getAlumno().getApellido()));
                 }
-                case "5" -> gestionando = false;
+                case "0" -> gestionando = false;
                 default -> System.out.println("Opción inválida.");
             }
         }

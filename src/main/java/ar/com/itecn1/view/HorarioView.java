@@ -41,7 +41,7 @@ public class HorarioView {
                 case 3 -> crearHorario();
                 case 4 -> actualizarHorario();
                 case 5 -> eliminarHorario();
-                case 6 -> continuar = false;
+                case 0 -> continuar = false;
                 default -> System.out.println("Ingrese una opción válida.");
             }
         }
@@ -58,7 +58,7 @@ public class HorarioView {
         System.out.println("3. Registrar horario");
         System.out.println("4. Actualizar horario");
         System.out.println("5. Dar de baja horario");
-        System.out.println("6. Volver atrás");
+        System.out.println("0. Volver atrás");
     }
 
     // ============================================================

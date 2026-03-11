@@ -37,7 +37,7 @@ public class PlanEstudioView {
                 case 3 -> crearPlan();
                 case 4 -> actualizarPlan();
                 case 5 -> eliminarPlan();
-                case 6 -> continuar = false;
+                case 0 -> continuar = false;
                 default -> System.out.println("Ingrese una opción válida");
             }
         }
@@ -50,7 +50,7 @@ public class PlanEstudioView {
         System.out.println("3. Registrar nuevo plan");
         System.out.println("4. Actualizar plan");
         System.out.println("5. Eliminar plan");
-        System.out.println("6. Volver atrás");
+        System.out.println("0. Volver atrás");
     }
 
     // ============================================================
@@ -242,7 +242,7 @@ public class PlanEstudioView {
             System.out.println("1. Agregar materia");
             System.out.println("2. Quitar materia");
             System.out.println("3. Ver materias del plan");
-            System.out.println("4. Terminar gestión de Materias");
+            System.out.println("0. Terminar gestión de Materias");
 
             String opcion = scanner.nextLine();
 
@@ -254,7 +254,7 @@ public class PlanEstudioView {
 
                 case "3" -> mostrarMateriasPlan(materiasDelPlan);
 
-                case "4" -> gestionando = false;
+                case "0" -> gestionando = false;
 
                 default -> System.out.println("Opción inválida.");
             }

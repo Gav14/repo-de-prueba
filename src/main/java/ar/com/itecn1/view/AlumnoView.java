@@ -162,7 +162,7 @@ public class AlumnoView {
         String email = scanner.nextLine().trim();
 
         Alumno alumno = new Alumno(dni, nombre, apellido, telefono, email);
-        
+
 
         // Validar campos obligatorios
         if (!alumnoController.validarCampos(alumno)) {
@@ -184,10 +184,10 @@ public class AlumnoView {
     }
 
     private void actualizarAlumno() {
-        System.out.println("----------Actualizar alumno----------");
+        ystem.out.println("----------Actualizar alumno----------");
 
         System.out.print("Ingrese el DNI: ");
-        String dni = scanner.nextLine();
+        String dni = scanner.nextLine().trim(); // Limpiar espacios
 
         if (!alumnoController.validarDni(dni)) {
             System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
@@ -211,16 +211,16 @@ public class AlumnoView {
         System.out.println("\nNUEVOS DATOS (dejar en blanco para no cambiar):");
 
         System.out.print("Nuevo nombre (" + alumno.getNombre() + "): ");
-        String nuevoNombre = scanner.nextLine();
+        String nuevoNombre = scanner.nextLine().trim();
 
         System.out.print("Nuevo apellido (" + alumno.getApellido() + "): ");
-        String nuevoApellido = scanner.nextLine();
+        String nuevoApellido = scanner.nextLine().trim();
 
         System.out.print("Nuevo teléfono (" + alumno.getTelefono() + "): ");
-        String nuevoTelefono = scanner.nextLine();
+        String nuevoTelefono = scanner.nextLine().trim();
 
         System.out.print("Nuevo email (" + alumno.getEmail() + "): ");
-        String nuevoEmail = scanner.nextLine();
+        String nuevoEmail = scanner.nextLine().trim();
 
         // Vista previa
         System.out.println("\nVista previa:");
@@ -230,6 +230,7 @@ public class AlumnoView {
         System.out.println("Email: "    + (nuevoEmail.isBlank()     ? alumno.getEmail()     : nuevoEmail));
 
         if (confirmarAccion() == 1) {
+            // Solo actualizar si el campo no está en blanco (después de trim)
             if (!nuevoNombre.isBlank())    alumno.setNombre(nuevoNombre);
             if (!nuevoApellido.isBlank())  alumno.setApellido(nuevoApellido);
             if (!nuevoTelefono.isBlank())  alumno.setTelefono(nuevoTelefono);

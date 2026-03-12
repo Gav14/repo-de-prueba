@@ -38,7 +38,7 @@ public class PlanEstudioView {
                 }
 
                 int opcion = scanner.nextInt();
-                scanner.nextLine(); // limpiar buffer
+                scanner.nextLine();
 
                 switch (opcion) {
                     case 1 -> listarPlanes();
@@ -77,7 +77,7 @@ public class PlanEstudioView {
         while (!scanner.hasNextInt()) {
             String input = scanner.nextLine();
             if (input.isEmpty()) {
-                return 0; // 0 significa "mantener valor actual"
+                return 0;
             }
             System.out.println("Debe ingresar un número.");
         }
@@ -92,7 +92,7 @@ public class PlanEstudioView {
             String input = scanner.nextLine().trim();
 
             if (input.isEmpty()) {
-                return valorSugerido; // Usar valor sugerido
+                return valorSugerido;
             }
 
             try {
@@ -155,7 +155,8 @@ public class PlanEstudioView {
     }
 
     private void mostrarMateria(Materia m) {
-        System.out.println("   • " + m.getCodigoMateria() + " - " + m.getNombre() + " (Año " + m.getAnio() + ")");
+        // CORREGIDO: Cambié getAnio() por getCuatrimestre()
+        System.out.println("   • " + m.getCodigoMateria() + " - " + m.getNombre() + " (" + m.getCuatrimestre() + "° cuatrimestre)");
     }
 
     private void listarPlanes() {
@@ -217,7 +218,6 @@ public class PlanEstudioView {
         }
 
         try {
-            // Verificar si ya existe
             PlanEstudio existente = planEstudioController.findByName(nombre);
 
             if (existente != null) {
@@ -235,7 +235,6 @@ public class PlanEstudioView {
                 }
             }
 
-            // Si hay planes similares
             List<PlanEstudio> similares = planEstudioController.buscarPlanes(nombre);
             if (!similares.isEmpty()) {
                 System.out.println("\n⚠️  Planes con nombres similares encontrados:");
@@ -299,13 +298,11 @@ public class PlanEstudioView {
 
             System.out.println("\n🔄 Modificando plan: " + planSeleccionado.getNombre());
 
-            // Guardar valores originales
             String tituloOriginal = planSeleccionado.getTitulo();
             int anioOriginal = planSeleccionado.getAnio();
             int duracionOriginal = planSeleccionado.getDuracion();
             List<Materia> materiasOriginales = new ArrayList<>(planSeleccionado.getMaterias());
 
-            // Modificar título
             System.out.println("\n📄 Título actual: " + planSeleccionado.getTitulo());
             System.out.print("Nuevo título (ENTER para mantener): ");
             String nuevoTitulo = scanner.nextLine();
@@ -313,7 +310,6 @@ public class PlanEstudioView {
                 planSeleccionado.setTitulo(nuevoTitulo);
             }
 
-            // Modificar año - CON VALIDACIÓN
             int nuevoAnio = leerEnteroConRango(
                     "📅 Nuevo año",
                     1900, 2100,
@@ -321,7 +317,6 @@ public class PlanEstudioView {
             );
             planSeleccionado.setAnio(nuevoAnio);
 
-            // Modificar duración - CON VALIDACIÓN
             int nuevaDuracion = leerEnteroConRango(
                     "⏱️  Nueva duración",
                     1, 6,
@@ -329,7 +324,6 @@ public class PlanEstudioView {
             );
             planSeleccionado.setDuracion(nuevaDuracion);
 
-            // Modificar materias
             System.out.println("\n📚 Gestión de materias");
             System.out.print("¿Desea modificar las materias del plan? (S/N) o (1/2): ");
             String respuesta = scanner.nextLine().trim();
@@ -338,7 +332,6 @@ public class PlanEstudioView {
                 gestionarMateriasDelPlan(planSeleccionado.getMaterias());
             }
 
-            // Vista previa
             System.out.println("\n📋 Vista previa de los cambios:");
             mostrarPlan(planSeleccionado);
 
@@ -347,7 +340,6 @@ public class PlanEstudioView {
                 planEstudioController.editarPlanEstudio(planSeleccionado);
                 System.out.println("✅ ¡Plan modificado exitosamente!");
             } else {
-                // Restaurar valores originales
                 planSeleccionado.setTitulo(tituloOriginal);
                 planSeleccionado.setAnio(anioOriginal);
                 planSeleccionado.setDuracion(duracionOriginal);

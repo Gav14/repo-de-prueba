@@ -109,7 +109,14 @@ public class AlumnoView {
     private void buscarAlumno() {
         System.out.println("----------Buscar alumno----------");
         System.out.print("Ingrese el DNI: ");
-        String dni = scanner.nextLine();
+        String dni = scanner.nextLine().trim();
+
+        if (!alumnoController.validarDni(dni)) {
+            System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
+            return;
+        }
 
         Alumno alumno = alumnoController.findByDni(dni);
 
@@ -118,29 +125,52 @@ public class AlumnoView {
         } else {
             mostrarAlumno(alumno);
         }
+        System.out.println("Presione Enter para continuar...");
+        scanner.nextLine();
     }
 
     private void crearAlumno() {
         System.out.println("----------Registrar alumno----------");
 
         System.out.print("DNI: ");
-        String dni = scanner.nextLine();
+        String dni = scanner.nextLine().trim();
+
+        if (!alumnoController.validarDni(dni)) {
+            System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
+            return;
+        }
 
         if (alumnoController.findByDni(dni) != null) {
             System.out.println("Ese DNI ya está registrado.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
             return;
         }
 
         System.out.print("Nombre: ");
-        String nombre = scanner.nextLine();
+        String nombre = scanner.nextLine().trim();
+
         System.out.print("Apellido: ");
-        String apellido = scanner.nextLine();
+        String apellido = scanner.nextLine().trim();
+
         System.out.print("Teléfono: ");
-        String telefono = scanner.nextLine();
+        String telefono = scanner.nextLine().trim();
+
         System.out.print("Email: ");
-        String email = scanner.nextLine();
+        String email = scanner.nextLine().trim();
 
         Alumno alumno = new Alumno(dni, nombre, apellido, telefono, email);
+
+
+        // Validar campos obligatorios
+        if (!alumnoController.validarCampos(alumno)) {
+            System.out.println("Error: Todos los campos son obligatorios. No se permiten valores vacíos.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
+            return;
+        }
 
         System.out.println("\nVista previa:");
         mostrarAlumno(alumno);
@@ -149,18 +179,29 @@ public class AlumnoView {
             alumnoController.createAlumno(alumno);
             System.out.println("Alumno registrado!");
         }
+        System.out.println("Presione Enter para continuar...");
+        scanner.nextLine();
     }
 
     private void actualizarAlumno() {
         System.out.println("----------Actualizar alumno----------");
 
         System.out.print("Ingrese el DNI: ");
-        String dni = scanner.nextLine();
+        String dni = scanner.nextLine().trim(); // Limpiar espacios
+
+        if (!alumnoController.validarDni(dni)) {
+            System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
+            return;
+        }
 
         Alumno alumno = alumnoController.findByDni(dni);
 
         if (alumno == null) {
             System.out.println("Alumno no encontrado.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
             return;
         }
 
@@ -170,16 +211,16 @@ public class AlumnoView {
         System.out.println("\nNUEVOS DATOS (dejar en blanco para no cambiar):");
 
         System.out.print("Nuevo nombre (" + alumno.getNombre() + "): ");
-        String nuevoNombre = scanner.nextLine();
+        String nuevoNombre = scanner.nextLine().trim();
 
         System.out.print("Nuevo apellido (" + alumno.getApellido() + "): ");
-        String nuevoApellido = scanner.nextLine();
+        String nuevoApellido = scanner.nextLine().trim();
 
         System.out.print("Nuevo teléfono (" + alumno.getTelefono() + "): ");
-        String nuevoTelefono = scanner.nextLine();
+        String nuevoTelefono = scanner.nextLine().trim();
 
         System.out.print("Nuevo email (" + alumno.getEmail() + "): ");
-        String nuevoEmail = scanner.nextLine();
+        String nuevoEmail = scanner.nextLine().trim();
 
         // Vista previa
         System.out.println("\nVista previa:");
@@ -189,6 +230,7 @@ public class AlumnoView {
         System.out.println("Email: "    + (nuevoEmail.isBlank()     ? alumno.getEmail()     : nuevoEmail));
 
         if (confirmarAccion() == 1) {
+            // Solo actualizar si el campo no está en blanco (después de trim)
             if (!nuevoNombre.isBlank())    alumno.setNombre(nuevoNombre);
             if (!nuevoApellido.isBlank())  alumno.setApellido(nuevoApellido);
             if (!nuevoTelefono.isBlank())  alumno.setTelefono(nuevoTelefono);
@@ -199,18 +241,29 @@ public class AlumnoView {
         } else {
             System.out.println("Actualización cancelada.");
         }
+        System.out.println("Presione Enter para continuar...");
+        scanner.nextLine();
     }
 
     private void eliminarAlumno() {
         System.out.println("----------Eliminar alumno----------");
 
         System.out.print("Ingrese el DNI: ");
-        String dni = scanner.nextLine();
+        String dni = scanner.nextLine().trim();
+
+        if (!alumnoController.validarDni(dni)) {
+            System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
+            return;
+        }
 
         Alumno alumno = alumnoController.findByDni(dni);
 
         if (alumno == null) {
             System.out.println("Alumno no encontrado.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
             return;
         }
 
@@ -221,5 +274,8 @@ public class AlumnoView {
             alumnoController.deleteAlumno(alumno);
             System.out.println("Alumno eliminado!");
         }
+        System.out.println("Presione Enter para continuar...");
+        scanner.nextLine();
     }
+
 }

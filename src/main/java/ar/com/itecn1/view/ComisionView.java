@@ -704,7 +704,7 @@ public class ComisionView {
             System.out.println("1. Inscribir un alumno");
             System.out.println("2. Dar de baja un alumno");
             System.out.println("3. Ver alumnos inscriptos");
-            System.out.println("4. Terminar gestión");
+            System.out.println("0. Terminar gestión");
             System.out.print("Opción: ");
 
             String opcion = scanner.nextLine().trim();
@@ -713,7 +713,7 @@ public class ComisionView {
                 case "1" -> inscribirAlumno(listaInscriptos, comision);
                 case "2" -> darBajaAlumno(listaInscriptos);
                 case "3" -> mostrarAlumnosInscriptos(listaInscriptos);
-                case "4" -> {
+                case "0" -> {
                     gestionando = false;
                     System.out.println("Gestión finalizada.");
                 }

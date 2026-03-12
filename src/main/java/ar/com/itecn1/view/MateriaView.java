@@ -171,7 +171,7 @@ public class MateriaView {
                 System.out.println("  " + (i+1) + "° Cuatrimestre: " + contador[i] + " materias");
             }
         }
-        System.out.println("  TOTAL: " + materias.size() + " materias");
+        System.out.println("  TOTAL: " + materias.stream().filter(Materia::isActivo).count() + " materias activas");
     }
 
     private void listarMateriasPorCuatrimestre() {
@@ -210,6 +210,9 @@ public class MateriaView {
         mostrarMateria(materia);
     }
 
+    // ============================================================
+    // MÉTODO CORREGIDO - Guardar antes de gestionar correlativas
+    // ============================================================
     private void crearMateria() {
         System.out.println("\n📝 REGISTRAR MATERIA");
         System.out.println("Ejemplos: THT-101, MAT-101, PRO-201, BDD-301");
@@ -228,18 +231,27 @@ public class MateriaView {
             return;
         }
 
+        // Crear la materia
         Materia materia = new Materia(codigo, nombre, cuatrimestre);
 
-        // Preguntar si quiere agregar correlativas
+        // PRIMERO: Guardar la materia en el repositorio
+        materiaController.save(materia);
+        System.out.println("✓ Materia guardada temporalmente");
+
+        // SEGUNDO: Preguntar si quiere agregar correlativas
         System.out.println("\n📌 ¿Desea agregar correlativas?");
         if (confirmar("")) {
-            gestionarCorrelativas(materia);
+            // Recuperar la materia del repositorio para asegurar que es la misma instancia
+            Materia materiaGuardada = materiaController.findByCode(codigo);
+            if (materiaGuardada != null) {
+                gestionarCorrelativas(materiaGuardada);
+                // Actualizar los cambios en el repositorio
+                materiaController.update(materiaGuardada);
+                System.out.println("✓ Correlativas agregadas correctamente");
+            }
         }
 
-        if (confirmar("¿Guardar materia?")) {
-            materiaController.save(materia);
-            System.out.println("✓ Materia registrada exitosamente");
-        }
+        System.out.println("✓ Materia registrada exitosamente: " + codigo);
     }
 
     private void actualizarMateria() {

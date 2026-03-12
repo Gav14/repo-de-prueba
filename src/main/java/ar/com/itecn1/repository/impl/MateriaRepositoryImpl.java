@@ -147,11 +147,13 @@ public class MateriaRepositoryImpl implements MateriaRepository {
 
     @Override
     public void save(Materia materia) {
+        // Verificar si ya existe
         for (Materia m : this.materiaDb) {
             if (m.getCodigoMateria().equals(materia.getCodigoMateria())) {
-                return;
+                return; // Ya existe, no guardar
             }
         }
+        // Si no existe, agregarla
         this.materiaDb.add(materia);
     }
 

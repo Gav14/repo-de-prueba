@@ -123,7 +123,7 @@ public class ProfesorView {
         }
 
         Profesor profesor = profesorController.findByDni(dni);
-        
+
         if (profesor == null) {
             System.out.println("Profesor no encontrado.");
         } else {

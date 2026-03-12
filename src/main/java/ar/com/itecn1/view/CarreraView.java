@@ -442,7 +442,7 @@ public class CarreraView {
             System.out.println("│ 1. Asignar plan         │");
             System.out.println("│ 2. Quitar plan          │");
             System.out.println("│ 3. Ver plan actual      │");
-            System.out.println("│ 4. Terminar             │");
+            System.out.println("│ 0. Terminar             │");
             System.out.println("└─────────────────────────┘");
             System.out.print("Opción: ");
 

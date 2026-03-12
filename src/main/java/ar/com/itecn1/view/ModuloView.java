@@ -30,7 +30,7 @@ public class ModuloView {
                 case 3 -> crearModulo();
                 case 4 -> actualizarModulo();
                 case 5 -> eliminarModulo();
-                case 6 -> continuar = false;
+                case 0 -> continuar = false;
                 default -> System.out.println("Ingrese una opción válida.");
             }
         }
@@ -46,7 +46,7 @@ public class ModuloView {
         System.out.println("3. Registrar módulo");
         System.out.println("4. Actualizar módulo");
         System.out.println("5. Dar de baja módulo");
-        System.out.println("6. Volver atrás");
+        System.out.println("0. Volver atrás");
     }
 
     // ============================================================

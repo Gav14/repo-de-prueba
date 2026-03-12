@@ -37,7 +37,7 @@ public class ProfesorView {
                 case 3 -> crearProfesor();
                 case 4 -> actualizarProfesor();
                 case 5 -> eliminarProfesor();
-                case 6 -> continuar = false;
+                case 0 -> continuar = false;
                 default -> System.out.println("Ingrese una opción válida");
             }
         }
@@ -54,7 +54,7 @@ public class ProfesorView {
         System.out.println("3. Registrar profesor");
         System.out.println("4. Actualizar datos de un profesor");
         System.out.println("5. Dar de baja un profesor");
-        System.out.println("6. Volver atrás");
+        System.out.println("0. Volver atrás");
         System.out.print("Seleccione una opción: ");
     }
 

@@ -327,7 +327,7 @@ public class AlumnoInscriptoCarreraView {
             System.out.println("2. Listar inscripciones");
             System.out.println("3. Actualizar inscripción");
             System.out.println("4. Eliminar inscripción");
-            System.out.println("5. Volver");
+            System.out.println("0. Volver");
 
             int opcion = leerEntero();
             switch (opcion) {
@@ -335,7 +335,7 @@ public class AlumnoInscriptoCarreraView {
                 case 2 -> listarInscripciones();
                 case 3 -> actualizarInscripcion();
                 case 4 -> eliminarInscripcion();
-                case 5 -> continuar = false;
+                case 0 -> continuar = false;
                 default -> System.out.println("Opción inválida.");
             }
         }

@@ -30,7 +30,7 @@ public class CuatrimestreView {
                 case 3 -> crearCuatrimestre();
                 case 4 -> actualizarCuatrimestre();
                 case 5 -> eliminarCuatrimestre();
-                case 6 -> continuar = false;
+                case 0 -> continuar = false;
                 default -> System.out.println("Ingrese una opción válida.");
             }
         }
@@ -43,7 +43,7 @@ public class CuatrimestreView {
         System.out.println("3. Registrar cuatrimestre");
         System.out.println("4. Actualizar datos de un cuatrimestre");
         System.out.println("5. Eliminar cuatrimestre");
-        System.out.println("6. Volver atrás");
+        System.out.println("0. Volver atrás");
     }
 
     // ============================================================

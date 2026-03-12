@@ -459,12 +459,10 @@ public class CarreraView {
                         mostrarPlan(carrera.getPlanEstudio());
                     }
                 }
-                case "4" -> gestionando = false;
-                default -> System.out.println("❌ Opción no válida.");
 
                 case "0" -> gestionando = false;
 
-                default -> System.out.println("Opción no válida.");
+                default -> System.out.println("❌ Opción no válida.");
             }
         }
     }

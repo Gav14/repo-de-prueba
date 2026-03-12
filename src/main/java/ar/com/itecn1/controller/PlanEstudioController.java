@@ -7,18 +7,58 @@ import ar.com.itecn1.service.impl.PlanEstudioServiceImpl;
 import java.util.List;
 
 public class PlanEstudioController {
+
     private final PlanEstudioService planEstudioService;
 
-    public PlanEstudioController(){this.planEstudioService = new PlanEstudioServiceImpl();}
+    public PlanEstudioController() {
+        this.planEstudioService = new PlanEstudioServiceImpl();
+    }
 
-    public PlanEstudio findByName(String nombre){return this.planEstudioService.findByName(nombre);}
+    public PlanEstudio findByName(String nombre) {
+        return planEstudioService.findByName(nombre);
+    }
 
-    public List<PlanEstudio> findAll(){return this.planEstudioService.findAll();}
+    public List<PlanEstudio> findAll() {
+        return planEstudioService.findAll();
+    }
 
-    public void crearPlanEstudio(PlanEstudio planEstudio){this.planEstudioService.save(planEstudio);}
+    public List<PlanEstudio> buscarPlanes(String texto) {
+        return planEstudioService.buscarPlanes(texto);
+    }
 
-    public void editarPlanEstudio(PlanEstudio planEstudio){this.planEstudioService.save(planEstudio);}
+    public List<PlanEstudio> findActivos() {
+        return planEstudioService.findActivos();
+    }
 
-    public void eliminarPlanEstudio(PlanEstudio planEstudio){this.planEstudioService.delete(planEstudio);}
+    public List<PlanEstudio> findInactivos() {
+        return planEstudioService.findInactivos();
+    }
 
+    public List<PlanEstudio> findPlanesPorAnio(int anio) {
+        return planEstudioService.findPlanesPorAnio(anio);
+    }
+
+    public void crearPlanEstudio(PlanEstudio planEstudio) {
+        planEstudioService.save(planEstudio);
+    }
+
+    public void editarPlanEstudio(PlanEstudio planEstudio) {
+        planEstudioService.update(planEstudio);
+    }
+
+    public void eliminarPlanEstudio(PlanEstudio planEstudio) {
+        planEstudioService.delete(planEstudio);
+    }
+
+    public void reactivarPlanEstudio(String nombre) {
+        planEstudioService.reactivarPlan(nombre);
+    }
+
+    public void agregarMateria(String nombrePlan, String codigoMateria) {
+        planEstudioService.agregarMateria(nombrePlan, codigoMateria);
+    }
+
+    public void quitarMateria(String nombrePlan, String codigoMateria) {
+        planEstudioService.quitarMateria(nombrePlan, codigoMateria);
+    }
 }

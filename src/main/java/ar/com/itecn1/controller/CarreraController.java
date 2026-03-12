@@ -7,6 +7,7 @@ import ar.com.itecn1.service.impl.CarreraServiceImpl;
 import java.util.List;
 
 public class CarreraController {
+
     private final CarreraService carreraService;
 
     public CarreraController(){
@@ -14,25 +15,31 @@ public class CarreraController {
     }
 
     public Carrera findByName(String nombre){
-        return this.carreraService.findByName(nombre);
+        return carreraService.findByName(nombre);
     }
 
     public List<Carrera> findAll(){
-        return this.carreraService.findAll();
+        return carreraService.findAll();
+    }
+
+    public List<Carrera> buscarCarreras(String texto){
+        return carreraService.buscarCarreras(texto);
     }
 
     public void createCarrera(Carrera carrera){
-        this.carreraService.save(carrera);
+        carreraService.save(carrera);
     }
 
-    public void updateCarrrera(Carrera carrera){
-        this.carreraService.update(carrera);
+    public void updateCarrera(Carrera carrera){
+        carreraService.update(carrera);
     }
 
-    public void  deleteCarrera(Carrera carrera){
-        this.carreraService.delete(carrera);
+    public void deleteCarrera(Carrera carrera){
+        carreraService.delete(carrera);
     }
 
+    // ✅ NUEVO MÉTODO - Solo pasa el mensaje
+    public void reactivarCarrera(String nombre){
+        carreraService.reactivarCarrera(nombre);
+    }
 }
-
-

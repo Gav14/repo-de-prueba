@@ -3,16 +3,17 @@ package ar.com.itecn1.model;
 import lombok.*;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-@ToString
 public class Carrera {
-    private String nombre;
-    private boolean activo;
 
+    private String nombre;
     private Turno turno;
     private PlanEstudio planEstudio;
+
+    @Builder.Default
+    private boolean activo = true;
 
     public Carrera(String nombre, Turno turno) {
         this.nombre = nombre;

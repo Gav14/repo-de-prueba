@@ -3,21 +3,53 @@ package ar.com.itecn1.controller;
 import ar.com.itecn1.model.Materia;
 import ar.com.itecn1.service.MateriaService;
 import ar.com.itecn1.service.impl.MateriaServiceImpl;
-
 import java.util.List;
+import java.util.Map;
 
 public class MateriaController {
     private final MateriaService materiaService;
 
-    public MateriaController(){this.materiaService = new MateriaServiceImpl();}
+    public MateriaController() {
+        this.materiaService = new MateriaServiceImpl();
+    }
 
-    public Materia findByCode(String codigoMateria){return this.materiaService.findByCode(codigoMateria);}
+    public Materia findByCode(String codigoMateria) {
+        return materiaService.findByCode(codigoMateria);
+    }
 
-    public List<Materia> findAll(){return this.materiaService.findAll();}
+    public List<Materia> findAll() {
+        return materiaService.findAll();
+    }
 
-    public void crearMateria(Materia materia){this.materiaService.save(materia);}
+    public List<Materia> findMateriasByCuatrimestre(String cuatrimestre) {
+        return materiaService.findMateriasByCuatrimestre(cuatrimestre);
+    }
 
-    public void editarMateria(Materia materia){this.materiaService.save(materia);}
+    public Map<String, List<Materia>> agruparCorrelativasPorCuatrimestre(Materia materia) {
+        return materiaService.agruparCorrelativasPorCuatrimestre(materia);
+    }
 
-    public void eliminarMateria(Materia materia){this.materiaService.delete(materia);}
+    public void save(Materia materia) {
+        materiaService.save(materia);
+    }
+
+    public void update(Materia materia) {
+        materiaService.update(materia);
+    }
+
+    public void delete(Materia materia) {
+        materiaService.delete(materia);
+    }
+
+    public String agregarCorrelativa(String codigoMateria, String codigoCorrelativa) {
+        return materiaService.agregarCorrelativa(codigoMateria, codigoCorrelativa);
+    }
+
+    public String quitarCorrelativa(String codigoMateria, String codigoCorrelativa) {
+        return materiaService.quitarCorrelativa(codigoMateria, codigoCorrelativa);
+    }
+
+    public List<Materia> findMateriasDisponiblesParaCorrelativa(Materia materiaActual) {
+        return materiaService.findMateriasDisponiblesParaCorrelativa(materiaActual);
+    }
 }

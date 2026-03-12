@@ -464,7 +464,6 @@ public class CarreraView {
 
                 case "0" -> gestionando = false;
 
-                default -> System.out.println("Opción no válida.");
             }
         }
     }

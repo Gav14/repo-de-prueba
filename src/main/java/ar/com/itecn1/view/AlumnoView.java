@@ -109,7 +109,7 @@ public class AlumnoView {
     private void buscarAlumno() {
         System.out.println("----------Buscar alumno----------");
         System.out.print("Ingrese el DNI: ");
-        String dni = scanner.nextLine();
+        String dni = scanner.nextLine().trim();
 
         if (!alumnoController.validarDni(dni)) {
             System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
@@ -249,7 +249,7 @@ public class AlumnoView {
         System.out.println("----------Eliminar alumno----------");
 
         System.out.print("Ingrese el DNI: ");
-        String dni = scanner.nextLine();
+        String dni = scanner.nextLine().trim();
 
         if (!alumnoController.validarDni(dni)) {
             System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
@@ -278,13 +278,4 @@ public class AlumnoView {
         scanner.nextLine();
     }
 
-    public boolean validarFormatoDni(String dni) {
-        if (dni == null) return false;
-        if (dni.length() != 8) return false; // Cambia a 9 si es necesario
-        for (int i = 0; i < dni.length(); i++) {
-            char c = dni.charAt(i);
-            if (c < '0' || c > '9') return false;
-        }
-        return true;
-    }
 }

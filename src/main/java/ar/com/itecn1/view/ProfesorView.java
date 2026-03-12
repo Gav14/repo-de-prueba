@@ -112,15 +112,26 @@ public class ProfesorView {
     private void buscarProfesor() {
         System.out.println("----------Buscar Profesor----------");
         System.out.print("Ingrese el DNI: ");
+        String dni = scanner.nextLine().trim(); // ← agregar .trim()
 
-        String dni = scanner.nextLine();
+        // Validar formato
+        if (!profesorController.validarFormatoDni(dni)) {
+            System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
+            return;
+        }
+
         Profesor profesor = profesorController.findByDni(dni);
-
+        
         if (profesor == null) {
             System.out.println("Profesor no encontrado.");
         } else {
             mostrarProfesor(profesor);
         }
+        System.out.println("Presione Enter para continuar...");
+        scanner.nextLine();
+
     }
 
     private void crearProfesor() {
@@ -129,21 +140,47 @@ public class ProfesorView {
         System.out.print("DNI: ");
         String dni = scanner.nextLine();
 
+        // ✅ VALIDACIÓN DE FORMATO (8 dígitos numéricos)
+        if (!profesorController.validarFormatoDni(dni)) {
+            System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine(); // Pausa para que el usuario vea el mensaje
+            return;             // Sale del método y vuelve al menú
+        }
+
         if (profesorController.findByDni(dni) != null) {
             System.out.println("Ese DNI ya está registrado.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
             return;
         }
 
         System.out.print("Nombre: ");
-        String nombre = scanner.nextLine();
+        String nombre = scanner.nextLine().trim();
         System.out.print("Apellido: ");
-        String apellido = scanner.nextLine();
+        String apellido = scanner.nextLine().trim();
         System.out.print("Teléfono: ");
-        String telefono = scanner.nextLine();
+        String telefono = scanner.nextLine().trim();
         System.out.print("Email: ");
-        String email = scanner.nextLine();
+        String email = scanner.nextLine().trim();
 
         Profesor profesor = new Profesor(dni, nombre, apellido, telefono, email);
+
+        // Validar formato
+        if (!profesorController.validarFormatoDni(dni)) {
+            System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
+            return;
+        }
+
+        // Validar campos obligatorios
+        if (!profesorController.validarCampos(profesor)) {
+            System.out.println("Error: Todos los campos son obligatorios. No se permiten valores vacíos.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
+            return;
+        }
 
         System.out.println("\nVista previa:");
         mostrarProfesor(profesor);
@@ -152,18 +189,28 @@ public class ProfesorView {
             profesorController.crearProfesor(profesor);
             System.out.println("Profesor registrado!");
         }
+        System.out.println("Presione Enter para continuar...");
+        scanner.nextLine();
     }
 
     private void actualizarProfesor() {
         System.out.println("----------Actualizar Profesor----------");
 
         System.out.print("Ingrese el DNI del profesor: ");
-        String dni = scanner.nextLine();
+        String dni = scanner.nextLine().trim();
+
+        if (!profesorController.validarFormatoDni(dni)) {
+            System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
+            return;
+        }
 
         Profesor profesor = profesorController.findByDni(dni);
-
         if (profesor == null) {
             System.out.println("Profesor no encontrado.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
             return;
         }
 
@@ -171,18 +218,14 @@ public class ProfesorView {
         mostrarProfesor(profesor);
 
         System.out.println("\nNuevos datos (dejar vacío para no cambiar):");
-
         System.out.print("Nuevo nombre (" + profesor.getNombre() + "): ");
-        String nuevoNombre = scanner.nextLine();
-
+        String nuevoNombre = scanner.nextLine().trim();
         System.out.print("Nuevo apellido (" + profesor.getApellido() + "): ");
-        String nuevoApellido = scanner.nextLine();
-
+        String nuevoApellido = scanner.nextLine().trim();
         System.out.print("Nuevo teléfono (" + profesor.getTelefono() + "): ");
-        String nuevoTelefono = scanner.nextLine();
-
+        String nuevoTelefono = scanner.nextLine().trim();
         System.out.print("Nuevo email (" + profesor.getEmail() + "): ");
-        String nuevoEmail = scanner.nextLine();
+        String nuevoEmail = scanner.nextLine().trim();
 
         System.out.println("\nVista previa:");
         System.out.println("Nombre: "   + (nuevoNombre.isBlank()   ? profesor.getNombre()    : nuevoNombre));
@@ -201,18 +244,28 @@ public class ProfesorView {
         } else {
             System.out.println("Actualización cancelada.");
         }
+        System.out.println("Presione Enter para continuar...");
+        scanner.nextLine();
     }
 
     private void eliminarProfesor() {
         System.out.println("----------Eliminar Profesor----------");
 
         System.out.print("Ingrese el DNI del profesor: ");
-        String dni = scanner.nextLine();
+        String dni = scanner.nextLine().trim();
+
+        if (!profesorController.validarFormatoDni(dni)) {
+            System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
+            return;
+        }
 
         Profesor profesor = profesorController.findByDni(dni);
-
         if (profesor == null) {
             System.out.println("Profesor no encontrado.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
             return;
         }
 
@@ -223,5 +276,7 @@ public class ProfesorView {
             profesorController.eliminarProfesor(profesor);
             System.out.println("Profesor eliminado!");
         }
+        System.out.println("Presione Enter para continuar...");
+        scanner.nextLine();
     }
 }

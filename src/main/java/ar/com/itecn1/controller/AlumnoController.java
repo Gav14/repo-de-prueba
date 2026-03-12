@@ -26,7 +26,7 @@ public class AlumnoController {
     }
 
     public void updateAlumno(Alumno alumno){
-        this.alumnoService.save(alumno);
+        this.alumnoService.update(alumno);
     }
 
     public void deleteAlumno(Alumno alumno){

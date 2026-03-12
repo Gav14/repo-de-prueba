@@ -133,31 +133,44 @@ public class AlumnoView {
         System.out.println("----------Registrar alumno----------");
 
         System.out.print("DNI: ");
-        String dni = scanner.nextLine();
+        String dni = scanner.nextLine().trim();
 
-        // Validar formato
         if (!alumnoController.validarDni(dni)) {
             System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
             System.out.println("Presione Enter para continuar...");
-            scanner.nextLine(); // Pausa para que vea el mensaje
+            scanner.nextLine();
             return;
         }
 
         if (alumnoController.findByDni(dni) != null) {
             System.out.println("Ese DNI ya está registrado.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
             return;
         }
 
         System.out.print("Nombre: ");
-        String nombre = scanner.nextLine();
+        String nombre = scanner.nextLine().trim();
+
         System.out.print("Apellido: ");
-        String apellido = scanner.nextLine();
+        String apellido = scanner.nextLine().trim();
+
         System.out.print("Teléfono: ");
-        String telefono = scanner.nextLine();
+        String telefono = scanner.nextLine().trim();
+
         System.out.print("Email: ");
-        String email = scanner.nextLine();
+        String email = scanner.nextLine().trim();
 
         Alumno alumno = new Alumno(dni, nombre, apellido, telefono, email);
+        
+
+        // Validar campos obligatorios
+        if (!alumnoController.validarCampos(alumno)) {
+            System.out.println("Error: Todos los campos son obligatorios. No se permiten valores vacíos.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
+            return;
+        }
 
         System.out.println("\nVista previa:");
         mostrarAlumno(alumno);

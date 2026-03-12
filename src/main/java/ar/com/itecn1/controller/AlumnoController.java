@@ -36,4 +36,8 @@ public class AlumnoController {
     public boolean validarDni(String dni) {
         return alumnoService.validarFormatoDni(dni);
     }
+
+    public boolean validarCampos(Alumno alumno) {
+        return alumnoService.validarCamposObligatorios(alumno);
+    }
 }

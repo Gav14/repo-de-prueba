@@ -7,4 +7,5 @@ import java.util.List;
 public interface AlumnoService extends CRUDService<Alumno> {
     Alumno findByDni(String dni);
     boolean validarFormatoDni(String dni);
+    boolean validarCamposObligatorios(Alumno alumno);
 }

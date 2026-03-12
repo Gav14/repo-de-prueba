@@ -11,6 +11,7 @@ public class MateriaRepositoryImpl implements MateriaRepository {
     public MateriaRepositoryImpl() {
         this.materiaDb = new ArrayList<>();
         cargarPlanAnalista();
+        cargarPlanGastronomia();
     }
 
     private void cargarPlanAnalista() {
@@ -74,7 +75,7 @@ public class MateriaRepositoryImpl implements MateriaRepository {
         Materia pas2 = new Materia("PAS-601", "Pasantías II", "6");
 
         // ============================================================
-        // CONFIGURAR CORRELATIVAS
+        // CONFIGURAR CORRELATIVAS DE ANALISTA
         // ============================================================
 
         // 2° Cuatrimestre
@@ -113,7 +114,7 @@ public class MateriaRepositoryImpl implements MateriaRepository {
         fin.getCorrelativas().add(iec);                 // Finanzas necesita Introducción a Economía
         pas2.getCorrelativas().add(pas1);               // Pasantías II necesita Pasantías I
 
-        // Agregar todas las materias
+        // Agregar todas las materias de analista
         materiaDb.addAll(List.of(
                 // 1° Cuatrimestre
                 tht, mat1, icc, ipr, ing1, tds, fde,
@@ -130,6 +131,110 @@ public class MateriaRepositoryImpl implements MateriaRepository {
         ));
     }
 
+    private void cargarPlanGastronomia() {
+        // ============================================================
+        // CREAR MATERIAS DE GASTRONOMÍA
+        // ============================================================
+
+        // 1° Cuatrimestre
+        Materia gas101 = new Materia("GAS-101", "Introducción a la Gastronomía", "1");
+        Materia coc101 = new Materia("COC-101", "Técnicas Culinarias Básicas", "1");
+        Materia hig101 = new Materia("HIG-101", "Higiene y Manipulación de Alimentos", "1");
+        Materia nut101 = new Materia("NUT-101", "Nutrición Básica", "1");
+
+        // 2° Cuatrimestre
+        Materia pan201 = new Materia("PAN-201", "Panadería y Pastelería", "2");
+        Materia coc201 = new Materia("COC-201", "Cocina Regional", "2");
+        Materia beb201 = new Materia("BEB-201", "Bebidas y Coctelería", "2");
+        Materia gas201 = new Materia("GAS-201", "Gastronomía Argentina", "2");
+
+        // 3° Cuatrimestre
+        Materia coc301 = new Materia("COC-301", "Cocina Internacional", "3");
+        Materia par301 = new Materia("PAR-301", "Parilla y Asados", "3");
+        Materia pos301 = new Materia("POS-301", "Postres y Repostería", "3");
+        Materia gas301 = new Materia("GAS-301", "Gestión Gastronómica", "3");
+        Materia eco301 = new Materia("ECO-301", "Economía Aplicada", "3");
+
+        // 4° Cuatrimestre
+        Materia eve401 = new Materia("EVE-401", "Eventos y Catering", "4");
+        Materia coc401 = new Materia("COC-401", "Alta Cocina", "4");
+        Materia eno401 = new Materia("ENO-401", "Enología", "4");
+        Materia gas401 = new Materia("GAS-401", "Marketing Gastronómico", "4");
+
+        // 5° Cuatrimestre
+        Materia emp501 = new Materia("EMP-501", "Emprendimientos Gastronómicos", "5");
+        Materia coc501 = new Materia("COC-501", "Cocina Molecular", "5");
+        Materia gas501 = new Materia("GAS-501", "Legislación Alimentaria", "5");
+        Materia neg501 = new Materia("NEG-501", "Gestión de Restaurantes", "5");
+
+        // 6° Cuatrimestre
+        Materia gas601 = new Materia("GAS-601", "Proyecto Final Gastronómico", "6");
+        Materia coc601 = new Materia("COC-601", "Cocina de Autor", "6");
+        Materia gas602 = new Materia("GAS-602", "Sommelier", "6");
+        Materia gas603 = new Materia("GAS-603", "Gestión de Calidad", "6");
+
+        // ============================================================
+        // CONFIGURAR CORRELATIVAS DE GASTRONOMÍA
+        // ============================================================
+
+        // Buscar materias comunes que ya existen
+        Materia mat1 = findByCode("MAT-101");
+        Materia ing1 = findByCode("ING-101");
+        Materia ing2 = findByCode("ING-201");
+        Materia ecy = findByCode("ECY-201");
+        Materia iec = findByCode("IEC-301");
+        Materia rrhh = findByCode("RRH-501");
+        Materia mkt = findByCode("MKT-601");
+        Materia eyd = findByCode("EYD-601");
+
+        // 2° Cuatrimestre - correlativas de 1°
+        coc201.getCorrelativas().add(coc101);
+        pan201.getCorrelativas().add(gas101);
+        beb201.getCorrelativas().add(gas101);
+        gas201.getCorrelativas().add(gas101);
+
+        // 3° Cuatrimestre - correlativas de 2°
+        coc301.getCorrelativas().add(coc201);
+        par301.getCorrelativas().add(coc201);
+        pos301.getCorrelativas().add(pan201);
+        gas301.getCorrelativas().add(gas201);
+        if (iec != null) eco301.getCorrelativas().add(iec);
+
+        // 4° Cuatrimestre - correlativas de 3°
+        eve401.getCorrelativas().add(coc301);
+        coc401.getCorrelativas().add(coc301);
+        if (ing2 != null) eno401.getCorrelativas().add(ing2);
+        if (mkt != null) gas401.getCorrelativas().add(mkt);
+
+        // 5° Cuatrimestre - correlativas de 4°
+        emp501.getCorrelativas().add(gas401);
+        coc501.getCorrelativas().add(coc401);
+        gas501.getCorrelativas().add(hig101);
+        if (rrhh != null) neg501.getCorrelativas().add(rrhh);
+
+        // 6° Cuatrimestre - correlativas de 5°
+        gas601.getCorrelativas().addAll(List.of(emp501, coc501, neg501));
+        coc601.getCorrelativas().add(coc501);
+        gas602.getCorrelativas().add(eno401);
+        if (eyd != null) gas603.getCorrelativas().add(eyd);
+
+        // Agregar todas las materias de gastronomía
+        materiaDb.addAll(List.of(
+                // 1° Cuatrimestre
+                gas101, coc101, hig101, nut101,
+                // 2° Cuatrimestre
+                pan201, coc201, beb201, gas201,
+                // 3° Cuatrimestre
+                coc301, par301, pos301, gas301, eco301,
+                // 4° Cuatrimestre
+                eve401, coc401, eno401, gas401,
+                // 5° Cuatrimestre
+                emp501, coc501, gas501, neg501,
+                // 6° Cuatrimestre
+                gas601, coc601, gas602, gas603
+        ));
+    }
+
     @Override
     public Materia findByCode(String codigoMateria) {
         for (Materia materia : this.materiaDb) {
@@ -142,7 +247,7 @@ public class MateriaRepositoryImpl implements MateriaRepository {
 
     @Override
     public List<Materia> findAll() {
-        return this.materiaDb;
+        return new ArrayList<>(this.materiaDb);
     }
 
     @Override

@@ -184,7 +184,7 @@ public class AlumnoView {
     }
 
     private void actualizarAlumno() {
-        ystem.out.println("----------Actualizar alumno----------");
+        System.out.println("----------Actualizar alumno----------");
 
         System.out.print("Ingrese el DNI: ");
         String dni = scanner.nextLine().trim(); // Limpiar espacios

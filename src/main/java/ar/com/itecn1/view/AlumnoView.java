@@ -7,6 +7,16 @@ import java.util.List;
 import java.util.Scanner;
 
 public class AlumnoView {
+
+    // Códigos de color
+    private static final String RESET = "\u001B[0m";
+    private static final String GREEN = "\u001B[32m";
+    private static final String YELLOW = "\u001B[33m";
+    private static final String BLUE = "\u001B[34m";
+    private static final String RED = "\u001B[31m";
+    private static final String CYAN = "\u001B[36m";
+    private static final String BOLD = "\u001B[1m";
+
     private final AlumnoController alumnoController;
     private final Scanner scanner;
 
@@ -22,13 +32,13 @@ public class AlumnoView {
             mostrarMenu();
 
             if (!scanner.hasNextInt()) {
-                System.out.println("Debe ingresar un número.");
+                System.out.println(RED + "Debe ingresar un número." + RESET);
                 scanner.next();
                 continue;
             }
 
             int opcion = scanner.nextInt();
-            pausa();
+            scanner.nextLine();
 
             switch (opcion) {
                 case 1 -> listarAlumnos();
@@ -37,71 +47,66 @@ public class AlumnoView {
                 case 4 -> actualizarAlumno();
                 case 5 -> eliminarAlumno();
                 case 0 -> continuar = false;
-                default -> System.out.println("Ingrese una opción válida");
+                default -> System.out.println(RED + "Opción no válida" + RESET);
             }
         }
     }
 
-    // -----------------------------
-    // Métodos auxiliares
-    // -----------------------------
-
     private void mostrarMenu() {
-        System.out.println("┌────────────────────────────────────┐");
-        System.out.println("│       GESTIÓN DE ALUMNOS           │");
-        System.out.println("├────────────────────────────────────┤");
-        System.out.println("│  1. Listar alumnos                 │");
-        System.out.println("│  2. Buscar alumno por DNI          │");
-        System.out.println("│  3. Registrar alumno               │");
-        System.out.println("│  4. Actualizar datos de un alumno  │");
-        System.out.println("│  5. Dar de baja un alumno          │");
-        System.out.println("│  0. Volver atrás                   │");
-        System.out.println("└────────────────────────────────────┘");
-        System.out.print("  Opción: ");
+        System.out.println("\n" + BLUE + BOLD + "ALUMNOS" + RESET);
+        System.out.println("-------");
+        System.out.println(CYAN + "1. Listar alumnos" + RESET);
+        System.out.println(CYAN + "2. Buscar alumno por DNI" + RESET);
+        System.out.println(CYAN + "3. Registrar alumno" + RESET);
+        System.out.println(CYAN + "4. Modificar alumno" + RESET);
+        System.out.println(CYAN + "5. Eliminar alumno (dar de baja)" + RESET);
+        System.out.println(YELLOW + "0. Volver" + RESET);
+        System.out.print("\nSeleccione: ");
     }
     private void mostrarAlumno(Alumno alumno) {
-        System.out.println(
-            "DNI: " + alumno.getDni() +
-            " | NOMBRE: " + alumno.getNombre() +
-            " | APELLIDO: " + alumno.getApellido() +
-            " | EMAIL: " + alumno.getEmail() +
-            " | TELÉFONO: " + alumno.getTelefono() +
-            " | ESTADO: " + (alumno.isActivo() ? "ACTIVO" : "INACTIVO")
+        String estado = alumno.isActivo() ? GREEN + "ACTIVO" + RESET : RED + "INACTIVO" + RESET;
+        System.out.printf("│ %-8s │ %-15s │ %-15s │ %-25s │ %-12s │ %-8s │%n",
+                alumno.getDni(),
+                alumno.getNombre(),
+                alumno.getApellido(),
+                alumno.getEmail(),
+                alumno.getTelefono(),
+                estado.replaceAll("\u001B\\[[;\\d]*m", "") // Sacar colores para formato
         );
     }
 
-    private int confirmarAccion() {
-        int opcion = 0;
-        while (opcion != 1 && opcion != 2) {
-            System.out.println("\n┌────────────┐");
-            System.out.println("│ Confirmar  │");
-            System.out.println("├────────────┤");
-            System.out.println("│ 1. Sí      │");
-            System.out.println("│ 2. No      │");
-            System.out.println("└────────────┘");
-            System.out.print("  Opción: ");
+    private void mostrarAlumnoColor(Alumno alumno) {
+        String estado = alumno.isActivo() ? GREEN + "ACTIVO" + RESET : RED + "INACTIVO" + RESET;
+        System.out.println("  DNI: " + CYAN + alumno.getDni() + RESET);
+        System.out.println("  Nombre: " + alumno.getNombre() + " " + alumno.getApellido());
+        System.out.println("  Email: " + alumno.getEmail());
+        System.out.println("  Teléfono: " + alumno.getTelefono());
+        System.out.println("  Estado: " + estado);
+    }
 
-            if (scanner.hasNextInt()) {
-                opcion = scanner.nextInt();
-            } else {
+    private boolean confirmarAccion(String mensaje) {
+        System.out.println("\n" + mensaje);
+        System.out.println(YELLOW + "1. Sí" + RESET);
+        System.out.println(YELLOW + "2. No" + RESET);
+        System.out.print("Opción: ");
+
+        int opcion;
+        do {
+            while (!scanner.hasNextInt()) {
+                System.out.println(RED + "Debe ingresar un número." + RESET);
                 scanner.next();
             }
-        }
-        pausa();
-        return opcion;
+            opcion = scanner.nextInt();
+            scanner.nextLine();
+        } while (opcion < 1 || opcion > 2);
+
+        return opcion == 1;
     }
-
-
-    private void pausa() {
-        scanner.nextLine(); // limpia buffer luego de nextInt()
-    }
-
-    // -----------------------------
-    // Funcionalidades
-    // -----------------------------
 
     private void listarAlumnos() {
-        System.out.println("----------Listado de Alumnos----------");
+        System.out.println("\n" + BLUE + BOLD + "LISTADO DE ALUMNOS" + RESET);
+        System.out.println("===================");
+
         List<Alumno> alumnos = alumnoController.findAll();
 
         if (alumnos.isEmpty()) {
@@ -109,11 +114,28 @@ public class AlumnoView {
             return;
         }
 
-        alumnos.forEach(this::mostrarAlumno);
+        System.out.println("┌──────────┬─────────────────┬─────────────────┬───────────────────────────┬──────────────┬──────────┐");
+        System.out.println("│ DNI      │ NOMBRE          │ APELLIDO        │ EMAIL                     │ TELÉFONO     │ ESTADO   │");
+        System.out.println("├──────────┼─────────────────┼─────────────────┼───────────────────────────┼──────────────┼──────────┤");
+
+        for (Alumno a : alumnos) {
+            String estado = a.isActivo() ? "ACTIVO" : "INACTIVO";
+            System.out.printf("│ %-8s │ %-15s │ %-15s │ %-25s │ %-12s │ %-8s │%n",
+                    a.getDni(),
+                    a.getNombre(),
+                    a.getApellido(),
+                    a.getEmail(),
+                    a.getTelefono(),
+                    estado
+            );
+        }
+        System.out.println("└──────────┴─────────────────┴─────────────────┴───────────────────────────┴──────────────┴──────────┘");
+        pausa();
     }
 
     private void buscarAlumno() {
-        System.out.println("----------Buscar alumno----------");
+        System.out.println("\n" + BLUE + BOLD + "BUSCAR ALUMNO" + RESET);
+        System.out.println("==============");
         System.out.print("Ingrese el DNI: ");
         String dni = scanner.nextLine().trim();
 
@@ -127,16 +149,17 @@ public class AlumnoView {
         Alumno alumno = alumnoController.findByDni(dni);
 
         if (alumno == null) {
-            System.out.println("Alumno no encontrado.");
+            System.out.println(RED + "Alumno no encontrado." + RESET);
         } else {
-            mostrarAlumno(alumno);
+            System.out.println("\n" + GREEN + "Alumno encontrado:" + RESET);
+            mostrarAlumnoColor(alumno);
         }
-        System.out.println("Presione Enter para continuar...");
-        scanner.nextLine();
+        pausa();
     }
 
     private void crearAlumno() {
-        System.out.println("----------Registrar alumno----------");
+        System.out.println("\n" + BLUE + BOLD + "REGISTRAR ALUMNO" + RESET);
+        System.out.println("=================");
 
         System.out.print("DNI: ");
         String dni = scanner.nextLine().trim();
@@ -149,9 +172,8 @@ public class AlumnoView {
         }
 
         if (alumnoController.findByDni(dni) != null) {
-            System.out.println("Ese DNI ya está registrado.");
-            System.out.println("Presione Enter para continuar...");
-            scanner.nextLine();
+            System.out.println(RED + "Ese DNI ya está registrado." + RESET);
+            pausa();
             return;
         }
 
@@ -169,28 +191,21 @@ public class AlumnoView {
 
         Alumno alumno = new Alumno(dni, nombre, apellido, telefono, email);
 
+        System.out.println("\n" + CYAN + "Vista previa:" + RESET);
+        mostrarAlumnoColor(alumno);
 
-        // Validar campos obligatorios
-        if (!alumnoController.validarCampos(alumno)) {
-            System.out.println("Error: Todos los campos son obligatorios. No se permiten valores vacíos.");
-            System.out.println("Presione Enter para continuar...");
-            scanner.nextLine();
-            return;
-        }
-
-        System.out.println("\nVista previa:");
-        mostrarAlumno(alumno);
-
-        if (confirmarAccion() == 1) {
+        if (confirmarAccion("¿Confirmar registro?")) {
             alumnoController.createAlumno(alumno);
-            System.out.println("Alumno registrado!");
+            System.out.println(GREEN + "✓ Alumno registrado exitosamente!" + RESET);
+        } else {
+            System.out.println("Registro cancelado.");
         }
-        System.out.println("Presione Enter para continuar...");
-        scanner.nextLine();
+        pausa();
     }
 
     private void actualizarAlumno() {
-        System.out.println("----------Actualizar alumno----------");
+        System.out.println("\n" + BLUE + BOLD + "MODIFICAR ALUMNO" + RESET);
+        System.out.println("=================");
 
         System.out.print("Ingrese el DNI: ");
         String dni = scanner.nextLine().trim(); // Limpiar espacios
@@ -205,16 +220,15 @@ public class AlumnoView {
         Alumno alumno = alumnoController.findByDni(dni);
 
         if (alumno == null) {
-            System.out.println("Alumno no encontrado.");
-            System.out.println("Presione Enter para continuar...");
-            scanner.nextLine();
+            System.out.println(RED + "Alumno no encontrado." + RESET);
+            pausa();
             return;
         }
 
-        System.out.println("Alumno encontrado:");
-        mostrarAlumno(alumno);
+        System.out.println("\n" + CYAN + "Datos actuales:" + RESET);
+        mostrarAlumnoColor(alumno);
 
-        System.out.println("\nNUEVOS DATOS (dejar en blanco para no cambiar):");
+        System.out.println("\n" + YELLOW + "NUEVOS DATOS (dejar en blanco para no cambiar):" + RESET);
 
         System.out.print("Nuevo nombre (" + alumno.getNombre() + "): ");
         String nuevoNombre = scanner.nextLine().trim();
@@ -228,31 +242,29 @@ public class AlumnoView {
         System.out.print("Nuevo email (" + alumno.getEmail() + "): ");
         String nuevoEmail = scanner.nextLine().trim();
 
-        // Vista previa
-        System.out.println("\nVista previa:");
-        System.out.println("Nombre: "   + (nuevoNombre.isBlank()    ? alumno.getNombre()    : nuevoNombre));
-        System.out.println("Apellido: " + (nuevoApellido.isBlank()  ? alumno.getApellido()  : nuevoApellido));
-        System.out.println("Teléfono: " + (nuevoTelefono.isBlank()  ? alumno.getTelefono()  : nuevoTelefono));
-        System.out.println("Email: "    + (nuevoEmail.isBlank()     ? alumno.getEmail()     : nuevoEmail));
+        System.out.println("\n" + CYAN + "Vista previa:" + RESET);
+        System.out.println("  Nombre: " + (nuevoNombre.isBlank() ? alumno.getNombre() : nuevoNombre) +
+                " " + (nuevoApellido.isBlank() ? alumno.getApellido() : nuevoApellido));
+        System.out.println("  Teléfono: " + (nuevoTelefono.isBlank() ? alumno.getTelefono() : nuevoTelefono));
+        System.out.println("  Email: " + (nuevoEmail.isBlank() ? alumno.getEmail() : nuevoEmail));
 
-        if (confirmarAccion() == 1) {
-            // Solo actualizar si el campo no está en blanco (después de trim)
-            if (!nuevoNombre.isBlank())    alumno.setNombre(nuevoNombre);
-            if (!nuevoApellido.isBlank())  alumno.setApellido(nuevoApellido);
-            if (!nuevoTelefono.isBlank())  alumno.setTelefono(nuevoTelefono);
-            if (!nuevoEmail.isBlank())     alumno.setEmail(nuevoEmail);
+        if (confirmarAccion("¿Confirmar cambios?")) {
+            if (!nuevoNombre.isBlank()) alumno.setNombre(nuevoNombre);
+            if (!nuevoApellido.isBlank()) alumno.setApellido(nuevoApellido);
+            if (!nuevoTelefono.isBlank()) alumno.setTelefono(nuevoTelefono);
+            if (!nuevoEmail.isBlank()) alumno.setEmail(nuevoEmail);
 
             alumnoController.updateAlumno(alumno);
-            System.out.println("Alumno modificado!");
+            System.out.println(GREEN + "✓ Alumno modificado exitosamente!" + RESET);
         } else {
-            System.out.println("Actualización cancelada.");
+            System.out.println("Modificación cancelada.");
         }
-        System.out.println("Presione Enter para continuar...");
-        scanner.nextLine();
+        pausa();
     }
 
     private void eliminarAlumno() {
-        System.out.println("----------Eliminar alumno----------");
+        System.out.println("\n" + BLUE + BOLD + "ELIMINAR ALUMNO" + RESET);
+        System.out.println("================");
 
         System.out.print("Ingrese el DNI: ");
         String dni = scanner.nextLine().trim();
@@ -267,21 +279,25 @@ public class AlumnoView {
         Alumno alumno = alumnoController.findByDni(dni);
 
         if (alumno == null) {
-            System.out.println("Alumno no encontrado.");
-            System.out.println("Presione Enter para continuar...");
-            scanner.nextLine();
+            System.out.println(RED + "Alumno no encontrado." + RESET);
+            pausa();
             return;
         }
 
-        System.out.println("Alumno encontrado:");
-        mostrarAlumno(alumno);
+        System.out.println("\n" + CYAN + "Alumno a eliminar:" + RESET);
+        mostrarAlumnoColor(alumno);
 
-        if (confirmarAccion() == 1) {
+        if (confirmarAccion(RED + "¿Está seguro que desea ELIMINAR este alumno?" + RESET)) {
             alumnoController.deleteAlumno(alumno);
-            System.out.println("Alumno eliminado!");
+            System.out.println(GREEN + "✓ Alumno eliminado correctamente." + RESET);
+        } else {
+            System.out.println("Eliminación cancelada.");
         }
-        System.out.println("Presione Enter para continuar...");
-        scanner.nextLine();
+        pausa();
     }
 
+    private void pausa() {
+        System.out.print("\n" + CYAN + "Presione ENTER para continuar..." + RESET);
+        scanner.nextLine();
+    }
 }

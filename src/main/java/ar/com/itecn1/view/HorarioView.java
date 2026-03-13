@@ -8,6 +8,16 @@ import java.util.Scanner;
 
 public class HorarioView {
 
+    // Códigos de color
+    private static final String RESET = "\u001B[0m";
+    private static final String GREEN = "\u001B[32m";
+    private static final String YELLOW = "\u001B[33m";
+    private static final String BLUE = "\u001B[34m";
+    private static final String RED = "\u001B[31m";
+    private static final String CYAN = "\u001B[36m";
+    private static final String PURPLE = "\u001B[35m";
+    private static final String BOLD = "\u001B[1m";
+
     private final HorarioController horarioController;
     private final CarreraController carreraController;
     private final CuatrimestreController cuatrimestreController;
@@ -33,7 +43,16 @@ public class HorarioView {
 
         while (continuar) {
             mostrarMenu();
-            int opcion = leerEntero();
+
+            if (!scanner.hasNextInt()) {
+                System.out.println(RED + "Debe ingresar un número." + RESET);
+                scanner.next();
+                scanner.nextLine();
+                continue;
+            }
+
+            int opcion = scanner.nextInt();
+            scanner.nextLine();
 
             switch (opcion) {
                 case 1 -> listarHorarios();
@@ -42,348 +61,335 @@ public class HorarioView {
                 case 4 -> actualizarHorario();
                 case 5 -> eliminarHorario();
                 case 0 -> continuar = false;
-                default -> System.out.println("Ingrese una opción válida.");
+                default -> System.out.println(RED + "Opción no válida" + RESET);
             }
         }
     }
 
-    // ============================================================
-    // MENÚ
-    // ============================================================
-
     private void mostrarMenu() {
-        System.out.println("\nGESTIÓN DE HORARIOS");
-        System.out.println("1. Listar horarios");
-        System.out.println("2. Buscar horario por ID");
-        System.out.println("3. Registrar horario");
-        System.out.println("4. Actualizar horario");
-        System.out.println("5. Dar de baja horario");
-        System.out.println("0. Volver atrás");
-    }
-
-    // ============================================================
-    // MÉTODOS UTILITARIOS
-    // ============================================================
-
-    private int leerEntero() {
-        while (!scanner.hasNextInt()) {
-            scanner.nextLine();
-            System.out.println("Debe ingresar un número.");
-        }
-        int num = scanner.nextInt();
-        scanner.nextLine(); // limpiar buffer
-        return num;
+        System.out.println("\n" + BLUE + BOLD + "HORARIOS" + RESET);
+        System.out.println("----------");
+        System.out.println(CYAN + "1. Listar horarios" + RESET);
+        System.out.println(CYAN + "2. Buscar horario por ID" + RESET);
+        System.out.println(CYAN + "3. Registrar horario" + RESET);
+        System.out.println(CYAN + "4. Modificar horario" + RESET);
+        System.out.println(CYAN + "5. Eliminar horario (dar de baja)" + RESET);
+        System.out.println(YELLOW + "0. Volver" + RESET);
+        System.out.print("\nSeleccione: ");
     }
 
     private boolean confirmarAccion(String mensaje) {
+        System.out.println("\n" + mensaje);
+        System.out.println(YELLOW + "1. Sí" + RESET);
+        System.out.println(YELLOW + "2. No" + RESET);
+        System.out.print("Opción: ");
+
         int opcion;
         do {
-            System.out.println(mensaje);
-            System.out.println("1. Sí");
-            System.out.println("2. No");
-            opcion = leerEntero();
+            while (!scanner.hasNextInt()) {
+                System.out.println(RED + "Debe ingresar un número." + RESET);
+                scanner.next();
+                scanner.nextLine();
+            }
+            opcion = scanner.nextInt();
+            scanner.nextLine();
         } while (opcion < 1 || opcion > 2);
 
         return opcion == 1;
     }
 
-    // Mostrar horario
-    private void mostrarHorario(Horario h) {
-        System.out.println(
-            "ID: " + h.getId() +
-            " | DÍA: " + h.getDia() +
-            " | CARRERA: " + (h.getCarrera() != null ? h.getCarrera().getNombre() : "NO ASIGNADA") +
-            " | CUATRIMESTRE: " + (h.getCuatrimestre() != null ? h.getCuatrimestre().getNumero() : "NO ASIGNADO") +
-            " | MÓDULO: " + (h.getModulo() != null ? h.getModulo().getCodigo() : "NO ASIGNADO") +
-            " | ESTADO: " + (h.isActivo() ? "ACTIVO" : "INACTIVO")
+    private void mostrarHorarioCompacto(Horario h) {
+        String estado = h.isActivo() ? "ACTIVO" : "INACTIVO";
+        String carrera = h.getCarrera() != null ? h.getCarrera().getNombre() : "NO ASIGNADA";
+        String cuatrimestre = h.getCuatrimestre() != null ? h.getCuatrimestre().getNumero() : "NO ASIGNADO";
+        String modulo = h.getModulo() != null ? h.getModulo().getCodigo() : "NO ASIGNADO";
+
+        System.out.printf("│ %-4s │ %-9s │ %-20s │ %-6s │ %-8s │ %-8s │%n",
+                h.getId(),
+                h.getDia(),
+                carrera.length() > 20 ? carrera.substring(0, 17) + "..." : carrera,
+                cuatrimestre,
+                modulo,
+                estado
         );
     }
 
-    private Carrera seleccionarCarrera() {
+    private void mostrarHorarioDetallado(Horario h) {
+        String estado = h.isActivo() ? GREEN + "ACTIVO" + RESET : RED + "INACTIVO" + RESET;
+        String disponible = h.isDisponible() ? GREEN + "SÍ" + RESET : RED + "NO" + RESET;
+
+        System.out.println("  " + BOLD + "ID:" + RESET + " " + CYAN + h.getId() + RESET);
+        System.out.println("  " + BOLD + "Día:" + RESET + " " + h.getDia());
+        System.out.println("  " + BOLD + "Carrera:" + RESET + " " + (h.getCarrera() != null ? h.getCarrera().getNombre() : "NO ASIGNADA"));
+        System.out.println("  " + BOLD + "Cuatrimestre:" + RESET + " " + (h.getCuatrimestre() != null ?
+                h.getCuatrimestre().getNumero() + " (" + h.getCuatrimestre().getAnio() + ")" : "NO ASIGNADO"));
+        System.out.println("  " + BOLD + "Módulo:" + RESET + " " + (h.getModulo() != null ?
+                h.getModulo().getCodigo() + " (" + h.getModulo().getInicio() + " - " + h.getModulo().getFin() + ")" : "NO ASIGNADO"));
+        System.out.println("  " + BOLD + "Estado:" + RESET + " " + estado);
+        System.out.println("  " + BOLD + "Disponible:" + RESET + " " + disponible);
+    }
+
+    private Dia seleccionarDia() {
+        System.out.println("\n" + CYAN + "Seleccionar día:" + RESET);
+        Dia[] dias = Dia.values();
+
+        for (int i = 0; i < dias.length; i++) {
+            System.out.println("  " + (i + 1) + ". " + dias[i]);
+        }
+
+        int opcion;
+        do {
+            System.out.print("Seleccione (1-" + dias.length + "): ");
+            while (!scanner.hasNextInt()) {
+                System.out.print(RED + "Debe ingresar un número: " + RESET);
+                scanner.next();
+            }
+            opcion = scanner.nextInt();
+            scanner.nextLine();
+        } while (opcion < 1 || opcion > dias.length);
+
+        return dias[opcion - 1];
+    }
+
+    private Carrera seleccionarCarrera(boolean obligatorio) {
         List<Carrera> carreras = carreraController.findAll();
-        if (carreras.isEmpty()) {
-            System.out.println("No hay carreras registradas.");
+        List<Carrera> activas = carreras.stream().filter(Carrera::isActivo).toList();
+
+        if (activas.isEmpty()) {
+            System.out.println(RED + "No hay carreras activas disponibles." + RESET);
             return null;
         }
 
-        System.out.println("CARRERAS DISPONIBLES:");
-        carreras.forEach(c -> System.out.println("- " + c.getNombre()));
-
-        System.out.print("Ingrese el nombre de la carrera: ");
-        String nombre = scanner.nextLine().trim();
-
-        Carrera encontrada = carreraController.findByName(nombre);
-        if (encontrada == null) {
-            System.out.println("Carrera inexistente.");
+        System.out.println("\n" + CYAN + "Carreras activas disponibles:" + RESET);
+        for (int i = 0; i < activas.size(); i++) {
+            System.out.println("  " + (i + 1) + ". " + activas.get(i).getNombre());
         }
 
-        return encontrada;
+        if (!obligatorio) {
+            System.out.println("  " + (activas.size() + 1) + ". Ninguna");
+        }
+
+        int opcion;
+        do {
+            System.out.print("Seleccione (1-" + (obligatorio ? activas.size() : activas.size() + 1) + "): ");
+            while (!scanner.hasNextInt()) {
+                System.out.print(RED + "Debe ingresar un número: " + RESET);
+                scanner.next();
+            }
+            opcion = scanner.nextInt();
+            scanner.nextLine();
+        } while (opcion < 1 || opcion > (obligatorio ? activas.size() : activas.size() + 1));
+
+        if (!obligatorio && opcion == activas.size() + 1) {
+            return null;
+        }
+
+        return activas.get(opcion - 1);
     }
 
-    private Cuatrimestre seleccionarCuatrimestre() {
+    private Cuatrimestre seleccionarCuatrimestre(boolean obligatorio) {
         List<Cuatrimestre> cuatrimestres = cuatrimestreController.findAll();
-        if (cuatrimestres.isEmpty()) {
-            System.out.println("No hay cuatrimestres registrados.");
+        List<Cuatrimestre> activos = cuatrimestres.stream().filter(Cuatrimestre::isActivo).toList();
+
+        if (activos.isEmpty()) {
+            System.out.println(RED + "No hay cuatrimestres activos disponibles." + RESET);
             return null;
         }
 
-        System.out.println("\nCUATRIMESTRES DISPONIBLES:");
-        cuatrimestres.forEach(c -> System.out.println(
-            "NÚMERO: " + c.getNumero() +
-            " | AÑO: " + c.getAnio() +
-            " | INICIO: " + c.getInicio() +
-            " | FIN: " + c.getFin() +
-            " | ESTADO: " + (c.isActivo() ? "ACTIVO" : "INACTIVO")
-        ));
-
-        System.out.print("Ingrese el número del cuatrimestre: ");
-        String numero = scanner.nextLine().trim();
-
-        Cuatrimestre encontrado = cuatrimestreController.findByNumber(numero);
-        if (encontrado == null) {
-            System.out.println("Cuatrimestre inexistente.");
+        System.out.println("\n" + CYAN + "Cuatrimestres activos disponibles:" + RESET);
+        for (int i = 0; i < activos.size(); i++) {
+            Cuatrimestre c = activos.get(i);
+            System.out.println("  " + (i + 1) + ". " + c.getNumero() + " (" + c.getAnio() + ") - " +
+                    c.getInicio() + " a " + c.getFin());
         }
 
-        return encontrado;
+        if (!obligatorio) {
+            System.out.println("  " + (activos.size() + 1) + ". Ninguno");
+        }
+
+        int opcion;
+        do {
+            System.out.print("Seleccione (1-" + (obligatorio ? activos.size() : activos.size() + 1) + "): ");
+            while (!scanner.hasNextInt()) {
+                System.out.print(RED + "Debe ingresar un número: " + RESET);
+                scanner.next();
+            }
+            opcion = scanner.nextInt();
+            scanner.nextLine();
+        } while (opcion < 1 || opcion > (obligatorio ? activos.size() : activos.size() + 1));
+
+        if (!obligatorio && opcion == activos.size() + 1) {
+            return null;
+        }
+
+        return activos.get(opcion - 1);
     }
 
-    private Modulo seleccionarModuloOpcional() {
+    private Modulo seleccionarModulo(boolean obligatorio) {
         List<Modulo> modulos = moduloController.findAll();
+        List<Modulo> activos = modulos.stream().filter(Modulo::isActivo).toList();
 
-        if (modulos.isEmpty()) {
-            System.out.println("\nNo hay módulos registrados.");
+        if (activos.isEmpty()) {
+            System.out.println(RED + "No hay módulos activos disponibles." + RESET);
             return null;
         }
 
-        System.out.println("\nMÓDULOS DISPONIBLES:");
-        modulos.forEach(m ->
-                System.out.println("CÓDIGO: " + m.getCodigo() + " | INICIO: " + m.getInicio() + " | FIN: " + m.getFin())
-        );
+        System.out.println("\n" + CYAN + "Módulos activos disponibles:" + RESET);
+        for (int i = 0; i < activos.size(); i++) {
+            Modulo m = activos.get(i);
+            System.out.println("  " + (i + 1) + ". " + m.getCodigo() + " (" + m.getInicio() + " - " + m.getFin() + ")");
+        }
 
-        System.out.print("Ingrese código del módulo (ENTER para no elegir ninguno): ");
-        String codigo = scanner.nextLine().trim();
+        if (!obligatorio) {
+            System.out.println("  " + (activos.size() + 1) + ". Ninguno");
+        }
 
-        if (codigo.isEmpty()) {
+        int opcion;
+        do {
+            System.out.print("Seleccione (1-" + (obligatorio ? activos.size() : activos.size() + 1) + "): ");
+            while (!scanner.hasNextInt()) {
+                System.out.print(RED + "Debe ingresar un número: " + RESET);
+                scanner.next();
+            }
+            opcion = scanner.nextInt();
+            scanner.nextLine();
+        } while (opcion < 1 || opcion > (obligatorio ? activos.size() : activos.size() + 1));
+
+        if (!obligatorio && opcion == activos.size() + 1) {
             return null;
         }
 
-        Modulo encontrado = moduloController.findByCode(codigo);
-        if (encontrado == null) {
-            System.out.println("Módulo inexistente.");
-        }
-
-        return encontrado;
+        return activos.get(opcion - 1);
     }
 
-
-    private Carrera leerCarreraOpcional(Carrera actual) {
-        List<Carrera> carreras = carreraController.findAll();
-
-        if (carreras.isEmpty()) {
-            System.out.println("No hay carreras registradas.");
-            return actual;
-        }
-
-        System.out.println("\nCarreras disponibles:");
-        carreras.forEach(c -> System.out.println(" - " + c.getNombre()));
-
-        System.out.print("Nueva carrera (ENTER para mantener): ");
-        String nombre = scanner.nextLine().trim();
-
-        if (nombre.isEmpty()) return actual;
-
-        Carrera c = carreraController.findByName(nombre);
-        if (c == null) {
-            System.out.println("Carrera inexistente. Se mantiene el valor actual.");
-            return actual;
-        }
-        return c;
-    }
-
-    private Cuatrimestre leerCuatrimestreOpcional(Cuatrimestre actual) {
-        List<Cuatrimestre> lista = cuatrimestreController.findAll();
-
-        if (lista.isEmpty()) {
-            System.out.println("No hay cuatrimestres registrados.");
-            return actual;
-        }
-
-        System.out.println("\nCuatrimestres disponibles:");
-        lista.forEach(c ->
-                System.out.println("NÚMERO: " + c.getNumero() + " | INICIO: " + c.getInicio() + " | FIN: " + c.getFin())
-        );
-
-        System.out.print("Nuevo cuatrimestre (ENTER para mantener): ");
-        String numero = scanner.nextLine().trim();
-
-        if (numero.isEmpty()) return actual;
-
-        Cuatrimestre c = cuatrimestreController.findByNumber(numero);
-        if (c == null) {
-            System.out.println("Cuatrimestre inexistente. Se mantiene el actual.");
-            return actual;
-        }
-        return c;
-    }
-
-    private Modulo leerModuloOpcional(Modulo actual) {
-        List<Modulo> modulos = moduloController.findAll();
-
-        if (modulos.isEmpty()) {
-            System.out.println("No hay módulos cargados.");
-            return actual;
-        }
-
-        System.out.println("\nMódulos disponibles:");
-        modulos.forEach(m ->
-                System.out.println("CÓDIGO: " + m.getCodigo() + " | INICIO: " + m.getInicio() + " | FIN: " + m.getFin())
-        );
-
-        System.out.println("Módulo actual: " + actual.getCodigo());
-        System.out.print("Nuevo módulo (ENTER para mantener): ");
-        String codigo = scanner.nextLine().trim();
-
-        if (codigo.isEmpty()) return actual;
-
-        Modulo encontrado = moduloController.findByCode(codigo);
-        if (encontrado == null) {
-            System.out.println("Módulo inexistente. Se mantiene el actual.");
-            return actual;
-        }
-
-        return encontrado;
-    }
-
-    private int generarIdHorario() {
+    private String generarIdHorario() {
         List<Horario> horarios = horarioController.findAll();
 
-        // Si no hay horarios guardados → ID = 1
         if (horarios.isEmpty()) {
-            return 1;
+            return "1";
         }
 
-        // Buscar el ID numérico más alto
         int maxId = horarios.stream()
                 .mapToInt(h -> {
                     try {
                         return Integer.parseInt(h.getId());
                     } catch (NumberFormatException e) {
-                        return 0; // si hubiera algún ID no numérico (no debería pasar)
+                        return 0;
                     }
                 })
                 .max()
                 .orElse(0);
 
-        return maxId + 1;
+        return String.valueOf(maxId + 1);
     }
-
-    private Dia seleccionarDia() {
-        System.out.println("\n----- Seleccionar día -----");
-
-        Dia[] dias = Dia.values();
-
-        // Mostrar lista numerada
-        for (int i = 0; i < dias.length; i++) {
-            System.out.println((i + 1) + ". " + dias[i]);
-        }
-
-        int opcion;
-        do {
-            System.out.print("Seleccione el día (1-" + dias.length + "): ");
-            while (!scanner.hasNextInt()) {
-                System.out.println("Debe ingresar un número válido.");
-                scanner.next(); // limpiar
-            }
-            opcion = scanner.nextInt();
-        } while (opcion < 1 || opcion > dias.length);
-
-        scanner.nextLine(); // limpiar buffer
-
-        return dias[opcion - 1];
-    }
-
-    // ============================================================
-    // CRUD
-    // ============================================================
 
     private void listarHorarios() {
-        System.out.println("---------- Listado de horarios ----------");
+        System.out.println("\n" + BLUE + BOLD + "LISTADO DE HORARIOS" + RESET);
+        System.out.println("====================");
 
         List<Horario> lista = horarioController.findAll();
 
         if (lista.isEmpty()) {
             System.out.println("No hay horarios registrados.");
+            pausa();
             return;
         }
 
-        lista.forEach(this::mostrarHorario);
+        System.out.println("┌──────┬───────────┬──────────────────────┬────────┬──────────┬──────────┐");
+        System.out.println("│ ID   │ DÍA       │ CARRERA               │ CUATR  │ MÓDULO   │ ESTADO   │");
+        System.out.println("├──────┼───────────┼──────────────────────┼────────┼──────────┼──────────┤");
+
+        for (Horario h : lista) {
+            mostrarHorarioCompacto(h);
+        }
+        System.out.println("└──────┴───────────┴──────────────────────┴────────┴──────────┴──────────┘");
+        pausa();
     }
 
     private void buscarHorario() {
-        System.out.println("Ingrese ID del horario:");
+        System.out.println("\n" + BLUE + BOLD + "BUSCAR HORARIO" + RESET);
+        System.out.println("===============");
+        System.out.print("Ingrese ID del horario: ");
         String id = scanner.nextLine();
 
         Horario h = horarioController.findById(id);
 
         if (h == null) {
-            System.out.println("No encontrado.");
-            return;
+            System.out.println(RED + "Horario no encontrado." + RESET);
+        } else {
+            System.out.println("\n" + GREEN + "Horario encontrado:" + RESET);
+            mostrarHorarioDetallado(h);
         }
-
-        mostrarHorario(h);
+        pausa();
     }
 
     private void crearHorario() {
-        System.out.println("---------- Registrar horario ----------");
+        System.out.println("\n" + BLUE + BOLD + "REGISTRAR HORARIO" + RESET);
+        System.out.println("==================");
 
-        int idGenerado = generarIdHorario();
+        String idGenerado = generarIdHorario();
+        System.out.println("ID asignado: " + CYAN + idGenerado + RESET);
 
         Horario horario = new Horario();
-        horario.setId(String.valueOf(idGenerado));
+        horario.setId(idGenerado);
 
-        // 1. Carrera
-        Carrera carrera = seleccionarCarrera();
-        if (carrera == null) return;
+        // Seleccionar día
+        Dia dia = seleccionarDia();
+        horario.setDia(dia);
+
+        // Seleccionar carrera (obligatoria)
+        Carrera carrera = seleccionarCarrera(true);
+        if (carrera == null) {
+            System.out.println(RED + "Debe seleccionar una carrera. Operación cancelada." + RESET);
+            pausa();
+            return;
+        }
         horario.setCarrera(carrera);
 
-        // 2. Cuatrimestre
-        Cuatrimestre cuatrimestre = seleccionarCuatrimestre();
-        if (cuatrimestre == null) return;
+        // Seleccionar cuatrimestre (obligatorio)
+        Cuatrimestre cuatrimestre = seleccionarCuatrimestre(true);
+        if (cuatrimestre == null) {
+            System.out.println(RED + "Debe seleccionar un cuatrimestre. Operación cancelada." + RESET);
+            pausa();
+            return;
+        }
         horario.setCuatrimestre(cuatrimestre);
 
-        // 3. Día
-        Dia diaSeleccionado = seleccionarDia();
-        horario.setDia(diaSeleccionado);
-
-
-        // 4. Módulo (opcional)
-        Modulo modulo = seleccionarModuloOpcional();
+        // Seleccionar módulo (opcional)
+        Modulo modulo = seleccionarModulo(false);
         horario.setModulo(modulo);
 
         horario.setActivo(true);
         horario.setDisponible(true);
 
-        System.out.println("\nVista previa:");
-        mostrarHorario(horario);
+        System.out.println("\n" + CYAN + "Vista previa:" + RESET);
+        mostrarHorarioDetallado(horario);
 
-        if (confirmarAccion("\n¿Confirmar registro?")) {
+        if (confirmarAccion("¿Confirmar registro?")) {
             horarioController.createHorario(horario);
-            System.out.println("Horario creado con éxito.");
+            System.out.println(GREEN + "✓ Horario creado con éxito." + RESET);
+        } else {
+            System.out.println("Registro cancelado.");
         }
+        pausa();
     }
 
     private void actualizarHorario() {
-        System.out.println("Ingrese ID del horario a actualizar:");
+        System.out.println("\n" + BLUE + BOLD + "MODIFICAR HORARIO" + RESET);
+        System.out.println("==================");
+
+        System.out.print("Ingrese ID del horario a actualizar: ");
         String id = scanner.nextLine();
 
         Horario horario = horarioController.findById(id);
         if (horario == null) {
-            System.out.println("Horario no encontrado.");
+            System.out.println(RED + "Horario no encontrado." + RESET);
+            pausa();
             return;
         }
 
-        System.out.println("Horario encontrado:");
-        mostrarHorario(horario);
+        System.out.println("\n" + CYAN + "Datos actuales:" + RESET);
+        mostrarHorarioDetallado(horario);
 
         // Guardar valores originales
         Dia diaOriginal = horario.getDia();
@@ -391,21 +397,46 @@ public class HorarioView {
         Cuatrimestre cuatrimestreOriginal = horario.getCuatrimestre();
         Modulo moduloOriginal = horario.getModulo();
 
-        System.out.println("\nNuevos datos:");
+        System.out.println("\n" + YELLOW + "NUEVOS DATOS (dejar en blanco para no cambiar):" + RESET);
 
-        Dia nuevoDia = seleccionarDia();
-        horario.setDia(nuevoDia);
+        // Nuevo día
+        System.out.print("¿Desea cambiar el día? (S/N): ");
+        if (scanner.nextLine().trim().equalsIgnoreCase("S")) {
+            Dia nuevoDia = seleccionarDia();
+            horario.setDia(nuevoDia);
+        }
 
-        horario.setCarrera(leerCarreraOpcional(horario.getCarrera()));
-        horario.setCuatrimestre(leerCuatrimestreOpcional(horario.getCuatrimestre()));
-        horario.setModulo(leerModuloOpcional(horario.getModulo()));
+        // Nueva carrera
+        System.out.print("¿Desea cambiar la carrera? (S/N): ");
+        if (scanner.nextLine().trim().equalsIgnoreCase("S")) {
+            Carrera nuevaCarrera = seleccionarCarrera(true);
+            if (nuevaCarrera != null) {
+                horario.setCarrera(nuevaCarrera);
+            }
+        }
 
-        System.out.println("\nVista previa:");
-        mostrarHorario(horario);
+        // Nuevo cuatrimestre
+        System.out.print("¿Desea cambiar el cuatrimestre? (S/N): ");
+        if (scanner.nextLine().trim().equalsIgnoreCase("S")) {
+            Cuatrimestre nuevoCuatrimestre = seleccionarCuatrimestre(true);
+            if (nuevoCuatrimestre != null) {
+                horario.setCuatrimestre(nuevoCuatrimestre);
+            }
+        }
 
-        if (confirmarAccion("\n¿Guardar cambios?")) {
+        // Nuevo módulo
+        System.out.print("¿Desea cambiar el módulo? (S/N): ");
+        if (scanner.nextLine().trim().equalsIgnoreCase("S")) {
+            Modulo nuevoModulo = seleccionarModulo(false);
+            horario.setModulo(nuevoModulo);
+        }
+
+        System.out.println("\n" + CYAN + "Vista previa de los cambios:" + RESET);
+        mostrarHorarioDetallado(horario);
+
+        if (confirmarAccion("¿Confirmar cambios?")) {
             horarioController.updateHorario(horario);
-            System.out.println("Horario actualizado.");
+            System.out.println(GREEN + "✓ Horario actualizado." + RESET);
         } else {
             horario.setDia(diaOriginal);
             horario.setCarrera(carreraOriginal);
@@ -413,24 +444,38 @@ public class HorarioView {
             horario.setModulo(moduloOriginal);
             System.out.println("Actualización cancelada.");
         }
+        pausa();
     }
 
     private void eliminarHorario() {
-        System.out.println("Ingrese ID del horario:");
+        System.out.println("\n" + BLUE + BOLD + "ELIMINAR HORARIO" + RESET);
+        System.out.println("=================");
+
+        System.out.print("Ingrese ID del horario: ");
         String id = scanner.nextLine();
 
         Horario h = horarioController.findById(id);
 
         if (h == null) {
-            System.out.println("Horario no encontrado.");
+            System.out.println(RED + "Horario no encontrado." + RESET);
+            pausa();
             return;
         }
 
-        mostrarHorario(h);
+        System.out.println("\n" + CYAN + "Horario a eliminar:" + RESET);
+        mostrarHorarioDetallado(h);
 
-        if (confirmarAccion("\n¿Confirmar baja lógica?")) {
+        if (confirmarAccion(RED + "¿Está seguro que desea ELIMINAR (dar de baja) este horario?" + RESET)) {
             horarioController.deleteHorario(h);
-            System.out.println("Horario dado de baja.");
+            System.out.println(GREEN + "✓ Horario dado de baja correctamente." + RESET);
+        } else {
+            System.out.println("Eliminación cancelada.");
         }
+        pausa();
+    }
+
+    private void pausa() {
+        System.out.print("\n" + CYAN + "Presione ENTER para continuar..." + RESET);
+        scanner.nextLine();
     }
 }

@@ -8,6 +8,15 @@ import java.util.Scanner;
 
 public class ProfesorView {
 
+    // Códigos de color
+    private static final String RESET = "\u001B[0m";
+    private static final String GREEN = "\u001B[32m";
+    private static final String YELLOW = "\u001B[33m";
+    private static final String BLUE = "\u001B[34m";
+    private static final String RED = "\u001B[31m";
+    private static final String CYAN = "\u001B[36m";
+    private static final String BOLD = "\u001B[1m";
+
     private final ProfesorController profesorController;
     private final Scanner scanner;
 
@@ -23,13 +32,13 @@ public class ProfesorView {
             mostrarMenu();
 
             if (!scanner.hasNextInt()) {
-                System.out.println("Debe ingresar un número.");
+                System.out.println(RED + "Debe ingresar un número." + RESET);
                 scanner.next();
                 continue;
             }
 
             int opcion = scanner.nextInt();
-            pausa();
+            scanner.nextLine();
 
             switch (opcion) {
                 case 1 -> listarProfesores();
@@ -38,104 +47,116 @@ public class ProfesorView {
                 case 4 -> actualizarProfesor();
                 case 5 -> eliminarProfesor();
                 case 0 -> continuar = false;
-                default -> System.out.println("Ingrese una opción válida");
+                default -> System.out.println(RED + "Opción no válida" + RESET);
             }
         }
     }
 
-    // ----------------------------------------------------------------
-    // Métodos auxiliares reutilizables
-    // ----------------------------------------------------------------
-
     private void mostrarMenu() {
-        System.out.println("\nGESTIÓN DE PROFESORES");
-        System.out.println("1. Listar profesores");
-        System.out.println("2. Buscar profesor por DNI");
-        System.out.println("3. Registrar profesor");
-        System.out.println("4. Actualizar datos de un profesor");
-        System.out.println("5. Dar de baja un profesor");
-        System.out.println("0. Volver atrás");
-        System.out.print("Seleccione una opción: ");
+        System.out.println("\n" + BLUE + BOLD + "PROFESORES" + RESET);
+        System.out.println("-----------");
+        System.out.println(CYAN + "1. Listar profesores" + RESET);
+        System.out.println(CYAN + "2. Buscar profesor por DNI" + RESET);
+        System.out.println(CYAN + "3. Registrar profesor" + RESET);
+        System.out.println(CYAN + "4. Modificar profesor" + RESET);
+        System.out.println(CYAN + "5. Eliminar profesor (dar de baja)" + RESET);
+        System.out.println(YELLOW + "0. Volver" + RESET);
+        System.out.print("\nSeleccione: ");
     }
 
     private void mostrarProfesor(Profesor profesor) {
-        System.out.println(
-            "DNI: " + profesor.getDni() +
-            " | NOMBRE: " + profesor.getNombre() +
-            " | APELLIDO: " + profesor.getApellido() +
-            " | EMAIL: " + profesor.getEmail() +
-            " | TELÉFONO: " + profesor.getTelefono() +
-            " | ESTADO: " + (profesor.isActivo() ? "ACTIVO" : "INACTIVO")
+        String estado = profesor.isActivo() ? GREEN + "ACTIVO" + RESET : RED + "INACTIVO" + RESET;
+        System.out.printf("│ %-8s │ %-15s │ %-15s │ %-25s │ %-12s │ %-8s │%n",
+                profesor.getDni(),
+                profesor.getNombre(),
+                profesor.getApellido(),
+                profesor.getEmail(),
+                profesor.getTelefono(),
+                estado.replaceAll("\u001B\\[[;\\d]*m", "") // Sacar colores para formato
         );
     }
 
-    private int confirmarAccion() {
-        int opcion = 0;
+    private void mostrarProfesorColor(Profesor profesor) {
+        String estado = profesor.isActivo() ? GREEN + "ACTIVO" + RESET : RED + "INACTIVO" + RESET;
+        System.out.println("  DNI: " + CYAN + profesor.getDni() + RESET);
+        System.out.println("  Nombre: " + profesor.getNombre() + " " + profesor.getApellido());
+        System.out.println("  Email: " + profesor.getEmail());
+        System.out.println("  Teléfono: " + profesor.getTelefono());
+        System.out.println("  Estado: " + estado);
+    }
 
-        while (opcion != 1 && opcion != 2) {
-            System.out.println("\nConfirmar:");
-            System.out.println("1. Sí");
-            System.out.println("2. No");
-            System.out.print("Opción: ");
+    private boolean confirmarAccion(String mensaje) {
+        System.out.println("\n" + mensaje);
+        System.out.println(YELLOW + "1. Sí" + RESET);
+        System.out.println(YELLOW + "2. No" + RESET);
+        System.out.print("Opción: ");
 
-            if (scanner.hasNextInt()) {
-                opcion = scanner.nextInt();
-            } else {
+        int opcion;
+        do {
+            while (!scanner.hasNextInt()) {
+                System.out.println(RED + "Debe ingresar un número." + RESET);
                 scanner.next();
             }
-        }
+            opcion = scanner.nextInt();
+            scanner.nextLine();
+        } while (opcion < 1 || opcion > 2);
 
-        pausa();
-        return opcion;
+        return opcion == 1;
     }
-
-    private void pausa() {
-        scanner.nextLine(); // Limpia buffer tras nextInt()
-    }
-
-    // ----------------------------------------------------------------
-    // Funcionalidades
-    // ----------------------------------------------------------------
 
     private void listarProfesores() {
-        System.out.println("----------Listado de Profesores----------");
+        System.out.println("\n" + BLUE + BOLD + "LISTADO DE PROFESORES" + RESET);
+        System.out.println("======================");
+
         List<Profesor> profesores = profesorController.findAll();
 
         if (profesores.isEmpty()) {
             System.out.println("No hay profesores registrados.");
+            pausa();
             return;
         }
 
-        profesores.forEach(this::mostrarProfesor);
+        System.out.println("┌──────────┬─────────────────┬─────────────────┬───────────────────────────┬──────────────┬──────────┐");
+        System.out.println("│ DNI      │ NOMBRE          │ APELLIDO        │ EMAIL                     │ TELÉFONO     │ ESTADO   │");
+        System.out.println("├──────────┼─────────────────┼─────────────────┼───────────────────────────┼──────────────┼──────────┤");
+
+        for (Profesor p : profesores) {
+            String estado = p.isActivo() ? "ACTIVO" : "INACTIVO";
+            System.out.printf("│ %-8s │ %-15s │ %-15s │ %-25s │ %-12s │ %-8s │%n",
+                    p.getDni(),
+                    p.getNombre(),
+                    p.getApellido(),
+                    p.getEmail(),
+                    p.getTelefono(),
+                    estado
+            );
+        }
+        System.out.println("└──────────┴─────────────────┴─────────────────┴───────────────────────────┴──────────────┴──────────┘");
+        pausa();
     }
 
     private void buscarProfesor() {
-        System.out.println("----------Buscar Profesor----------");
+        System.out.println("\n" + BLUE + BOLD + "BUSCAR PROFESOR" + RESET);
+        System.out.println("================");
         System.out.print("Ingrese el DNI: ");
-        String dni = scanner.nextLine().trim(); // ← agregar .trim()
+        String dni = scanner.nextLine();
 
-        // Validar formato
-        if (!profesorController.validarFormatoDni(dni)) {
-            System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
-            System.out.println("Presione Enter para continuar...");
-            scanner.nextLine();
-            return;
-        }
+        Profesor profesor = profesorController.findByDni(dni);
 
         Profesor profesor = profesorController.findByDni(dni);
         
         if (profesor == null) {
-            System.out.println("Profesor no encontrado.");
+            System.out.println(RED + "Profesor no encontrado." + RESET);
         } else {
-            mostrarProfesor(profesor);
+            System.out.println("\n" + GREEN + "Profesor encontrado:" + RESET);
+            mostrarProfesorColor(profesor);
         }
-        System.out.println("Presione Enter para continuar...");
-        scanner.nextLine();
-
+        pausa();
     }
 
     private void crearProfesor() {
-        System.out.println("----------Registrar Profesor----------");
+        System.out.println("\n" + BLUE + BOLD + "REGISTRAR PROFESOR" + RESET);
+        System.out.println("===================");
 
         System.out.print("DNI: ");
         String dni = scanner.nextLine();
@@ -149,9 +170,8 @@ public class ProfesorView {
         }
 
         if (profesorController.findByDni(dni) != null) {
-            System.out.println("Ese DNI ya está registrado.");
-            System.out.println("Presione Enter para continuar...");
-            scanner.nextLine();
+            System.out.println(RED + "Ese DNI ya está registrado." + RESET);
+            pausa();
             return;
         }
 
@@ -166,38 +186,24 @@ public class ProfesorView {
 
         Profesor profesor = new Profesor(dni, nombre, apellido, telefono, email);
 
-        // Validar formato
-        if (!profesorController.validarFormatoDni(dni)) {
-            System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
-            System.out.println("Presione Enter para continuar...");
-            scanner.nextLine();
-            return;
-        }
+        System.out.println("\n" + CYAN + "Vista previa:" + RESET);
+        mostrarProfesorColor(profesor);
 
-        // Validar campos obligatorios
-        if (!profesorController.validarCampos(profesor)) {
-            System.out.println("Error: Todos los campos son obligatorios. No se permiten valores vacíos.");
-            System.out.println("Presione Enter para continuar...");
-            scanner.nextLine();
-            return;
-        }
-
-        System.out.println("\nVista previa:");
-        mostrarProfesor(profesor);
-
-        if (confirmarAccion() == 1) {
+        if (confirmarAccion("¿Confirmar registro?")) {
             profesorController.crearProfesor(profesor);
-            System.out.println("Profesor registrado!");
+            System.out.println(GREEN + "✓ Profesor registrado exitosamente!" + RESET);
+        } else {
+            System.out.println("Registro cancelado.");
         }
-        System.out.println("Presione Enter para continuar...");
-        scanner.nextLine();
+        pausa();
     }
 
     private void actualizarProfesor() {
-        System.out.println("----------Actualizar Profesor----------");
+        System.out.println("\n" + BLUE + BOLD + "MODIFICAR PROFESOR" + RESET);
+        System.out.println("===================");
 
-        System.out.print("Ingrese el DNI del profesor: ");
-        String dni = scanner.nextLine().trim();
+        System.out.print("Ingrese el DNI: ");
+        String dni = scanner.nextLine();
 
         if (!profesorController.validarFormatoDni(dni)) {
             System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
@@ -208,16 +214,16 @@ public class ProfesorView {
 
         Profesor profesor = profesorController.findByDni(dni);
         if (profesor == null) {
-            System.out.println("Profesor no encontrado.");
-            System.out.println("Presione Enter para continuar...");
-            scanner.nextLine();
+            System.out.println(RED + "Profesor no encontrado." + RESET);
+            pausa();
             return;
         }
 
-        System.out.println("Profesor encontrado:");
-        mostrarProfesor(profesor);
+        System.out.println("\n" + CYAN + "Datos actuales:" + RESET);
+        mostrarProfesorColor(profesor);
 
-        System.out.println("\nNuevos datos (dejar vacío para no cambiar):");
+        System.out.println("\n" + YELLOW + "NUEVOS DATOS (dejar en blanco para no cambiar):" + RESET);
+
         System.out.print("Nuevo nombre (" + profesor.getNombre() + "): ");
         String nuevoNombre = scanner.nextLine().trim();
         System.out.print("Nuevo apellido (" + profesor.getApellido() + "): ");
@@ -227,32 +233,32 @@ public class ProfesorView {
         System.out.print("Nuevo email (" + profesor.getEmail() + "): ");
         String nuevoEmail = scanner.nextLine().trim();
 
-        System.out.println("\nVista previa:");
-        System.out.println("Nombre: "   + (nuevoNombre.isBlank()   ? profesor.getNombre()    : nuevoNombre));
-        System.out.println("Apellido: " + (nuevoApellido.isBlank() ? profesor.getApellido()  : nuevoApellido));
-        System.out.println("Teléfono: " + (nuevoTelefono.isBlank() ? profesor.getTelefono()  : nuevoTelefono));
-        System.out.println("Email: "    + (nuevoEmail.isBlank()    ? profesor.getEmail()     : nuevoEmail));
+        System.out.println("\n" + CYAN + "Vista previa:" + RESET);
+        System.out.println("  Nombre: " + (nuevoNombre.isBlank() ? profesor.getNombre() : nuevoNombre) +
+                " " + (nuevoApellido.isBlank() ? profesor.getApellido() : nuevoApellido));
+        System.out.println("  Teléfono: " + (nuevoTelefono.isBlank() ? profesor.getTelefono() : nuevoTelefono));
+        System.out.println("  Email: " + (nuevoEmail.isBlank() ? profesor.getEmail() : nuevoEmail));
 
-        if (confirmarAccion() == 1) {
-            if (!nuevoNombre.isBlank())   profesor.setNombre(nuevoNombre);
+        if (confirmarAccion("¿Confirmar cambios?")) {
+            if (!nuevoNombre.isBlank()) profesor.setNombre(nuevoNombre);
             if (!nuevoApellido.isBlank()) profesor.setApellido(nuevoApellido);
             if (!nuevoTelefono.isBlank()) profesor.setTelefono(nuevoTelefono);
-            if (!nuevoEmail.isBlank())    profesor.setEmail(nuevoEmail);
+            if (!nuevoEmail.isBlank()) profesor.setEmail(nuevoEmail);
 
             profesorController.editarProfesor(profesor);
-            System.out.println("Profesor modificado!");
+            System.out.println(GREEN + "✓ Profesor modificado exitosamente!" + RESET);
         } else {
-            System.out.println("Actualización cancelada.");
+            System.out.println("Modificación cancelada.");
         }
-        System.out.println("Presione Enter para continuar...");
-        scanner.nextLine();
+        pausa();
     }
 
     private void eliminarProfesor() {
-        System.out.println("----------Eliminar Profesor----------");
+        System.out.println("\n" + BLUE + BOLD + "ELIMINAR PROFESOR" + RESET);
+        System.out.println("==================");
 
-        System.out.print("Ingrese el DNI del profesor: ");
-        String dni = scanner.nextLine().trim();
+        System.out.print("Ingrese el DNI: ");
+        String dni = scanner.nextLine();
 
         if (!profesorController.validarFormatoDni(dni)) {
             System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
@@ -263,20 +269,25 @@ public class ProfesorView {
 
         Profesor profesor = profesorController.findByDni(dni);
         if (profesor == null) {
-            System.out.println("Profesor no encontrado.");
-            System.out.println("Presione Enter para continuar...");
-            scanner.nextLine();
+            System.out.println(RED + "Profesor no encontrado." + RESET);
+            pausa();
             return;
         }
 
-        System.out.println("Profesor encontrado:");
-        mostrarProfesor(profesor);
+        System.out.println("\n" + CYAN + "Profesor a eliminar:" + RESET);
+        mostrarProfesorColor(profesor);
 
-        if (confirmarAccion() == 1) {
+        if (confirmarAccion(RED + "¿Está seguro que desea ELIMINAR este profesor?" + RESET)) {
             profesorController.eliminarProfesor(profesor);
-            System.out.println("Profesor eliminado!");
+            System.out.println(GREEN + "✓ Profesor eliminado correctamente." + RESET);
+        } else {
+            System.out.println("Eliminación cancelada.");
         }
-        System.out.println("Presione Enter para continuar...");
+        pausa();
+    }
+
+    private void pausa() {
+        System.out.print("\n" + CYAN + "Presione ENTER para continuar..." + RESET);
         scanner.nextLine();
     }
 }

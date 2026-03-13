@@ -621,145 +621,18 @@ public class ComisionView {
             System.out.println("1. Inscribir un alumno");
             System.out.println("2. Dar de baja un alumno");
             System.out.println("3. Ver alumnos inscriptos");
-            System.out.println("0. Terminar gestión");
+            System.out.println("4. Terminar gestión");
             System.out.print("Opción: ");
             String opcion = scanner.nextLine().trim();
 
             switch (opcion) {
                 case "1" -> inscribirAlumno(listaInscriptos, comision);
-                case "2" -> darBajaAlumno(listaInscriptos);
-                case "3" -> mostrarAlumnosInscriptos(listaInscriptos);
-                case "0" -> {
-                    gestionando = false;
-                    System.out.println("Gestión finalizada.");
-                }
+                case "2" -> darDeBajaAlumno(listaInscriptos);
+                case "3" -> verAlumnosInscriptos(listaInscriptos);
+                case "4" -> gestionando = false;
                 default -> System.out.println("Opción inválida.");
             }
         }
-    }
-
-    private void inscribirAlumno(List<AlumnoInscriptoMateria> listaInscriptos, ComisionMateria comision) {
-        System.out.println("\n--- Inscribir Alumno ---");
-
-        // Mostrar alumnos inscriptos a carreras (disponibles)
-        List<AlumnoInscriptoCarrera> inscriptosCarrera = alumnoInscriptoCarreraController.findAll();
-        if (inscriptosCarrera == null || inscriptosCarrera.isEmpty()) {
-            System.out.println("No hay alumnos inscriptos a ninguna carrera.");
-            return;
-        }
-
-        System.out.println("\nAlumnos inscriptos en carreras:");
-        inscriptosCarrera.forEach(aic -> System.out.println(
-                "DNI: " + aic.getAlumno().getDni() + " | " +
-                        aic.getAlumno().getApellido() + " " + aic.getAlumno().getNombre() + " | " +
-                        "Carrera: " + aic.getCarrera().getNombre() + " | Año: " + aic.getAnioIngreso()
-        ));
-
-        System.out.print("\nIngrese DNI del alumno a inscribir en la comisión: ");
-        String dni = scanner.nextLine().trim();
-
-        // Validar formato DNI (usando el controlador de alumno si existe, o el de profesor, pero deberías tener un método genérico)
-        // Suponiendo que tienes un método validarDni en algún controlador (por ejemplo, alumnoController)
-        // Como no lo tenemos en esta vista, usamos una validación simple
-        if (dni.length() != 8 || !dni.matches("\\d+")) {
-            System.out.println("Error: DNI inválido. Debe tener 8 dígitos numéricos.");
-            return;
-        }
-
-        // Buscar el AlumnoInscriptoCarrera por DNI
-        AlumnoInscriptoCarrera aic = alumnoInscriptoCarreraController.findByDni(dni);
-        if (aic == null) {
-            System.out.println("No existe alumno inscripto a carrera con ese DNI.");
-            return;
-        }
-
-        // Verificar si el alumno ya está inscripto en esta comisión
-        boolean yaInscripto = listaInscriptos.stream()
-                .anyMatch(aim -> aim.getAlumnoInscriptoCarrera().getAlumno().getDni().equals(dni));
-        if (yaInscripto) {
-            System.out.println("El alumno ya está inscripto en esta comisión.");
-            return;
-        }
-
-        // Crear AlumnoInscriptoMateria
-        AlumnoInscriptoMateria aim = new AlumnoInscriptoMateria();
-        aim.setAlumnoInscriptoCarrera(aic);
-        aim.setExamenes(new ArrayList<>());
-        aim.setEstado(Estado.REGULAR);
-        aim.setActivo(true);
-
-        // Vista previa
-        System.out.println("\nVista previa inscripción a la comisión:");
-        System.out.println("Alumno: " + aic.getAlumno().getApellido() + " " + aic.getAlumno().getNombre());
-        System.out.println("DNI: " + aic.getAlumno().getDni());
-        System.out.println("Carrera: " + aic.getCarrera().getNombre());
-        System.out.println("Año ingreso: " + aic.getAnioIngreso());
-
-        if (confirmarAccion("¿Confirmar inscripción del alumno a la comisión?")) {
-            alumnoInscriptoMateriaController.save(aim); // persistir
-            listaInscriptos.add(aim);
-            System.out.println("Alumno inscrito a la comisión.");
-        } else {
-            System.out.println("Inscripción cancelada.");
-        }
-    }
-
-    private void darBajaAlumno(List<AlumnoInscriptoMateria> listaInscriptos) {
-        System.out.println("\n--- Dar de baja Alumno ---");
-
-        if (listaInscriptos.isEmpty()) {
-            System.out.println("No hay alumnos inscriptos en la comisión.");
-            return;
-        }
-
-        System.out.println("\nAlumnos inscriptos en la comisión:");
-        listaInscriptos.forEach(aim -> System.out.println(
-                "DNI: " + aim.getAlumnoInscriptoCarrera().getAlumno().getDni() + " | " +
-                        aim.getAlumnoInscriptoCarrera().getAlumno().getApellido() + " " +
-                        aim.getAlumnoInscriptoCarrera().getAlumno().getNombre()
-        ));
-
-        System.out.print("\nIngrese DNI del alumno a dar de baja: ");
-        String dni = scanner.nextLine().trim();
-
-        // Validación simple
-        if (dni.length() != 8 || !dni.matches("\\d+")) {
-            System.out.println("Error: DNI inválido.");
-            return;
-        }
-
-        Optional<AlumnoInscriptoMateria> opt = listaInscriptos.stream()
-                .filter(a -> a.getAlumnoInscriptoCarrera().getAlumno().getDni().equals(dni))
-                .findFirst();
-
-        if (opt.isPresent()) {
-            if (confirmarAccion("¿Confirmar baja del alumno en la comisión?")) {
-                listaInscriptos.remove(opt.get());
-                // Si tuvieras baja lógica: alumnoInscriptoMateriaController.delete(opt.get());
-                System.out.println("Alumno dado de baja de la comisión.");
-            } else {
-                System.out.println("Operación cancelada.");
-            }
-        } else {
-            System.out.println("Alumno no encontrado en la comisión.");
-        }
-    }
-
-    private void mostrarAlumnosInscriptos(List<AlumnoInscriptoMateria> listaInscriptos) {
-        System.out.println("\n--- Alumnos inscriptos en la comisión ---");
-        if (listaInscriptos.isEmpty()) {
-            System.out.println("No hay alumnos inscriptos.");
-            return;
-        }
-        listaInscriptos.forEach(aim -> {
-            Alumno a = aim.getAlumnoInscriptoCarrera().getAlumno();
-            System.out.println(
-                    "DNI: " + a.getDni() + " | " +
-                            a.getApellido() + " " + a.getNombre() + " | " +
-                            "Carrera: " + aim.getAlumnoInscriptoCarrera().getCarrera().getNombre() + " | " +
-                            "Año ingreso: " + aim.getAlumnoInscriptoCarrera().getAnioIngreso()
-            );
-        });
     }
 
     private void inscribirAlumno(List<AlumnoInscriptoMateria> listaInscriptos, ComisionMateria comision) {

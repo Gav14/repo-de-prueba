@@ -580,6 +580,8 @@ public class ComisionView {
         }
         for (Examen ex : examenes) {
             System.out.println("- Fecha: " + ex.getFecha() + " | Tipo: " + ex.getTipo() +
+                    " | Nota: " + ex.getNota() +
+                    " | Alumno: " + ex.getAlumno().getApellido() +
                     " | Estado: " + (ex.isActivo() ? "ACTIVO" : "INACTIVO"));
         }
     }
@@ -907,7 +909,8 @@ public class ComisionView {
             System.out.println("Tipo inválido.");
             return;
         }
-        nuevo.setTipo(tipos[tipoIdx]);
+        Tipo tipoSeleccionado = tipos[tipoIdx];
+        nuevo.setTipo(tipoSeleccionado);
 
         System.out.print("Nota (0-10): ");
         double nota = leerEntero();
@@ -941,13 +944,47 @@ public class ComisionView {
         AlumnoInscriptoMateria aim = comision.getAlumnosInscriptos().get(alumnoIdx);
         nuevo.setAlumno(aim.getAlumnoInscriptoCarrera().getAlumno());
         nuevo.setMateria(comision.getMateria());
-        nuevo.setActivo(true);
+
+        if (tipoSeleccionado == Tipo.FINAL) {
+            double porcentajeAsistencia = comisionController.calcularPorcentajeAsistencia(
+                    comision.getCodigo(),
+                    nuevo.getAlumno().getDni()
+            );
+
+            boolean tieneParcialAprobado = comisionController.tieneParcialAprobado(
+                    comision.getCodigo(),
+                    nuevo.getAlumno().getDni()
+            );
+
+            System.out.println("\n📊 VERIFICACIÓN DE REQUISITOS PARA EXAMEN FINAL:");
+            System.out.printf("   Asistencia: %.1f%% (mínimo 70%%) %s%n",
+                    porcentajeAsistencia,
+                    porcentajeAsistencia >= 70 ? "✅" : "❌");
+            System.out.println("   Parcial aprobado: " +
+                    (tieneParcialAprobado ? "✅ Sí" : "❌ No"));
+
+            if (porcentajeAsistencia < 70 || !tieneParcialAprobado) {
+                System.out.println("\n❌ El alumno NO cumple con los requisitos para rendir examen final.");
+                if (!confirmarAccion("¿Crear examen de todas formas?")) {
+                    System.out.println("Creación cancelada.");
+                    return;
+                }
+            }
+        }
 
         if (confirmarAccion("¿Confirmar creación?")) {
-            examenController.createExamen(nuevo);
-            aim.getExamenes().add(nuevo);
-            examenes.add(nuevo);
-            System.out.println("Examen creado.");
+            String resultado = comisionController.crearExamenConValidaciones(
+                    comision.getCodigo(),
+                    nuevo
+            );
+
+            if (resultado.startsWith("SUCCESS")) {
+                System.out.println("✓ " + resultado.substring(8));
+                aim.getExamenes().add(nuevo);
+                examenes.add(nuevo);
+            } else {
+                System.out.println("✗ " + resultado.substring(6));
+            }
         }
     }
 

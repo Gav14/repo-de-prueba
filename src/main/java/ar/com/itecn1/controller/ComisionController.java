@@ -3,23 +3,27 @@ package ar.com.itecn1.controller;
 import ar.com.itecn1.model.ComisionMateria;
 import ar.com.itecn1.model.AlumnoInscriptoMateria;
 import ar.com.itecn1.model.Asistencia;
+import ar.com.itecn1.model.Examen;
+import ar.com.itecn1.model.Tipo;
 import ar.com.itecn1.service.ComisionService;
 import ar.com.itecn1.service.impl.ComisionServiceImpl;
+
 import java.util.List;
 
 public class ComisionController {
+
     private final ComisionService comisionService;
 
     public ComisionController() {
         this.comisionService = new ComisionServiceImpl();
     }
 
-    public List<ComisionMateria> findAll() {
-        return comisionService.findAll();
+    public ComisionMateria findByCode(String codigo) {
+        return comisionService.findByCode(codigo);
     }
 
-    public ComisionMateria findByCode(String codigoComision) {
-        return comisionService.findByCode(codigoComision);
+    public List<ComisionMateria> findAll() {
+        return comisionService.findAll();
     }
 
     public List<ComisionMateria> findByCarrera(String nombreCarrera) {
@@ -52,6 +56,30 @@ public class ComisionController {
 
     public boolean puedeRegistrarAsistencia(String codigoComision, String dniAlumno) {
         return comisionService.puedeRegistrarAsistencia(codigoComision, dniAlumno);
+    }
+
+    public boolean puedeRendirExamen(String codigoComision, String dniAlumno, Tipo tipoExamen) {
+        return comisionService.puedeRendirExamen(codigoComision, dniAlumno, tipoExamen);
+    }
+
+    public double calcularPorcentajeAsistencia(String codigoComision, String dniAlumno) {
+        return comisionService.calcularPorcentajeAsistencia(codigoComision, dniAlumno);
+    }
+
+    public boolean tieneParcialAprobado(String codigoComision, String dniAlumno) {
+        return comisionService.tieneParcialAprobado(codigoComision, dniAlumno);
+    }
+
+    public List<Examen> getExamenesAprobados(String codigoComision, String dniAlumno) {
+        return comisionService.getExamenesAprobados(codigoComision, dniAlumno);
+    }
+
+    public String crearExamenConValidaciones(String codigoComision, Examen examen) {
+        return comisionService.crearExamenConValidaciones(codigoComision, examen);
+    }
+
+    public void createComision(ComisionMateria comision) {
+        comisionService.save(comision);
     }
 
     public void updateComision(ComisionMateria comision) {

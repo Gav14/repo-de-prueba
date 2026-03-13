@@ -12,9 +12,15 @@ import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 public class ComisionServiceImpl implements ComisionService {
     private final ComisionRepository comisionRepository;
+
+    // Constantes
+    private static final double PORCENTAJE_ASISTENCIA_MINIMO = 70.0;
+    private static final double NOTA_APROBACION = 6.0;
+    private static final int CLASES_POR_CUATRIMESTRE = 16;
 
     public ComisionServiceImpl() {
         this.comisionRepository = new ComisionRepositoryImpl();
@@ -150,6 +156,125 @@ public class ComisionServiceImpl implements ComisionService {
         comisionRepository.update(comision);
 
         return "SUCCESS: Asistencia registrada";
+    }
+
+    @Override
+    public boolean puedeRendirExamen(String codigoComision, String dniAlumno, Tipo tipoExamen) {
+        if (tipoExamen != Tipo.FINAL) {
+            return true;
+        }
+
+        double porcentajeAsistencia = calcularPorcentajeAsistencia(codigoComision, dniAlumno);
+        boolean tieneParcialAprobado = tieneParcialAprobado(codigoComision, dniAlumno);
+
+        return porcentajeAsistencia >= PORCENTAJE_ASISTENCIA_MINIMO && tieneParcialAprobado;
+    }
+
+    @Override
+    public double calcularPorcentajeAsistencia(String codigoComision, String dniAlumno) {
+        ComisionMateria comision = comisionRepository.findByCode(codigoComision);
+
+        if (comision == null) return 0.0;
+
+        int totalClasesPosibles = comision.getHorarios().size() * CLASES_POR_CUATRIMESTRE;
+        if (totalClasesPosibles == 0) return 0.0;
+
+        long asistenciasAlumno = comision.getAsistencias().stream()
+                .filter(a -> a.getAlumno().getDni().equals(dniAlumno))
+                .filter(Asistencia::isPresente)
+                .count();
+
+        return (asistenciasAlumno * 100.0) / totalClasesPosibles;
+    }
+
+    @Override
+    public boolean tieneParcialAprobado(String codigoComision, String dniAlumno) {
+        List<Examen> examenesAprobados = getExamenesAprobados(codigoComision, dniAlumno);
+
+        return examenesAprobados.stream()
+                .anyMatch(e -> e.getTipo() == Tipo.PARCIAL);
+    }
+
+    @Override
+    public List<Examen> getExamenesAprobados(String codigoComision, String dniAlumno) {
+        ComisionMateria comision = comisionRepository.findByCode(codigoComision);
+
+        if (comision == null) return List.of();
+
+        return comision.getExamenes().stream()
+                .filter(e -> e.getAlumno().getDni().equals(dniAlumno))
+                .filter(e -> e.getNota() != null && e.getNota() >= NOTA_APROBACION)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public String crearExamenConValidaciones(String codigoComision, Examen examen) {
+        ComisionMateria comision = comisionRepository.findByCode(codigoComision);
+
+        if (comision == null) {
+            return "ERROR: Comisión no encontrada";
+        }
+
+        if (!comision.isActivo()) {
+            return "ERROR: La comisión no está activa";
+        }
+
+        boolean alumnoInscripto = comision.getAlumnosInscriptos().stream()
+                .anyMatch(a -> a.getAlumnoInscriptoCarrera().getAlumno().getDni()
+                        .equals(examen.getAlumno().getDni()));
+
+        if (!alumnoInscripto) {
+            return "ERROR: El alumno no está inscrito en esta comisión";
+        }
+
+        if (examen.getTipo() == Tipo.FINAL) {
+            double porcentajeAsistencia = calcularPorcentajeAsistencia(codigoComision,
+                    examen.getAlumno().getDni());
+            boolean tieneParcialAprobado = tieneParcialAprobado(codigoComision,
+                    examen.getAlumno().getDni());
+
+            if (porcentajeAsistencia < PORCENTAJE_ASISTENCIA_MINIMO) {
+                return String.format("ERROR: Asistencia insuficiente (%.1f%%) para rendir examen final. Mínimo: %.1f%%",
+                        porcentajeAsistencia, PORCENTAJE_ASISTENCIA_MINIMO);
+            }
+
+            if (!tieneParcialAprobado) {
+                return "ERROR: El alumno no tiene ningún parcial aprobado (nota >= 6). No puede rendir examen final";
+            }
+        }
+
+        examen.setActivo(true);
+        comision.getExamenes().add(examen);
+        comisionRepository.update(comision);
+
+        return "SUCCESS: Examen registrado correctamente";
+    }
+
+    public void precargarAsistenciasEjemplo(ComisionMateria comision) {
+        if (comision.getAlumnosInscriptos().isEmpty() || comision.getHorarios().isEmpty()) {
+            return;
+        }
+
+        java.util.Random random = new java.util.Random();
+        LocalDate fechaInicio = LocalDate.now().minusMonths(2);
+
+        for (int i = 0; i < CLASES_POR_CUATRIMESTRE; i++) {
+            LocalDate fechaClase = fechaInicio.plusDays(i * 3);
+
+            for (AlumnoInscriptoMateria alumnoInscripto : comision.getAlumnosInscriptos()) {
+                boolean presente = random.nextInt(100) < 85;
+
+                Asistencia asistencia = new Asistencia();
+                asistencia.setFecha(fechaClase);
+                asistencia.setPresente(presente);
+                asistencia.setAlumno(alumnoInscripto.getAlumnoInscriptoCarrera().getAlumno());
+                asistencia.setActivo(true);
+
+                comision.getAsistencias().add(asistencia);
+            }
+        }
+
+        comisionRepository.update(comision);
     }
 
     @Override

@@ -11,6 +11,14 @@ import java.util.Scanner;
 
 public class CarreraView {
 
+    private static final String RESET = "\u001B[0m";
+    private static final String GREEN = "\u001B[32m";
+    private static final String YELLOW = "\u001B[33m";
+    private static final String BLUE = "\u001B[34m";
+    private static final String RED = "\u001B[31m";
+    private static final String CYAN = "\u001B[36m";
+    private static final String BOLD = "\u001B[1m";
+
     private final CarreraController carreraController;
     private final PlanEstudioController planEstudioController;
     private final Scanner scanner;
@@ -25,91 +33,78 @@ public class CarreraView {
         boolean continuar = true;
 
         while (continuar) {
-            try {
-                mostrarMenu();
+            mostrarMenu();
 
-                if (!scanner.hasNextInt()) {
-                    System.out.println("Debe ingresar un número.");
-                    scanner.next();
-                    continue;
-                }
+            if (!scanner.hasNextInt()) {
+                System.out.println(RED + "Debe ingresar un número." + RESET);
+                scanner.next();
+                continue;
+            }
 
-                int opcion = scanner.nextInt();
-                pausa();
+            int opcion = scanner.nextInt();
+            scanner.nextLine();
 
-                switch (opcion) {
-                    case 1 -> listarCarreras();
-                    case 2 -> buscarCarrera();
-                    case 3 -> registrarCarrera();
-                    case 4 -> modificarCarrera();
-                    case 5 -> eliminarCarrera();
-                    case 6 -> reactivarCarrera();
-                    case 0 -> continuar = false;
-                    default -> System.out.println("Opción no válida. Por favor ingrese un número del 0 al 6.");
-                }
-            } catch (IllegalArgumentException e) {
-                System.out.println("❌ Error: " + e.getMessage());
-            } catch (Exception e) {
-                System.out.println("❌ Error inesperado: " + e.getMessage());
+            switch (opcion) {
+                case 1 -> listarCarreras();
+                case 2 -> buscarCarrera();
+                case 3 -> registrarCarrera();
+                case 4 -> modificarCarrera();
+                case 5 -> eliminarCarrera();
+                case 6 -> reactivarCarrera();
+                case 0 -> continuar = false;
+                default -> System.out.println(RED + "Opción no válida" + RESET);
             }
         }
     }
-
-    // ----------------------------------------------------
-    // MÉTODOS AUXILIARES
-    // ----------------------------------------------------
 
     private void mostrarMenu() {
-        System.out.println("\n╔════════════════════════════════╗");
-        System.out.println("║      GESTIÓN DE CARRERAS       ║");
-        System.out.println("╠════════════════════════════════╣");
-        System.out.println("║ 1. Listar todas las carreras   ║");
-        System.out.println("║ 2. Buscar carrera              ║");
-        System.out.println("║ 3. Registrar nueva carrera     ║");
-        System.out.println("║ 4. Modificar datos de una      ║");
-        System.out.println("║    carrera                     ║");
-        System.out.println("║ 5. Eliminar carrera            ║");
-        System.out.println("║    (dar de baja)               ║");
-        System.out.println("║ 6. Reactivar carrera           ║");
-        System.out.println("║ 0. Volver al menú anterior     ║");
-        System.out.println("╚════════════════════════════════╝");
-        System.out.print("Seleccione una opción: ");
+        System.out.println("\n" + BLUE + BOLD + "CARRERAS" + RESET);
+        System.out.println("--------");
+        System.out.println(CYAN + "1. Listar todas las carreras" + RESET);
+        System.out.println(CYAN + "2. Buscar carrera" + RESET);
+        System.out.println(CYAN + "3. Registrar nueva carrera" + RESET);
+        System.out.println(CYAN + "4. Modificar carrera" + RESET);
+        System.out.println(CYAN + "5. Eliminar carrera (dar de baja)" + RESET);
+        System.out.println(CYAN + "6. Reactivar carrera" + RESET);
+        System.out.println(YELLOW + "0. Volver" + RESET);
+        System.out.print("\nSeleccione: ");
     }
 
-    private void pausa() {
-        scanner.nextLine();
-    }
+    private boolean confirmarAccion(String mensaje) {
+        System.out.println("\n" + mensaje);
+        System.out.println(YELLOW + "1. Sí" + RESET);
+        System.out.println(YELLOW + "2. No" + RESET);
+        System.out.print("Opción: ");
 
-    private int confirmarAccion() {
-        int opcion = 0;
-
-        while (opcion != 1 && opcion != 2) {
-            System.out.println("\n┌─────────────────────────┐");
-            System.out.println("│     CONFIRMAR ACCIÓN     │");
-            System.out.println("├─────────────────────────┤");
-            System.out.println("│ 1. Sí, confirmar         │");
-            System.out.println("│ 2. No, cancelar          │");
-            System.out.println("└─────────────────────────┘");
-            System.out.print("Opción: ");
-
-            if (scanner.hasNextInt()) {
-                opcion = scanner.nextInt();
-            } else {
+        int opcion;
+        do {
+            while (!scanner.hasNextInt()) {
+                System.out.println(RED + "Debe ingresar un número." + RESET);
                 scanner.next();
             }
-        }
+            opcion = scanner.nextInt();
+            scanner.nextLine();
+        } while (opcion < 1 || opcion > 2);
 
-        pausa();
-        return opcion;
+        return opcion == 1;
     }
 
-    private void mostrarCarrera(Carrera carrera) {
-        String planInfo = (carrera.getPlanEstudio() != null) ?
-                carrera.getPlanEstudio().getNombre() : "NO POSEE";
+    private void mostrarCarreraSimple(Carrera carrera) {
+        String planInfo = (carrera.getPlanEstudio() != null) ? carrera.getPlanEstudio().getNombre() : "NO POSEE";
+        String estado = carrera.isActivo() ? GREEN + "ACTIVA" + RESET : RED + "INACTIVA" + RESET;
 
+        System.out.println("  • " + CYAN + carrera.getNombre() + RESET);
+        System.out.println("    Turno: " + carrera.getTurno());
+        System.out.println("    Plan: " + planInfo);
+        System.out.println("    Estado: " + estado);
+        System.out.println();
+    }
+
+    private void mostrarCarreraTabla(Carrera carrera) {
+        String planInfo = (carrera.getPlanEstudio() != null) ? carrera.getPlanEstudio().getNombre() : "NO POSEE";
         String estado = carrera.isActivo() ? "ACTIVA" : "INACTIVA";
 
-        System.out.printf("│ • %-35s │ %-8s │ %-15s │ %-8s │%n",
+        System.out.printf("│ %-35s │ %-8s │ %-15s │ %-8s │%n",
                 carrera.getNombre(),
                 carrera.getTurno(),
                 planInfo.length() > 15 ? planInfo.substring(0, 12) + "..." : planInfo,
@@ -122,34 +117,44 @@ public class CarreraView {
                 planEstudio.getMaterias().stream().map(m -> m.getNombre()).reduce((a, b) -> a + ", " + b).orElse("NO POSEE") :
                 "NO POSEE";
 
-        System.out.println(
-                "NOMBRE: " + planEstudio.getNombre() +
-                        " | TÍTULO: " + planEstudio.getTitulo() +
-                        " | MATERIAS: " + materiasInfo +
-                        " | ESTADO: " + (planEstudio.isActivo() ? "ACTIVO" : "INACTIVO")
-        );
+        System.out.println("  Nombre: " + planEstudio.getNombre());
+        System.out.println("  Título: " + planEstudio.getTitulo());
+        System.out.println("  Materias: " + materiasInfo);
     }
 
     private void listarCarreras() {
-        System.out.println("\n┌─────────────────────────────────────────────────────────────────────────────┐");
-        System.out.println("│                         LISTADO DE CARRERAS                                  │");
-        System.out.println("├─────────────────────────────────────────────────────────────────────────────┤");
+        System.out.println("\n" + BLUE + BOLD + "LISTADO DE CARRERAS" + RESET);
+        System.out.println("====================");
 
         List<Carrera> carreras = carreraController.findAll();
 
         if (carreras.isEmpty()) {
-            System.out.println("│                No hay carreras registradas.                                │");
-        } else {
-            System.out.println("│ CARRERA                          │ TURNO   │ PLAN DE ESTUDIO  │ ESTADO   │");
-            System.out.println("├──────────────────────────────────┼─────────┼──────────────────┼──────────┤");
-            carreras.forEach(this::mostrarCarrera);
+            System.out.println("No hay carreras registradas.");
+            pausa();
+            return;
         }
 
-        System.out.println("└─────────────────────────────────────────────────────────────────────────────┘");
+        System.out.println("┌─────────────────────────────────────┬──────────┬─────────────────┬──────────┐");
+        System.out.println("│ CARRERA                              │ TURNO    │ PLAN            │ ESTADO   │");
+        System.out.println("├─────────────────────────────────────┼──────────┼─────────────────┼──────────┤");
+
+        for (Carrera c : carreras) {
+            String planInfo = (c.getPlanEstudio() != null) ? c.getPlanEstudio().getNombre() : "NO POSEE";
+            String estado = c.isActivo() ? "ACTIVA" : "INACTIVA";
+            System.out.printf("│ %-35s │ %-8s │ %-15s │ %-8s │%n",
+                    c.getNombre().length() > 35 ? c.getNombre().substring(0, 32) + "..." : c.getNombre(),
+                    c.getTurno(),
+                    planInfo.length() > 15 ? planInfo.substring(0, 12) + "..." : planInfo,
+                    estado
+            );
+        }
+        System.out.println("└─────────────────────────────────────┴──────────┴─────────────────┴──────────┘");
+        pausa();
     }
 
     private void buscarCarrera() {
-        System.out.println("\n🔍 BUSCAR CARRERA");
+        System.out.println("\n" + BLUE + BOLD + "BUSCAR CARRERA" + RESET);
+        System.out.println("===============");
         System.out.print("Ingrese el nombre o parte del nombre: ");
         String texto = scanner.nextLine();
 
@@ -157,156 +162,143 @@ public class CarreraView {
             List<Carrera> resultados = carreraController.buscarCarreras(texto);
 
             if (resultados.isEmpty()) {
-                System.out.println("❌ No se encontraron carreras que coincidan con: \"" + texto + "\"");
+                System.out.println(RED + "No se encontraron carreras con: \"" + texto + "\"" + RESET);
             } else {
-                System.out.println("\n✅ Se encontraron " + resultados.size() + " carrera(s):");
-                System.out.println("┌─────────────────────────────────────────────────────────────────────────────┐");
-                System.out.println("│ CARRERA                          │ TURNO   │ PLAN DE ESTUDIO  │ ESTADO   │");
-                System.out.println("├──────────────────────────────────┼─────────┼──────────────────┼──────────┤");
-                resultados.forEach(this::mostrarCarrera);
-                System.out.println("└─────────────────────────────────────────────────────────────────────────────┘");
+                System.out.println(GREEN + "Se encontraron " + resultados.size() + " carrera(s):" + RESET);
+                System.out.println();
+                for (Carrera c : resultados) {
+                    mostrarCarreraSimple(c);
+                }
             }
         } catch (IllegalArgumentException e) {
-            System.out.println("❌ Error: " + e.getMessage());
+            System.out.println(RED + "Error: " + e.getMessage() + RESET);
         }
+        pausa();
     }
 
     private void registrarCarrera() {
-        System.out.println("\n📝 REGISTRAR NUEVA CARRERA");
+        System.out.println("\n" + BLUE + BOLD + "REGISTRAR CARRERA" + RESET);
+        System.out.println("==================");
+
         System.out.print("Nombre de la carrera: ");
         String nombre = scanner.nextLine();
 
         if (nombre.trim().isEmpty()) {
-            System.out.println("❌ El nombre no puede estar vacío.");
+            System.out.println(RED + "El nombre no puede estar vacío." + RESET);
+            pausa();
             return;
         }
 
         try {
-            // Verificar si ya existe una carrera con ese nombre exacto
             Carrera existente = carreraController.findByName(nombre);
 
             if (existente != null) {
                 if (existente.isActivo()) {
-                    System.out.println("❌ Ya existe una carrera ACTIVA con ese nombre.");
-                    return;
+                    System.out.println(RED + "Ya existe una carrera ACTIVA con ese nombre." + RESET);
                 } else {
-                    System.out.println("⚠️  Ya existe una carrera INACTIVA con ese nombre.");
-                    System.out.println("¿Desea reactivarla en lugar de crear una nueva?");
-                    if (confirmarAccion() == 1) {
+                    System.out.println(YELLOW + "Ya existe una carrera INACTIVA con ese nombre." + RESET);
+                    if (confirmarAccion("¿Desea reactivarla?")) {
                         carreraController.reactivarCarrera(nombre);
-                        System.out.println("✅ Carrera reactivada exitosamente!");
+                        System.out.println(GREEN + "✓ Carrera reactivada!" + RESET);
                     }
-                    return;
                 }
-            }
-
-            // Si hay carreras similares pero no exactas, mostrar advertencia
-            List<Carrera> similares = carreraController.buscarCarreras(nombre);
-            if (!similares.isEmpty()) {
-                System.out.println("\n⚠️  Carreras con nombres similares encontradas:");
-                similares.forEach(this::mostrarCarrera);
-                System.out.println("\n¿Desea continuar con el registro de \"" + nombre + "\"?");
-                if (confirmarAccion() != 1) {
-                    System.out.println("Registro cancelado.");
-                    return;
-                }
+                pausa();
+                return;
             }
 
             Turno turno = seleccionarTurno();
             Carrera carrera = new Carrera(nombre, turno);
 
-            System.out.println("\n📚 Plan de estudio (opcional)");
-            System.out.print("¿Desea asignar un plan de estudio? (S/N): ");
-            String respuesta = scanner.nextLine();
-
-            if (respuesta.equalsIgnoreCase("S")) {
-                gestionarPlanEstudio(carrera);
+            System.out.println("\n¿Desea asignar un plan de estudio?");
+            if (confirmarAccion("")) {
+                asignarPlanEstudio(carrera);
             }
 
-            System.out.println("\n📋 Vista previa de la carrera a registrar:");
-            mostrarCarrera(carrera);
+            System.out.println("\n" + CYAN + "Vista previa:" + RESET);
+            mostrarCarreraSimple(carrera);
 
-            System.out.println("\n¿Confirma el registro de esta carrera?");
-            if (confirmarAccion() == 1) {
+            if (confirmarAccion("¿Confirmar registro?")) {
                 carreraController.createCarrera(carrera);
-                System.out.println("✅ ¡Carrera registrada exitosamente!");
+                System.out.println(GREEN + "✓ Carrera registrada!" + RESET);
             }
         } catch (IllegalArgumentException e) {
-            System.out.println("❌ Error: " + e.getMessage());
+            System.out.println(RED + "Error: " + e.getMessage() + RESET);
         }
+        pausa();
     }
 
     private void modificarCarrera() {
-        System.out.println("\n✏️  MODIFICAR CARRERA");
-        System.out.print("Ingrese el nombre o parte del nombre de la carrera: ");
+        System.out.println("\n" + BLUE + BOLD + "MODIFICAR CARRERA" + RESET);
+        System.out.println("==================");
+
+        System.out.print("Ingrese el nombre o parte del nombre: ");
         String texto = scanner.nextLine();
 
         try {
             List<Carrera> resultados = carreraController.buscarCarreras(texto);
-
-            // Filtrar solo carreras activas para modificar
             List<Carrera> activas = resultados.stream().filter(Carrera::isActivo).toList();
 
             if (activas.isEmpty()) {
-                System.out.println("❌ No se encontraron carreras ACTIVAS que coincidan con: \"" + texto + "\"");
-                if (!resultados.isEmpty()) {
-                    System.out.println("(Las carreras encontradas están INACTIVAS. Use la opción 6 para reactivarlas)");
-                }
+                System.out.println(RED + "No se encontraron carreras ACTIVAS." + RESET);
+                pausa();
                 return;
             }
 
-            Carrera carreraSeleccionada = (activas.size() == 1) ?
-                    activas.get(0) : seleccionarCarreraDeLista(activas, "modificar");
-
-            if (carreraSeleccionada == null) return;
-
-            System.out.println("\n🔄 Modificando carrera: " + carreraSeleccionada.getNombre());
-
-            // Guardar valores originales
-            Turno turnoOriginal = carreraSeleccionada.getTurno();
-            PlanEstudio planEstudioOriginal = carreraSeleccionada.getPlanEstudio();
-
-            // Modificar turno
-            System.out.println("\n⏰ Turno actual: " + carreraSeleccionada.getTurno());
-            System.out.print("¿Desea cambiar el turno? (S/N): ");
-            if (scanner.nextLine().equalsIgnoreCase("S")) {
-                Turno nuevoTurno = seleccionarTurno();
-                carreraSeleccionada.setTurno(nuevoTurno);
-            }
-
-            // Modificar plan de estudio
-            System.out.println("\n📚 Plan de estudio actual: " +
-                    (carreraSeleccionada.getPlanEstudio() != null ?
-                            carreraSeleccionada.getPlanEstudio().getNombre() : "NO POSEE"));
-            System.out.print("¿Desea modificar el plan de estudio? (S/N): ");
-
-            if (scanner.nextLine().equalsIgnoreCase("S")) {
-                gestionarPlanEstudio(carreraSeleccionada);
-            }
-
-            // Mostrar vista previa
-            System.out.println("\n📋 Vista previa de los cambios:");
-            mostrarCarrera(carreraSeleccionada);
-
-            System.out.println("\n¿Confirma los cambios?");
-            if (confirmarAccion() == 1) {
-                carreraController.updateCarrera(carreraSeleccionada);
-                System.out.println("✅ ¡Carrera modificada exitosamente!");
+            Carrera carrera;
+            if (activas.size() == 1) {
+                carrera = activas.get(0);
+                System.out.println("\n" + CYAN + "Carrera encontrada:" + RESET);
+                mostrarCarreraSimple(carrera);
             } else {
-                // Restaurar valores originales
-                carreraSeleccionada.setTurno(turnoOriginal);
-                carreraSeleccionada.setPlanEstudio(planEstudioOriginal);
+                carrera = seleccionarCarreraDeLista(activas, "modificar");
+                if (carrera == null) return;
+            }
+
+            Turno turnoOriginal = carrera.getTurno();
+            PlanEstudio planOriginal = carrera.getPlanEstudio();
+
+            System.out.println("\nTurno actual: " + carrera.getTurno());
+            if (confirmarAccion("¿Cambiar turno?")) {
+                Turno nuevoTurno = seleccionarTurno();
+                carrera.setTurno(nuevoTurno);
+            }
+
+            System.out.println("\nPlan actual: " + (carrera.getPlanEstudio() != null ?
+                    carrera.getPlanEstudio().getNombre() : "NO POSEE"));
+            if (confirmarAccion("¿Modificar plan de estudio?")) {
+                if (carrera.getPlanEstudio() == null) {
+                    asignarPlanEstudio(carrera);
+                } else {
+                    if (confirmarAccion("¿Quitar plan actual?")) {
+                        carrera.setPlanEstudio(null);
+                    } else {
+                        asignarPlanEstudio(carrera);
+                    }
+                }
+            }
+
+            System.out.println("\n" + CYAN + "Vista previa:" + RESET);
+            mostrarCarreraSimple(carrera);
+
+            if (confirmarAccion("¿Confirmar cambios?")) {
+                carreraController.updateCarrera(carrera);
+                System.out.println(GREEN + "✓ Carrera modificada!" + RESET);
+            } else {
+                carrera.setTurno(turnoOriginal);
+                carrera.setPlanEstudio(planOriginal);
                 System.out.println("Modificación cancelada.");
             }
-
         } catch (IllegalArgumentException e) {
-            System.out.println("❌ Error: " + e.getMessage());
+            System.out.println(RED + "Error: " + e.getMessage() + RESET);
         }
+        pausa();
     }
 
     private void eliminarCarrera() {
-        System.out.println("\n🗑️  ELIMINAR CARRERA (DAR DE BAJA)");
-        System.out.print("Ingrese el nombre o parte del nombre de la carrera: ");
+        System.out.println("\n" + BLUE + BOLD + "ELIMINAR CARRERA" + RESET);
+        System.out.println("=================");
+
+        System.out.print("Ingrese el nombre o parte del nombre: ");
         String texto = scanner.nextLine();
 
         try {
@@ -314,34 +306,37 @@ public class CarreraView {
             List<Carrera> activas = resultados.stream().filter(Carrera::isActivo).toList();
 
             if (activas.isEmpty()) {
-                System.out.println("❌ No se encontraron carreras ACTIVAS para eliminar.");
-                if (!resultados.isEmpty()) {
-                    System.out.println("(Las carreras encontradas ya están INACTIVAS)");
-                }
+                System.out.println(RED + "No se encontraron carreras ACTIVAS para eliminar." + RESET);
+                pausa();
                 return;
             }
 
-            Carrera carreraSeleccionada = (activas.size() == 1) ?
-                    activas.get(0) : seleccionarCarreraDeLista(activas, "eliminar");
+            Carrera carrera;
+            if (activas.size() == 1) {
+                carrera = activas.get(0);
+            } else {
+                carrera = seleccionarCarreraDeLista(activas, "eliminar");
+                if (carrera == null) return;
+            }
 
-            if (carreraSeleccionada == null) return;
+            System.out.println("\n" + YELLOW + "Carrera a eliminar:" + RESET);
+            mostrarCarreraSimple(carrera);
 
-            System.out.println("\n⚠️  ADVERTENCIA: Esta acción dará de baja la carrera:");
-            mostrarCarrera(carreraSeleccionada);
-            System.out.println("\n¿Está seguro que desea ELIMINAR (dar de baja) esta carrera?");
-
-            if (confirmarAccion() == 1) {
-                carreraController.deleteCarrera(carreraSeleccionada);
-                System.out.println("✅ Carrera dada de baja correctamente (estado: INACTIVA)");
+            if (confirmarAccion(RED + "¿Está seguro de eliminar esta carrera?" + RESET)) {
+                carreraController.deleteCarrera(carrera);
+                System.out.println(GREEN + "✓ Carrera eliminada (estado: INACTIVA)" + RESET);
             }
         } catch (IllegalArgumentException e) {
-            System.out.println("❌ Error: " + e.getMessage());
+            System.out.println(RED + "Error: " + e.getMessage() + RESET);
         }
+        pausa();
     }
 
     private void reactivarCarrera() {
-        System.out.println("\n🔄 REACTIVAR CARRERA");
-        System.out.print("Ingrese el nombre o parte del nombre de la carrera: ");
+        System.out.println("\n" + BLUE + BOLD + "REACTIVAR CARRERA" + RESET);
+        System.out.println("==================");
+
+        System.out.print("Ingrese el nombre o parte del nombre: ");
         String texto = scanner.nextLine();
 
         try {
@@ -349,122 +344,79 @@ public class CarreraView {
             List<Carrera> inactivas = resultados.stream().filter(c -> !c.isActivo()).toList();
 
             if (inactivas.isEmpty()) {
-                System.out.println("❌ No se encontraron carreras INACTIVAS para reactivar.");
-                if (!resultados.isEmpty()) {
-                    System.out.println("(Las carreras encontradas ya están ACTIVAS)");
-                }
+                System.out.println(RED + "No se encontraron carreras INACTIVAS." + RESET);
+                pausa();
                 return;
             }
 
-            Carrera carreraSeleccionada = (inactivas.size() == 1) ?
-                    inactivas.get(0) : seleccionarCarreraDeLista(inactivas, "reactivar");
+            Carrera carrera;
+            if (inactivas.size() == 1) {
+                carrera = inactivas.get(0);
+            } else {
+                carrera = seleccionarCarreraDeLista(inactivas, "reactivar");
+                if (carrera == null) return;
+            }
 
-            if (carreraSeleccionada == null) return;
+            System.out.println("\n" + CYAN + "Carrera a reactivar:" + RESET);
+            mostrarCarreraSimple(carrera);
 
-            System.out.println("\n🔄 Carrera seleccionada para reactivar:");
-            mostrarCarrera(carreraSeleccionada);
-
-            System.out.println("\n¿Confirma la reactivación de esta carrera?");
-            if (confirmarAccion() == 1) {
-                carreraController.reactivarCarrera(carreraSeleccionada.getNombre());
-                System.out.println("✅ ¡Carrera reactivada exitosamente!");
+            if (confirmarAccion("¿Confirmar reactivación?")) {
+                carreraController.reactivarCarrera(carrera.getNombre());
+                System.out.println(GREEN + "✓ Carrera reactivada!" + RESET);
             }
         } catch (IllegalArgumentException e) {
-            System.out.println("❌ Error: " + e.getMessage());
-        }
-    }
-
-    // Método auxiliar para seleccionar carrera de una lista
-    private Carrera seleccionarCarreraDeLista(List<Carrera> carreras, String accion) {
-        System.out.println("\n📋 Se encontraron las siguientes carreras:");
-        for (int i = 0; i < carreras.size(); i++) {
-            System.out.print((i + 1) + ". ");
-            mostrarCarrera(carreras.get(i));
-        }
-
-        System.out.print("\nSeleccione el número de la carrera que desea " + accion + " (0 para cancelar): ");
-
-        int seleccion = -1;
-        if (scanner.hasNextInt()) {
-            seleccion = scanner.nextInt();
+            System.out.println(RED + "Error: " + e.getMessage() + RESET);
         }
         pausa();
+    }
+
+    private Carrera seleccionarCarreraDeLista(List<Carrera> carreras, String accion) {
+        System.out.println("\n" + CYAN + "Carreras encontradas:" + RESET);
+        for (int i = 0; i < carreras.size(); i++) {
+            Carrera c = carreras.get(i);
+            System.out.println((i + 1) + ". " + c.getNombre() + " (" + c.getTurno() + ")");
+        }
+
+        System.out.print("\nSeleccione número (0 para cancelar): ");
+        int seleccion;
+        do {
+            while (!scanner.hasNextInt()) {
+                System.out.println(RED + "Debe ingresar un número." + RESET);
+                scanner.next();
+            }
+            seleccion = scanner.nextInt();
+            scanner.nextLine();
+        } while (seleccion < 0 || seleccion > carreras.size());
 
         if (seleccion == 0) {
             System.out.println("Operación cancelada.");
             return null;
         }
-
-        if (seleccion < 1 || seleccion > carreras.size()) {
-            System.out.println("❌ Opción no válida.");
-            return null;
-        }
-
         return carreras.get(seleccion - 1);
     }
 
     private Turno seleccionarTurno() {
-        int opcion = 0;
-
-        System.out.println("\n⏰ Seleccione turno:");
+        System.out.println("\nTurnos disponibles:");
         System.out.println("1. MAÑANA");
         System.out.println("2. TARDE");
         System.out.println("3. NOCHE");
+        System.out.print("Seleccione (1-3): ");
 
-        while (opcion < 1 || opcion > 3) {
-            System.out.print("Opción: ");
-            if (scanner.hasNextInt()) {
-                opcion = scanner.nextInt();
-            } else {
+        int opcion;
+        do {
+            while (!scanner.hasNextInt()) {
+                System.out.println(RED + "Debe ingresar un número." + RESET);
                 scanner.next();
             }
-        }
-        pausa();
+            opcion = scanner.nextInt();
+            scanner.nextLine();
+        } while (opcion < 1 || opcion > 3);
 
         return switch (opcion) {
             case 1 -> Turno.MANANA;
             case 2 -> Turno.TARDE;
-            case 3 -> Turno.NOCHE;
-            default -> Turno.MANANA;
+            default -> Turno.NOCHE;
         };
-    }
-
-    // ----------------------------------------------------
-    // GESTIÓN PLAN DE ESTUDIO
-    // ----------------------------------------------------
-    private void gestionarPlanEstudio(Carrera carrera) {
-        boolean gestionando = true;
-
-        while (gestionando) {
-            System.out.println("\n┌─────────────────────────┐");
-            System.out.println("│   GESTIÓN PLAN DE ESTUDIO │");
-            System.out.println("├─────────────────────────┤");
-            System.out.println("│ 1. Asignar plan         │");
-            System.out.println("│ 2. Quitar plan          │");
-            System.out.println("│ 3. Ver plan actual      │");
-            System.out.println("│ 4. Terminar             │");
-            System.out.println("└─────────────────────────┘");
-            System.out.print("Opción: ");
-
-            String opcion = scanner.nextLine();
-
-            switch (opcion) {
-                case "1" -> asignarPlanEstudio(carrera);
-                case "2" -> quitarPlanEstudio(carrera);
-                case "3" -> {
-                    if (carrera.getPlanEstudio() == null) {
-                        System.out.println("📌 La carrera no tiene plan asignado.");
-                    } else {
-                        System.out.println("\n📚 Plan actual:");
-                        mostrarPlan(carrera.getPlanEstudio());
-                    }
-                }
-
-                case "0" -> gestionando = false;
-
-                default -> System.out.println("❌ Opción no válida.");
-            }
-        }
     }
 
     private void asignarPlanEstudio(Carrera carrera) {
@@ -473,51 +425,37 @@ public class CarreraView {
             List<PlanEstudio> activos = planes.stream().filter(PlanEstudio::isActivo).toList();
 
             if (activos.isEmpty()) {
-                System.out.println("❌ No hay planes de estudio activos disponibles.");
+                System.out.println(YELLOW + "No hay planes de estudio activos." + RESET);
                 return;
             }
 
-            System.out.println("\n📚 Planes de estudio activos disponibles:");
+            System.out.println("\nPlanes disponibles:");
             for (int i = 0; i < activos.size(); i++) {
-                System.out.print((i + 1) + ". ");
-                System.out.println(activos.get(i).getNombre() + " - " + activos.get(i).getTitulo());
+                System.out.println((i + 1) + ". " + activos.get(i).getNombre());
             }
 
-            System.out.print("\nSeleccione el número del plan (0 para cancelar): ");
-
-            int seleccion = -1;
-            if (scanner.hasNextInt()) {
+            System.out.print("Seleccione (0 para cancelar): ");
+            int seleccion;
+            do {
+                while (!scanner.hasNextInt()) {
+                    System.out.println(RED + "Debe ingresar un número." + RESET);
+                    scanner.next();
+                }
                 seleccion = scanner.nextInt();
+                scanner.nextLine();
+            } while (seleccion < 0 || seleccion > activos.size());
+
+            if (seleccion > 0) {
+                carrera.setPlanEstudio(activos.get(seleccion - 1));
+                System.out.println(GREEN + "✓ Plan asignado." + RESET);
             }
-            pausa();
-
-            if (seleccion == 0) return;
-
-            if (seleccion < 1 || seleccion > activos.size()) {
-                System.out.println("❌ Opción no válida.");
-                return;
-            }
-
-            carrera.setPlanEstudio(activos.get(seleccion - 1));
-            System.out.println("✅ Plan asignado correctamente.");
-
-        } catch (IllegalArgumentException e) {
-            System.out.println("❌ Error: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println(RED + "Error al asignar plan." + RESET);
         }
     }
 
-    private void quitarPlanEstudio(Carrera carrera) {
-        if (carrera.getPlanEstudio() == null) {
-            System.out.println("❌ La carrera no tiene plan de estudio asignado.");
-            return;
-        }
-
-        System.out.println("\n📚 Plan actual: " + carrera.getPlanEstudio().getNombre());
-        System.out.print("¿Está seguro que desea quitar el plan de estudio? (S/N): ");
-
-        if (scanner.nextLine().equalsIgnoreCase("S")) {
-            carrera.setPlanEstudio(null);
-            System.out.println("✅ Plan de estudio eliminado.");
-        }
+    private void pausa() {
+        System.out.print("\n" + CYAN + "Presione ENTER para continuar..." + RESET);
+        scanner.nextLine();
     }
 }

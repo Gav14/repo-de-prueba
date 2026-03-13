@@ -11,6 +11,16 @@ import java.util.Scanner;
 
 public class PlanEstudioView {
 
+    // Códigos de color
+    private static final String RESET = "\u001B[0m";
+    private static final String GREEN = "\u001B[32m";
+    private static final String YELLOW = "\u001B[33m";
+    private static final String BLUE = "\u001B[34m";
+    private static final String RED = "\u001B[31m";
+    private static final String CYAN = "\u001B[36m";
+    private static final String PURPLE = "\u001B[35m";
+    private static final String BOLD = "\u001B[1m";
+
     private final PlanEstudioController planEstudioController;
     private final MateriaController materiaController;
     private final Scanner scanner;
@@ -27,109 +37,97 @@ public class PlanEstudioView {
         boolean continuar = true;
 
         while (continuar) {
-            try {
-                mostrarMenu();
+            mostrarMenu();
 
-                if (!scanner.hasNextInt()) {
-                    System.out.println("Debe ingresar un número.");
-                    scanner.next();
-                    scanner.nextLine();
-                    continue;
-                }
-
-                int opcion = scanner.nextInt();
+            if (!scanner.hasNextInt()) {
+                System.out.println(RED + "Debe ingresar un número." + RESET);
+                scanner.next();
                 scanner.nextLine();
+                continue;
+            }
 
-                switch (opcion) {
-                    case 1 -> listarPlanes();
-                    case 2 -> buscarPlan();
-                    case 3 -> registrarPlan();
-                    case 4 -> modificarPlan();
-                    case 5 -> eliminarPlan();
-                    case 6 -> reactivarPlan();
-                    case 0 -> continuar = false;
-                    default -> System.out.println("Opción no válida. Ingrese un número del 0 al 6.");
-                }
-            } catch (IllegalArgumentException e) {
-                System.out.println("❌ Error: " + e.getMessage());
-            } catch (Exception e) {
-                System.out.println("❌ Error inesperado: " + e.getMessage());
+            int opcion = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (opcion) {
+                case 1 -> listarPlanes();
+                case 2 -> buscarPlan();
+                case 3 -> registrarPlan();
+                case 4 -> modificarPlan();
+                case 5 -> eliminarPlan();
+                case 6 -> reactivarPlan();
+                case 0 -> continuar = false;
+                default -> System.out.println(RED + "Opción no válida. Ingrese un número del 0 al 6." + RESET);
             }
         }
     }
 
     private void mostrarMenu() {
-        System.out.println("\n╔════════════════════════════════╗");
-        System.out.println("║    GESTIÓN DE PLANES DE ESTUDIO ║");
-        System.out.println("╠════════════════════════════════╣");
-        System.out.println("║ 1. Listar todos los planes     ║");
-        System.out.println("║ 2. Buscar plan                 ║");
-        System.out.println("║ 3. Registrar nuevo plan        ║");
-        System.out.println("║ 4. Modificar datos de un plan  ║");
-        System.out.println("║ 5. Eliminar plan (dar de baja) ║");
-        System.out.println("║ 6. Reactivar plan              ║");
-        System.out.println("║ 0. Volver al menú anterior     ║");
-        System.out.println("╚════════════════════════════════╝");
-        System.out.print("Seleccione una opción: ");
+        System.out.println("\n" + BLUE + BOLD + "PLANES DE ESTUDIO" + RESET);
+        System.out.println("-------------------");
+        System.out.println(CYAN + "1. Listar todos los planes" + RESET);
+        System.out.println(CYAN + "2. Buscar plan" + RESET);
+        System.out.println(CYAN + "3. Registrar nuevo plan" + RESET);
+        System.out.println(CYAN + "4. Modificar datos de un plan" + RESET);
+        System.out.println(CYAN + "5. Eliminar plan (dar de baja)" + RESET);
+        System.out.println(CYAN + "6. Reactivar plan" + RESET);
+        System.out.println(YELLOW + "0. Volver" + RESET);
+        System.out.print("\nSeleccione: ");
     }
 
-    private int leerEntero() {
-        while (!scanner.hasNextInt()) {
-            String input = scanner.nextLine();
-            if (input.isEmpty()) {
-                return 0;
+    private boolean confirmarAccion(String mensaje) {
+        System.out.println("\n" + mensaje);
+        System.out.println(YELLOW + "1. Sí" + RESET);
+        System.out.println(YELLOW + "2. No" + RESET);
+        System.out.print("Opción: ");
+
+        int opcion;
+        do {
+            while (!scanner.hasNextInt()) {
+                System.out.println(RED + "Debe ingresar un número." + RESET);
+                scanner.next();
+                scanner.nextLine();
             }
-            System.out.println("Debe ingresar un número.");
+            opcion = scanner.nextInt();
+            scanner.nextLine();
+        } while (opcion < 1 || opcion > 2);
+
+        return opcion == 1;
+    }
+
+    private int leerEntero(String mensaje, int valorPorDefecto) {
+        System.out.print(mensaje + " [" + valorPorDefecto + "]: ");
+        String input = scanner.nextLine().trim();
+
+        if (input.isEmpty()) {
+            return valorPorDefecto;
         }
-        int num = scanner.nextInt();
-        scanner.nextLine();
-        return num;
-    }
 
-    private int leerEnteroConRango(String mensaje, int min, int max, int valorSugerido) {
         while (true) {
-            System.out.print(mensaje + " [" + valorSugerido + "]: ");
-            String input = scanner.nextLine().trim();
-
-            if (input.isEmpty()) {
-                return valorSugerido;
-            }
-
             try {
-                int num = Integer.parseInt(input);
-                if (num >= min && num <= max) {
-                    return num;
-                }
-                System.out.printf("❌ El valor debe estar entre %d y %d%n", min, max);
+                return Integer.parseInt(input);
             } catch (NumberFormatException e) {
-                System.out.println("❌ Debe ingresar un número válido");
+                System.out.print(RED + "Debe ingresar un número válido: " + RESET);
+                input = scanner.nextLine().trim();
+                if (input.isEmpty()) {
+                    return valorPorDefecto;
+                }
             }
         }
     }
 
-    private int confirmarAccion() {
+    private int leerEnteroRango(String mensaje, int min, int max, int valorPorDefecto) {
         while (true) {
-            System.out.println("\n┌─────────────────────────┐");
-            System.out.println("│     CONFIRMAR ACCIÓN     │");
-            System.out.println("├─────────────────────────┤");
-            System.out.println("│ 1. Sí, confirmar         │");
-            System.out.println("│ 2. No, cancelar          │");
-            System.out.println("└─────────────────────────┘");
-            System.out.print("Opción: ");
-
-            String input = scanner.nextLine().trim();
-
-            if (input.equals("1") || input.equalsIgnoreCase("S")) {
-                return 1;
+            int valor = leerEntero(mensaje, valorPorDefecto);
+            if (valor >= min && valor <= max) {
+                return valor;
             }
-            if (input.equals("2") || input.equalsIgnoreCase("N")) {
-                return 2;
-            }
-            System.out.println("❌ Opción no válida. Ingrese 1(S) o 2(N)");
+            System.out.println(RED + "El valor debe estar entre " + min + " y " + max + RESET);
         }
     }
 
     private void mostrarPlan(PlanEstudio plan) {
+        String estado = plan.isActivo() ? GREEN + "ACTIVO" + RESET : RED + "INACTIVO" + RESET;
         String materias = (plan.getMaterias() != null && !plan.getMaterias().isEmpty())
                 ? plan.getMaterias().stream()
                 .map(Materia::getNombre)
@@ -137,51 +135,67 @@ public class PlanEstudioView {
                 .orElse("NO POSEE")
                 : "NO POSEE";
 
-        String estado = plan.isActivo() ? "ACTIVO" : "INACTIVO";
+        System.out.println("  " + BOLD + "Nombre:" + RESET + " " + plan.getNombre());
+        System.out.println("  " + BOLD + "Título:" + RESET + " " + plan.getTitulo());
+        System.out.println("  " + BOLD + "Año:" + RESET + " " + plan.getAnio() +
+                " | " + BOLD + "Duración:" + RESET + " " + plan.getDuracion() + " años" +
+                " | " + BOLD + "Estado:" + RESET + " " + estado);
 
-        System.out.printf("│ • %-20s │ Año: %d │ Duración: %d años │ %-8s │%n",
-                plan.getNombre(),
+        if (materias.length() > 80) {
+            System.out.println("  " + BOLD + "Materias:" + RESET + " " + materias.substring(0, 77) + "...");
+        } else {
+            System.out.println("  " + BOLD + "Materias:" + RESET + " " + materias);
+        }
+    }
+
+    private void mostrarPlanCompacto(PlanEstudio plan) {
+        String estado = plan.isActivo() ? "ACTIVO" : "INACTIVO";
+        System.out.printf("│ %-25s │ %-4d │ %-3d años │ %-8s │%n",
+                plan.getNombre().length() > 25 ? plan.getNombre().substring(0, 22) + "..." : plan.getNombre(),
                 plan.getAnio(),
                 plan.getDuracion(),
                 estado
         );
-        System.out.println("│   Título: " + plan.getTitulo());
-
-        if (materias.length() > 60) {
-            System.out.println("│   Materias: " + materias.substring(0, 57) + "...");
-        } else {
-            System.out.println("│   Materias: " + materias);
-        }
     }
 
     private void mostrarMateria(Materia m) {
-        // CORREGIDO: Cambié getAnio() por getCuatrimestre()
-        System.out.println("   • " + m.getCodigoMateria() + " - " + m.getNombre() + " (" + m.getCuatrimestre() + "° cuatrimestre)");
+        System.out.println("     • " + CYAN + m.getCodigoMateria() + RESET +
+                " - " + m.getNombre() +
+                " (" + m.getCuatrimestre() + "° cuatrimestre)");
     }
 
     private void listarPlanes() {
-        System.out.println("\n┌────────────────────────────────────────────────────────────────────────────────┐");
-        System.out.println("│                           LISTADO DE PLANES DE ESTUDIO                          │");
-        System.out.println("├────────────────────────────────────────────────────────────────────────────────┤");
+        System.out.println("\n" + BLUE + BOLD + "LISTADO DE PLANES DE ESTUDIO" + RESET);
+        System.out.println("=============================");
 
         List<PlanEstudio> planes = planEstudioController.findAll();
 
         if (planes.isEmpty()) {
-            System.out.println("│                      No hay planes de estudio registrados.                     │");
-        } else {
-            for (int i = 0; i < planes.size(); i++) {
-                mostrarPlan(planes.get(i));
-                if (i < planes.size() - 1) {
-                    System.out.println("├────────────────────────────────────────────────────────────────────────────────┤");
-                }
-            }
+            System.out.println("No hay planes de estudio registrados.");
+            pausa();
+            return;
         }
 
-        System.out.println("└────────────────────────────────────────────────────────────────────────────────┘");
+        System.out.println("┌───────────────────────────┬──────┬───────────┬──────────┐");
+        System.out.println("│ NOMBRE                    │ AÑO  │ DURACIÓN  │ ESTADO   │");
+        System.out.println("├───────────────────────────┼──────┼───────────┼──────────┤");
+
+        for (PlanEstudio p : planes) {
+            mostrarPlanCompacto(p);
+        }
+        System.out.println("└───────────────────────────┴──────┴───────────┴──────────┘");
+
+        System.out.println("\n" + CYAN + "Detalles completos:" + RESET);
+        for (int i = 0; i < planes.size(); i++) {
+            System.out.println("\n" + YELLOW + "Plan " + (i + 1) + ":" + RESET);
+            mostrarPlan(planes.get(i));
+        }
+        pausa();
     }
 
     private void buscarPlan() {
-        System.out.println("\n🔍 BUSCAR PLAN DE ESTUDIO");
+        System.out.println("\n" + BLUE + BOLD + "BUSCAR PLAN DE ESTUDIO" + RESET);
+        System.out.println("=======================");
         System.out.print("Ingrese el nombre o parte del nombre: ");
         String texto = scanner.nextLine();
 
@@ -189,31 +203,43 @@ public class PlanEstudioView {
             List<PlanEstudio> resultados = planEstudioController.buscarPlanes(texto);
 
             if (resultados.isEmpty()) {
-                System.out.println("❌ No se encontraron planes que coincidan con: \"" + texto + "\"");
+                System.out.println(RED + "No se encontraron planes que coincidan con: \"" + texto + "\"" + RESET);
             } else {
-                System.out.println("\n✅ Se encontraron " + resultados.size() + " plan(es):");
-                System.out.println("┌────────────────────────────────────────────────────────────────────────────────┐");
+                System.out.println("\n" + GREEN + "Se encontraron " + resultados.size() + " plan(es):" + RESET);
+                System.out.println("┌────────────────────────────────────────────────────────────────┐");
                 for (int i = 0; i < resultados.size(); i++) {
-                    mostrarPlan(resultados.get(i));
-                    if (i < resultados.size() - 1) {
-                        System.out.println("├────────────────────────────────────────────────────────────────────────────────┤");
+                    System.out.println("│ " + (i + 1) + ". " + resultados.get(i).getNombre() +
+                            " (" + resultados.get(i).getAnio() + ") - " +
+                            (resultados.get(i).isActivo() ? "ACTIVO" : "INACTIVO"));
+                }
+                System.out.println("└────────────────────────────────────────────────────────────────┘");
+
+                System.out.print("\n¿Desea ver detalles de algún plan? (Ingrese número o 0 para salir): ");
+                if (scanner.hasNextInt()) {
+                    int idx = scanner.nextInt();
+                    scanner.nextLine();
+                    if (idx > 0 && idx <= resultados.size()) {
+                        System.out.println("\n" + CYAN + "Detalles del plan:" + RESET);
+                        mostrarPlan(resultados.get(idx - 1));
                     }
                 }
-                System.out.println("└────────────────────────────────────────────────────────────────────────────────┘");
             }
         } catch (IllegalArgumentException e) {
-            System.out.println("❌ Error: " + e.getMessage());
+            System.out.println(RED + "Error: " + e.getMessage() + RESET);
         }
+        pausa();
     }
 
     private void registrarPlan() {
-        System.out.println("\n📝 REGISTRAR NUEVO PLAN DE ESTUDIO");
+        System.out.println("\n" + BLUE + BOLD + "REGISTRAR NUEVO PLAN DE ESTUDIO" + RESET);
+        System.out.println("================================");
 
         System.out.print("Nombre del plan: ");
         String nombre = scanner.nextLine();
 
         if (nombre.trim().isEmpty()) {
-            System.out.println("❌ El nombre no puede estar vacío.");
+            System.out.println(RED + "El nombre no puede estar vacío." + RESET);
+            pausa();
             return;
         }
 
@@ -222,60 +248,68 @@ public class PlanEstudioView {
 
             if (existente != null) {
                 if (existente.isActivo()) {
-                    System.out.println("❌ Ya existe un plan ACTIVO con ese nombre.");
+                    System.out.println(RED + "Ya existe un plan ACTIVO con ese nombre." + RESET);
+                    pausa();
                     return;
                 } else {
-                    System.out.println("⚠️  Ya existe un plan INACTIVO con ese nombre.");
-                    System.out.println("¿Desea reactivarlo en lugar de crear uno nuevo?");
-                    if (confirmarAccion() == 1) {
+                    System.out.println(YELLOW + "Ya existe un plan INACTIVO con ese nombre." + RESET);
+                    if (confirmarAccion("¿Desea reactivarlo en lugar de crear uno nuevo?")) {
                         planEstudioController.reactivarPlanEstudio(nombre);
-                        System.out.println("✅ Plan reactivado exitosamente!");
+                        System.out.println(GREEN + "✓ Plan reactivado exitosamente!" + RESET);
                     }
+                    pausa();
                     return;
                 }
             }
 
             List<PlanEstudio> similares = planEstudioController.buscarPlanes(nombre);
             if (!similares.isEmpty()) {
-                System.out.println("\n⚠️  Planes con nombres similares encontrados:");
-                similares.forEach(this::mostrarPlan);
-                System.out.println("\n¿Desea continuar con el registro de \"" + nombre + "\"?");
-                if (confirmarAccion() != 1) {
+                System.out.println(YELLOW + "\nPlanes con nombres similares encontrados:" + RESET);
+                for (PlanEstudio p : similares) {
+                    System.out.println("  • " + p.getNombre() + " (" + p.getAnio() + ")");
+                }
+                if (!confirmarAccion("\n¿Desea continuar con el registro de \"" + nombre + "\"?")) {
                     System.out.println("Registro cancelado.");
+                    pausa();
                     return;
                 }
             }
 
-            int anio = leerEnteroConRango("Año de vigencia", 1900, 2100, 2024);
-            int duracion = leerEnteroConRango("Duración en años", 1, 6, 3);
+            int anio = leerEnteroRango("Año de vigencia", 1900, 2100, 2024);
+            int duracion = leerEnteroRango("Duración en años", 1, 6, 3);
 
             System.out.print("Título que otorga: ");
             String titulo = scanner.nextLine();
+            if (titulo.trim().isEmpty()) {
+                titulo = "Sin título especificado";
+            }
 
             PlanEstudio nuevoPlan = new PlanEstudio(nombre, anio, duracion, titulo);
 
-            System.out.println("\n📚 Materias del plan");
-            System.out.print("¿Desea agregar materias ahora? (S/N) o (1/2): ");
-            String respuesta = scanner.nextLine().trim();
-            if (respuesta.equalsIgnoreCase("S") || respuesta.equals("1")) {
+            System.out.println("\n" + CYAN + "📚 Materias del plan" + RESET);
+            if (confirmarAccion("¿Desea agregar materias ahora?")) {
                 gestionarMateriasDelPlan(nuevoPlan.getMaterias());
             }
 
-            System.out.println("\n📋 Vista previa del plan:");
+            System.out.println("\n" + CYAN + "Vista previa del plan:" + RESET);
             mostrarPlan(nuevoPlan);
 
-            System.out.println("\n¿Confirma el registro de este plan?");
-            if (confirmarAccion() == 1) {
+            if (confirmarAccion("¿Confirmar registro?")) {
                 planEstudioController.crearPlanEstudio(nuevoPlan);
-                System.out.println("✅ ¡Plan registrado exitosamente!");
+                System.out.println(GREEN + "✓ Plan registrado exitosamente!" + RESET);
+            } else {
+                System.out.println("Registro cancelado.");
             }
         } catch (IllegalArgumentException e) {
-            System.out.println("❌ Error: " + e.getMessage());
+            System.out.println(RED + "Error: " + e.getMessage() + RESET);
         }
+        pausa();
     }
 
     private void modificarPlan() {
-        System.out.println("\n✏️  MODIFICAR PLAN DE ESTUDIO");
+        System.out.println("\n" + BLUE + BOLD + "MODIFICAR PLAN DE ESTUDIO" + RESET);
+        System.out.println("=========================");
+
         System.out.print("Ingrese el nombre o parte del nombre del plan: ");
         String texto = scanner.nextLine();
 
@@ -284,61 +318,54 @@ public class PlanEstudioView {
             List<PlanEstudio> activos = resultados.stream().filter(PlanEstudio::isActivo).toList();
 
             if (activos.isEmpty()) {
-                System.out.println("❌ No se encontraron planes ACTIVOS para modificar.");
+                System.out.println(RED + "No se encontraron planes ACTIVOS para modificar." + RESET);
                 if (!resultados.isEmpty()) {
-                    System.out.println("(Los planes encontrados están INACTIVOS. Use opción 6 para reactivarlos)");
+                    System.out.println(YELLOW + "(Los planes encontrados están INACTIVOS. Use opción 6 para reactivarlos)" + RESET);
                 }
+                pausa();
                 return;
             }
 
             PlanEstudio planSeleccionado = (activos.size() == 1) ?
                     activos.get(0) : seleccionarPlanDeLista(activos, "modificar");
 
-            if (planSeleccionado == null) return;
+            if (planSeleccionado == null) {
+                pausa();
+                return;
+            }
 
-            System.out.println("\n🔄 Modificando plan: " + planSeleccionado.getNombre());
+            System.out.println("\n" + CYAN + "Datos actuales:" + RESET);
+            mostrarPlan(planSeleccionado);
 
             String tituloOriginal = planSeleccionado.getTitulo();
             int anioOriginal = planSeleccionado.getAnio();
             int duracionOriginal = planSeleccionado.getDuracion();
             List<Materia> materiasOriginales = new ArrayList<>(planSeleccionado.getMaterias());
 
-            System.out.println("\n📄 Título actual: " + planSeleccionado.getTitulo());
-            System.out.print("Nuevo título (ENTER para mantener): ");
+            System.out.println("\n" + YELLOW + "NUEVOS DATOS (dejar en blanco para no cambiar):" + RESET);
+
+            System.out.print("Nuevo título [" + planSeleccionado.getTitulo() + "]: ");
             String nuevoTitulo = scanner.nextLine();
-            if (!nuevoTitulo.isEmpty()) {
+            if (!nuevoTitulo.isBlank()) {
                 planSeleccionado.setTitulo(nuevoTitulo);
             }
 
-            int nuevoAnio = leerEnteroConRango(
-                    "📅 Nuevo año",
-                    1900, 2100,
-                    planSeleccionado.getAnio()
-            );
+            int nuevoAnio = leerEnteroRango("Nuevo año", 1900, 2100, planSeleccionado.getAnio());
             planSeleccionado.setAnio(nuevoAnio);
 
-            int nuevaDuracion = leerEnteroConRango(
-                    "⏱️  Nueva duración",
-                    1, 6,
-                    planSeleccionado.getDuracion()
-            );
+            int nuevaDuracion = leerEnteroRango("Nueva duración en años", 1, 6, planSeleccionado.getDuracion());
             planSeleccionado.setDuracion(nuevaDuracion);
 
-            System.out.println("\n📚 Gestión de materias");
-            System.out.print("¿Desea modificar las materias del plan? (S/N) o (1/2): ");
-            String respuesta = scanner.nextLine().trim();
-
-            if (respuesta.equalsIgnoreCase("S") || respuesta.equals("1")) {
+            if (confirmarAccion("¿Desea modificar las materias del plan?")) {
                 gestionarMateriasDelPlan(planSeleccionado.getMaterias());
             }
 
-            System.out.println("\n📋 Vista previa de los cambios:");
+            System.out.println("\n" + CYAN + "Vista previa de los cambios:" + RESET);
             mostrarPlan(planSeleccionado);
 
-            System.out.println("\n¿Confirma los cambios?");
-            if (confirmarAccion() == 1) {
+            if (confirmarAccion("¿Confirmar cambios?")) {
                 planEstudioController.editarPlanEstudio(planSeleccionado);
-                System.out.println("✅ ¡Plan modificado exitosamente!");
+                System.out.println(GREEN + "✓ Plan modificado exitosamente!" + RESET);
             } else {
                 planSeleccionado.setTitulo(tituloOriginal);
                 planSeleccionado.setAnio(anioOriginal);
@@ -348,12 +375,15 @@ public class PlanEstudioView {
             }
 
         } catch (IllegalArgumentException e) {
-            System.out.println("❌ Error: " + e.getMessage());
+            System.out.println(RED + "Error: " + e.getMessage() + RESET);
         }
+        pausa();
     }
 
     private void eliminarPlan() {
-        System.out.println("\n🗑️  ELIMINAR PLAN (DAR DE BAJA)");
+        System.out.println("\n" + BLUE + BOLD + "ELIMINAR PLAN DE ESTUDIO" + RESET);
+        System.out.println("=========================");
+
         System.out.print("Ingrese el nombre o parte del nombre del plan: ");
         String texto = scanner.nextLine();
 
@@ -362,33 +392,41 @@ public class PlanEstudioView {
             List<PlanEstudio> activos = resultados.stream().filter(PlanEstudio::isActivo).toList();
 
             if (activos.isEmpty()) {
-                System.out.println("❌ No se encontraron planes ACTIVOS para eliminar.");
+                System.out.println(RED + "No se encontraron planes ACTIVOS para eliminar." + RESET);
                 if (!resultados.isEmpty()) {
-                    System.out.println("(Los planes encontrados ya están INACTIVOS)");
+                    System.out.println(YELLOW + "(Los planes encontrados ya están INACTIVOS)" + RESET);
                 }
+                pausa();
                 return;
             }
 
             PlanEstudio planSeleccionado = (activos.size() == 1) ?
                     activos.get(0) : seleccionarPlanDeLista(activos, "eliminar");
 
-            if (planSeleccionado == null) return;
+            if (planSeleccionado == null) {
+                pausa();
+                return;
+            }
 
-            System.out.println("\n⚠️  ADVERTENCIA: Esta acción dará de baja el plan:");
+            System.out.println("\n" + CYAN + "Plan a eliminar:" + RESET);
             mostrarPlan(planSeleccionado);
-            System.out.println("\n¿Está seguro que desea ELIMINAR (dar de baja) este plan?");
 
-            if (confirmarAccion() == 1) {
+            if (confirmarAccion(RED + "¿Está seguro que desea ELIMINAR (dar de baja) este plan?" + RESET)) {
                 planEstudioController.eliminarPlanEstudio(planSeleccionado);
-                System.out.println("✅ Plan dado de baja correctamente (estado: INACTIVO)");
+                System.out.println(GREEN + "✓ Plan dado de baja correctamente (estado: INACTIVO)" + RESET);
+            } else {
+                System.out.println("Eliminación cancelada.");
             }
         } catch (IllegalArgumentException e) {
-            System.out.println("❌ Error: " + e.getMessage());
+            System.out.println(RED + "Error: " + e.getMessage() + RESET);
         }
+        pausa();
     }
 
     private void reactivarPlan() {
-        System.out.println("\n🔄 REACTIVAR PLAN DE ESTUDIO");
+        System.out.println("\n" + BLUE + BOLD + "REACTIVAR PLAN DE ESTUDIO" + RESET);
+        System.out.println("==========================");
+
         System.out.print("Ingrese el nombre o parte del nombre del plan: ");
         String texto = scanner.nextLine();
 
@@ -397,38 +435,49 @@ public class PlanEstudioView {
             List<PlanEstudio> inactivos = resultados.stream().filter(p -> !p.isActivo()).toList();
 
             if (inactivos.isEmpty()) {
-                System.out.println("❌ No se encontraron planes INACTIVOS para reactivar.");
+                System.out.println(RED + "No se encontraron planes INACTIVOS para reactivar." + RESET);
                 if (!resultados.isEmpty()) {
-                    System.out.println("(Los planes encontrados ya están ACTIVOS)");
+                    System.out.println(YELLOW + "(Los planes encontrados ya están ACTIVOS)" + RESET);
                 }
+                pausa();
                 return;
             }
 
             PlanEstudio planSeleccionado = (inactivos.size() == 1) ?
                     inactivos.get(0) : seleccionarPlanDeLista(inactivos, "reactivar");
 
-            if (planSeleccionado == null) return;
+            if (planSeleccionado == null) {
+                pausa();
+                return;
+            }
 
-            System.out.println("\n🔄 Plan seleccionado para reactivar:");
+            System.out.println("\n" + CYAN + "Plan seleccionado para reactivar:" + RESET);
             mostrarPlan(planSeleccionado);
 
-            System.out.println("\n¿Confirma la reactivación de este plan?");
-            if (confirmarAccion() == 1) {
+            if (confirmarAccion("¿Confirmar reactivación?")) {
                 planEstudioController.reactivarPlanEstudio(planSeleccionado.getNombre());
-                System.out.println("✅ ¡Plan reactivado exitosamente!");
+                System.out.println(GREEN + "✓ Plan reactivado exitosamente!" + RESET);
+            } else {
+                System.out.println("Reactivación cancelada.");
             }
         } catch (IllegalArgumentException e) {
-            System.out.println("❌ Error: " + e.getMessage());
+            System.out.println(RED + "Error: " + e.getMessage() + RESET);
         }
+        pausa();
     }
 
     private PlanEstudio seleccionarPlanDeLista(List<PlanEstudio> planes, String accion) {
-        System.out.println("\n📋 Se encontraron los siguientes planes:");
+        System.out.println("\n" + CYAN + "Planes encontrados:" + RESET);
+        System.out.println("┌────────────────────────────────────────────────────────────────┐");
         for (int i = 0; i < planes.size(); i++) {
-            System.out.print((i + 1) + ". ");
-            System.out.println(planes.get(i).getNombre() + " (" + planes.get(i).getAnio() + ") - " +
-                    (planes.get(i).isActivo() ? "ACTIVO" : "INACTIVO"));
+            PlanEstudio p = planes.get(i);
+            System.out.printf("│ %d. %-30s (%d) %s%n",
+                    (i + 1),
+                    p.getNombre().length() > 30 ? p.getNombre().substring(0, 27) + "..." : p.getNombre(),
+                    p.getAnio(),
+                    p.isActivo() ? "ACTIVO" : "INACTIVO");
         }
+        System.out.println("└────────────────────────────────────────────────────────────────┘");
 
         System.out.print("\nSeleccione el número del plan que desea " + accion + " (0 para cancelar): ");
 
@@ -444,33 +493,30 @@ public class PlanEstudioView {
         }
 
         if (seleccion < 1 || seleccion > planes.size()) {
-            System.out.println("❌ Opción no válida.");
+            System.out.println(RED + "Opción no válida." + RESET);
             return null;
         }
 
         return planes.get(seleccion - 1);
     }
 
-    // ============================================================
-    // GESTIÓN DE MATERIAS
-    // ============================================================
     private void gestionarMateriasDelPlan(List<Materia> materiasDelPlan) {
         if (materiasDelPlan == null) {
-            System.out.println("⚠️  Error interno: lista de materias no inicializada");
+            System.out.println(RED + "Error interno: lista de materias no inicializada" + RESET);
             return;
         }
+
         boolean gestionando = true;
 
         while (gestionando) {
-            System.out.println("\n┌─────────────────────────┐");
-            System.out.println("│   GESTIÓN DE MATERIAS    │");
-            System.out.println("├─────────────────────────┤");
+            System.out.println("\n" + PURPLE + BOLD + "GESTIÓN DE MATERIAS" + RESET);
+            System.out.println("┌─────────────────────────┐");
             System.out.println("│ 1. Agregar materia      │");
             System.out.println("│ 2. Quitar materia       │");
             System.out.println("│ 3. Ver materias del plan│");
             System.out.println("│ 4. Terminar             │");
             System.out.println("└─────────────────────────┘");
-            System.out.print("Opción: ");
+            System.out.print("Seleccione: ");
 
             String opcion = scanner.nextLine();
 
@@ -479,7 +525,7 @@ public class PlanEstudioView {
                 case "2" -> quitarMateria(materiasDelPlan);
                 case "3" -> mostrarMateriasPlan(materiasDelPlan);
                 case "4" -> gestionando = false;
-                default -> System.out.println("❌ Opción no válida.");
+                default -> System.out.println(RED + "Opción no válida." + RESET);
             }
         }
     }
@@ -489,11 +535,11 @@ public class PlanEstudioView {
         List<Materia> activas = disponibles.stream().filter(Materia::isActivo).toList();
 
         if (activas.isEmpty()) {
-            System.out.println("❌ No hay materias activas disponibles.");
+            System.out.println(RED + "No hay materias activas disponibles." + RESET);
             return;
         }
 
-        System.out.println("\n📚 Materias activas disponibles:");
+        System.out.println("\n" + CYAN + "Materias activas disponibles:" + RESET);
         for (int i = 0; i < activas.size(); i++) {
             System.out.print((i + 1) + ". ");
             mostrarMateria(activas.get(i));
@@ -510,27 +556,27 @@ public class PlanEstudioView {
         if (seleccion == 0) return;
 
         if (seleccion < 1 || seleccion > activas.size()) {
-            System.out.println("❌ Opción no válida.");
+            System.out.println(RED + "Opción no válida." + RESET);
             return;
         }
 
         Materia materiaSeleccionada = activas.get(seleccion - 1);
 
         if (materiasDelPlan.contains(materiaSeleccionada)) {
-            System.out.println("❌ La materia ya está en el plan.");
+            System.out.println(RED + "La materia ya está en el plan." + RESET);
         } else {
             materiasDelPlan.add(materiaSeleccionada);
-            System.out.println("✅ Materia agregada al plan.");
+            System.out.println(GREEN + "✓ Materia agregada al plan." + RESET);
         }
     }
 
     private void quitarMateria(List<Materia> materiasDelPlan) {
         if (materiasDelPlan.isEmpty()) {
-            System.out.println("❌ El plan no tiene materias.");
+            System.out.println(RED + "El plan no tiene materias." + RESET);
             return;
         }
 
-        System.out.println("\n📚 Materias del plan:");
+        System.out.println("\n" + CYAN + "Materias del plan:" + RESET);
         for (int i = 0; i < materiasDelPlan.size(); i++) {
             System.out.print((i + 1) + ". ");
             mostrarMateria(materiasDelPlan.get(i));
@@ -547,20 +593,25 @@ public class PlanEstudioView {
         if (seleccion == 0) return;
 
         if (seleccion < 1 || seleccion > materiasDelPlan.size()) {
-            System.out.println("❌ Opción no válida.");
+            System.out.println(RED + "Opción no válida." + RESET);
             return;
         }
 
         Materia materiaRemovida = materiasDelPlan.remove(seleccion - 1);
-        System.out.println("✅ Materia removida: " + materiaRemovida.getNombre());
+        System.out.println(GREEN + "✓ Materia removida: " + materiaRemovida.getNombre() + RESET);
     }
 
     private void mostrarMateriasPlan(List<Materia> materiasDelPlan) {
-        System.out.println("\n📚 Materias del plan:");
+        System.out.println("\n" + CYAN + "Materias del plan:" + RESET);
         if (materiasDelPlan.isEmpty()) {
-            System.out.println("   El plan no tiene materias cargadas.");
+            System.out.println("  El plan no tiene materias cargadas.");
             return;
         }
         materiasDelPlan.forEach(this::mostrarMateria);
+    }
+
+    private void pausa() {
+        System.out.print("\n" + CYAN + "Presione ENTER para continuar..." + RESET);
+        scanner.nextLine();
     }
 }

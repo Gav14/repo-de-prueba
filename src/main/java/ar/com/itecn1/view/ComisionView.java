@@ -9,6 +9,15 @@ import java.util.*;
 
 public class ComisionView {
 
+    // Códigos de color
+    private static final String RESET = "\u001B[0m";
+    private static final String GREEN = "\u001B[32m";
+    private static final String YELLOW = "\u001B[33m";
+    private static final String BLUE = "\u001B[34m";
+    private static final String RED = "\u001B[31m";
+    private static final String CYAN = "\u001B[36m";
+    private static final String BOLD = "\u001B[1m";
+
     private final ComisionController comisionController;
     private final CuatrimestreController cuatrimestreController;
     private final ProfesorController profesorController;
@@ -72,50 +81,36 @@ public class ComisionView {
                 }
                 case 10 -> actualizarComision();
                 case 0 -> continuar = false;
-                default -> System.out.println("Ingrese una opción válida.");
+                default -> System.out.println(RED + "Opción no válida" + RESET);
             }
         }
     }
 
     private void mostrarMenu() {
-        System.out.println("\n===== GESTIÓN DE COMISIÓN-MATERIA =====");
-        System.out.println("1. Listar comisiones");
-        System.out.println("2. Buscar comisión por código");
-        System.out.println("3. Registrar comisión");
-        System.out.println("4. Registrar una asistencia");
-        System.out.println("5. Dar de baja comisión");
-        System.out.println("6. Listar alumnos inscriptos de una comisión");
-        System.out.println("7. Listar exámenes de una comisión");
-        System.out.println("8. Listar asistencias de una comisión");
-        System.out.println("9. Listar horarios");
-        System.out.println("10. Actualizar comisión");
-        System.out.println("0. Volver atrás");
-        System.out.print("Seleccione opción: ");
+        System.out.println("\n" + BLUE + BOLD + "COMISIONES" + RESET);
+        System.out.println("----------");
+        System.out.println(CYAN + "1. Listar comisiones" + RESET);
+        System.out.println(CYAN + "2. Buscar comisión por código" + RESET);
+        System.out.println(CYAN + "3. Registrar comisión" + RESET);
+        System.out.println(CYAN + "4. Registrar asistencia" + RESET);
+        System.out.println(CYAN + "5. Dar de baja comisión" + RESET);
+        System.out.println(CYAN + "6. Listar alumnos inscriptos" + RESET);
+        System.out.println(CYAN + "7. Listar exámenes" + RESET);
+        System.out.println(CYAN + "8. Listar asistencias" + RESET);
+        System.out.println(CYAN + "9. Listar horarios" + RESET);
+        System.out.println(CYAN + "10. Actualizar comisión" + RESET);
+        System.out.println(YELLOW + "0. Volver" + RESET);
+        System.out.print("\nSeleccione: ");
     }
 
     private int leerEntero() {
         while (!scanner.hasNextInt()) {
-            scanner.nextLine();
-            System.out.print("Debe ingresar un número. Intente nuevamente: ");
+            System.out.println(RED + "Debe ingresar un número." + RESET);
+            scanner.next();
         }
         int n = scanner.nextInt();
         scanner.nextLine();
         return n;
-    }
-
-    private String leerString() {
-        return scanner.nextLine().trim();
-    }
-
-    private boolean confirmarAccion(String mensaje) {
-        int opcion;
-        do {
-            System.out.println(mensaje);
-            System.out.println("1. Sí");
-            System.out.println("2. No");
-            opcion = leerEntero();
-        } while (opcion < 1 || opcion > 2);
-        return opcion == 1;
     }
 
     private int leerEnteroEnRango(int min, int max) {
@@ -123,71 +118,90 @@ public class ComisionView {
         do {
             num = leerEntero();
             if (num < min || num > max) {
-                System.out.println("Ingrese un número entre " + min + " y " + max);
+                System.out.println(RED + "Ingrese un número entre " + min + " y " + max + RESET);
             }
         } while (num < min || num > max);
         return num;
     }
 
+    private boolean confirmarAccion(String mensaje) {
+        System.out.println("\n" + mensaje);
+        System.out.println(YELLOW + "1. Sí" + RESET);
+        System.out.println(YELLOW + "2. No" + RESET);
+        System.out.print("Opción: ");
+
+        int opcion = leerEnteroEnRango(1, 2);
+        return opcion == 1;
+    }
+
     private void mostrarComision(ComisionMateria c) {
-        System.out.println("--------------------------------------------------");
-        System.out.println("CÓDIGO: " + c.getCodigo());
-        System.out.println("CARRERA: " + (c.getCarrera() != null ? c.getCarrera().getNombre() : "NO ASIGNADA"));
-        System.out.println("MATERIA: " + (c.getMateria() != null ? c.getMateria().getNombre() : "NO ASIGNADA"));
-        System.out.println("CUATRIMESTRE: " + (c.getCuatrimestre() != null ? c.getCuatrimestre().getNumero() : "NO ASIGNADO"));
-        System.out.println("PROFESOR: " + (c.getProfesor() != null ? c.getProfesor().getNombre() + " " + c.getProfesor().getApellido() : "NO ASIGNADO"));
-        System.out.println("ALUMNOS: " + (c.getAlumnosInscriptos() != null ? c.getAlumnosInscriptos().size() : 0));
-        System.out.println("HORARIOS: " + (c.getHorarios() != null ? c.getHorarios().size() : 0));
-        System.out.println("EXÁMENES: " + (c.getExamenes() != null ? c.getExamenes().size() : 0));
-        System.out.println("ASISTENCIAS: " + (c.getAsistencias() != null ? c.getAsistencias().size() : 0));
-        System.out.println("ESTADO: " + (c.isActivo() ? "ACTIVO" : "INACTIVO"));
-        System.out.println("--------------------------------------------------");
+        String estado = c.isActivo() ? GREEN + "ACTIVO" + RESET : RED + "INACTIVO" + RESET;
+        System.out.println("┌────────────────────────────────────────────────────────────────┐");
+        System.out.println("  " + CYAN + "CÓDIGO:" + RESET + " " + c.getCodigo());
+        System.out.println("  " + CYAN + "CARRERA:" + RESET + " " + (c.getCarrera() != null ? c.getCarrera().getNombre() : "NO ASIGNADA"));
+        System.out.println("  " + CYAN + "MATERIA:" + RESET + " " + (c.getMateria() != null ? c.getMateria().getNombre() : "NO ASIGNADA"));
+        System.out.println("  " + CYAN + "CUATRIMESTRE:" + RESET + " " + (c.getCuatrimestre() != null ? c.getCuatrimestre().getNumero() : "NO ASIGNADO"));
+        System.out.println("  " + CYAN + "PROFESOR:" + RESET + " " + (c.getProfesor() != null ? c.getProfesor().getNombre() + " " + c.getProfesor().getApellido() : "NO ASIGNADO"));
+        System.out.println("  " + CYAN + "ALUMNOS:" + RESET + " " + (c.getAlumnosInscriptos() != null ? c.getAlumnosInscriptos().size() : 0));
+        System.out.println("  " + CYAN + "HORARIOS:" + RESET + " " + (c.getHorarios() != null ? c.getHorarios().size() : 0));
+        System.out.println("  " + CYAN + "EXÁMENES:" + RESET + " " + (c.getExamenes() != null ? c.getExamenes().size() : 0));
+        System.out.println("  " + CYAN + "ASISTENCIAS:" + RESET + " " + (c.getAsistencias() != null ? c.getAsistencias().size() : 0));
+        System.out.println("  " + CYAN + "ESTADO:" + RESET + " " + estado);
+        System.out.println("└────────────────────────────────────────────────────────────────┘");
     }
 
     private ComisionMateria buscarComisionPorCodigo() {
-        System.out.print("Ingrese código de comisión: ");
-        String codigo = scanner.nextLine();
+        System.out.print("\nIngrese código de comisión: ");
+        String codigo = scanner.nextLine().trim();
         ComisionMateria com = comisionController.findByCode(codigo);
         if (com == null) {
-            System.out.println("Comisión no encontrada.");
+            System.out.println(RED + "Comisión no encontrada." + RESET);
         }
         return com;
     }
 
     private void listarComisiones() {
-        System.out.println("\n--- Listado de Comisiones ---");
+        System.out.println("\n" + BLUE + BOLD + "LISTADO DE COMISIONES" + RESET);
+        System.out.println("======================");
+
         List<ComisionMateria> lista = comisionController.findAll();
         if (lista == null || lista.isEmpty()) {
             System.out.println("No hay comisiones registradas.");
-            return;
+        } else {
+            for (ComisionMateria c : lista) {
+                mostrarComision(c);
+            }
         }
-        for (ComisionMateria c : lista) {
-            mostrarComision(c);
-        }
+        pausa();
     }
 
     private void buscarComision() {
-        System.out.print("\nIngrese el código de la comisión: ");
-        String codigo = scanner.nextLine().trim();
-        ComisionMateria c = comisionController.findByCode(codigo);
-        if (c == null) {
-            System.out.println("Comisión no encontrada.");
-            return;
+        System.out.println("\n" + BLUE + BOLD + "BUSCAR COMISIÓN" + RESET);
+        System.out.println("================");
+
+        ComisionMateria c = buscarComisionPorCodigo();
+        if (c != null) {
+            mostrarComision(c);
         }
-        mostrarComision(c);
+        pausa();
     }
 
     private void crearComision() {
-        System.out.println("\n--- Registrar Comisión ---");
+        System.out.println("\n" + BLUE + BOLD + "REGISTRAR COMISIÓN" + RESET);
+        System.out.println("===================");
+
         System.out.print("Código de comisión (ej. AN-MAT101-2025-1): ");
         String codigo = scanner.nextLine().trim();
 
         if (codigo.isEmpty()) {
-            System.out.println("Código vacío. Operación cancelada.");
+            System.out.println(RED + "Código vacío. Operación cancelada." + RESET);
+            pausa();
             return;
         }
+
         if (comisionController.findByCode(codigo) != null) {
-            System.out.println("Ya existe comisión con ese código.");
+            System.out.println(RED + "Ya existe una comisión con ese código." + RESET);
+            pausa();
             return;
         }
 
@@ -196,92 +210,100 @@ public class ComisionView {
 
         Carrera carrera = seleccionarCarrera();
         if (carrera == null) return;
-        nueva.setCarrera(carrera);
 
         Materia materia = seleccionarMateria(carrera);
         if (materia == null) return;
-        nueva.setMateria(materia);
 
         Profesor profesor = seleccionarProfesor();
         if (profesor == null) return;
-        nueva.setProfesor(profesor);
 
         Cuatrimestre cuatrimestre = seleccionarCuatrimestre(materia);
         if (cuatrimestre == null) return;
-        nueva.setCuatrimestre(cuatrimestre);
 
+        nueva.setCarrera(carrera);
+        nueva.setMateria(materia);
+        nueva.setProfesor(profesor);
+        nueva.setCuatrimestre(cuatrimestre);
         nueva.setAlumnosInscriptos(new ArrayList<>());
         nueva.setExamenes(new ArrayList<>());
         nueva.setAsistencias(new ArrayList<>());
         nueva.setHorarios(new ArrayList<>());
         nueva.setActivo(true);
 
-        System.out.println("\nVista previa de la comisión:");
+        System.out.println("\n" + CYAN + "VISTA PREVIA:" + RESET);
         mostrarComision(nueva);
 
-        if (confirmarAccion("¿Confirmar registro de la comisión?")) {
+        if (confirmarAccion("¿Confirmar registro?")) {
             String resultado = comisionController.registrarComision(nueva);
             if (resultado.startsWith("SUCCESS")) {
-                System.out.println("✓ " + resultado.substring(8));
+                System.out.println(GREEN + "✓ Comisión registrada exitosamente!" + RESET);
             } else {
-                System.out.println("✗ " + resultado.substring(6));
+                System.out.println(RED + "✗ " + resultado.substring(6) + RESET);
             }
-        } else {
-            System.out.println("Registro cancelado.");
         }
+        pausa();
     }
 
     private Carrera seleccionarCarrera() {
         List<Carrera> lista = carreraController.findAll();
         if (lista == null || lista.isEmpty()) {
-            System.out.println("No hay carreras registradas.");
+            System.out.println(RED + "No hay carreras registradas." + RESET);
+            pausa();
             return null;
         }
-        System.out.println("\n--- Seleccione Carrera ---");
+
+        System.out.println("\n" + CYAN + "CARRERAS DISPONIBLES:" + RESET);
         for (int i = 0; i < lista.size(); i++) {
-            System.out.println((i + 1) + ". " + lista.get(i).getNombre() + " | Turno: " + lista.get(i).getTurno());
+            Carrera c = lista.get(i);
+            System.out.println((i + 1) + ". " + c.getNombre() + " (" + c.getTurno() + ")");
         }
-        int op = seleccionarDeLista(lista.size());
+
+        int op = leerEnteroEnRango(1, lista.size());
         return lista.get(op - 1);
     }
 
     private Materia seleccionarMateria(Carrera carrera) {
         PlanEstudio plan = carrera.getPlanEstudio();
         if (plan == null || plan.getMaterias() == null || plan.getMaterias().isEmpty()) {
-            System.out.println("La carrera seleccionada no tiene materias asignadas en su plan de estudio.");
+            System.out.println(RED + "La carrera no tiene materias en su plan de estudio." + RESET);
+            pausa();
             return null;
         }
 
-        System.out.println("\n--- Seleccione la Materia (según el Plan de Estudio) ---");
-        List<Materia> materiasPlan = plan.getMaterias();
-        for (int i = 0; i < materiasPlan.size(); i++) {
-            Materia mat = materiasPlan.get(i);
-            System.out.println((i + 1) + ". " + mat.getCodigoMateria() + " | " + mat.getNombre());
+        System.out.println("\n" + CYAN + "MATERIAS DEL PLAN " + plan.getNombre() + ":" + RESET);
+        List<Materia> materias = plan.getMaterias();
+        for (int i = 0; i < materias.size(); i++) {
+            Materia m = materias.get(i);
+            System.out.println((i + 1) + ". " + m.getCodigoMateria() + " - " + m.getNombre());
         }
 
-        System.out.println("Ingrese el número de la materia:");
-        int opcionMateria = leerEnteroEnRango(1, materiasPlan.size());
-        return materiasPlan.get(opcionMateria - 1);
+        int op = leerEnteroEnRango(1, materias.size());
+        return materias.get(op - 1);
     }
 
     private Profesor seleccionarProfesor() {
         List<Profesor> lista = profesorController.findAll();
         if (lista == null || lista.isEmpty()) {
-            System.out.println("No hay profesores registrados.");
+            System.out.println(RED + "No hay profesores registrados." + RESET);
+            pausa();
             return null;
         }
-        System.out.println("\n--- Seleccione Profesor ---");
+
+        System.out.println("\n" + CYAN + "PROFESORES DISPONIBLES:" + RESET);
         for (int i = 0; i < lista.size(); i++) {
-            System.out.println((i + 1) + ". " + lista.get(i).getDni() + " | " + lista.get(i).getApellido() + " " + lista.get(i).getNombre());
+            Profesor p = lista.get(i);
+            System.out.println((i + 1) + ". " + p.getApellido() + ", " + p.getNombre());
         }
-        int op = seleccionarDeLista(lista.size());
+
+        int op = leerEnteroEnRango(1, lista.size());
         return lista.get(op - 1);
     }
 
     private Cuatrimestre seleccionarCuatrimestre(Materia materia) {
         List<Cuatrimestre> lista = cuatrimestreController.findAll();
         if (lista == null || lista.isEmpty()) {
-            System.out.println("No hay cuatrimestres registrados.");
+            System.out.println(RED + "No hay cuatrimestres registrados." + RESET);
+            pausa();
             return null;
         }
 
@@ -289,57 +311,55 @@ public class ComisionView {
 
         for (Cuatrimestre c : lista) {
             if (c.getNumero().equals(cuatrimestreMateria)) {
-                System.out.println("\n📌 Cuatrimestre asignado automáticamente: " +
-                        c.getNumero() + "° - Año: " + c.getAnio());
+                System.out.println("\n" + GREEN + "✓ Cuatrimestre asignado: " + c.getNumero() + "° - Año " + c.getAnio() + RESET);
                 return c;
             }
         }
 
-        System.out.println("Error: No hay cuatrimestre registrado para el " +
-                cuatrimestreMateria + "° cuatrimestre.");
+        System.out.println(RED + "Error: No hay cuatrimestre para el " + cuatrimestreMateria + "° cuatrimestre." + RESET);
+        pausa();
         return null;
     }
 
-    private int seleccionarDeLista(int max) {
-        int op;
-        do {
-            System.out.print("Seleccione opción (1-" + max + "): ");
-            op = leerEntero();
-        } while (op < 1 || op > max);
-        return op;
-    }
-
     private void eliminarComision() {
-        System.out.print("\nIngrese el código de la comisión a eliminar: ");
-        String codigo = scanner.nextLine().trim();
-        ComisionMateria c = comisionController.findByCode(codigo);
+        System.out.println("\n" + BLUE + BOLD + "ELIMINAR COMISIÓN" + RESET);
+        System.out.println("==================");
+
+        ComisionMateria c = buscarComisionPorCodigo();
         if (c == null) {
-            System.out.println("Comisión no encontrada.");
+            pausa();
             return;
         }
+
         mostrarComision(c);
-        if (confirmarAccion("¿Confirmar eliminación?")) {
+
+        if (confirmarAccion(RED + "¿Está seguro de eliminar esta comisión?" + RESET)) {
             comisionController.deleteComision(c);
-            System.out.println("Comisión eliminada.");
-        } else {
-            System.out.println("Eliminación cancelada.");
+            System.out.println(GREEN + "✓ Comisión eliminada correctamente." + RESET);
         }
+        pausa();
     }
 
     private void actualizarComision() {
-        System.out.println("\n--- Actualizar Comisión ---");
+        System.out.println("\n" + BLUE + BOLD + "ACTUALIZAR COMISIÓN" + RESET);
+        System.out.println("====================");
+
         ComisionMateria comision = buscarComisionPorCodigo();
-        if (comision == null) return;
+        if (comision == null) {
+            pausa();
+            return;
+        }
 
         boolean continuar = true;
         while (continuar) {
+            System.out.println("\n" + CYAN + "OPCIONES DE ACTUALIZACIÓN:" + RESET);
             System.out.println("1. Alumnos inscriptos");
             System.out.println("2. Exámenes");
-            System.out.println("3. Eliminar una asistencia");
+            System.out.println("3. Eliminar asistencia");
             System.out.println("4. Cambiar profesor");
             System.out.println("5. Modificar horarios");
             System.out.println("6. Ver comisión");
-            System.out.println("0. Salir de actualización");
+            System.out.println(YELLOW + "0. Volver" + RESET);
             System.out.print("Opción: ");
 
             int opcion = leerEntero();
@@ -352,89 +372,89 @@ public class ComisionView {
                 case 5 -> modificarHorarios(comision);
                 case 6 -> mostrarComision(comision);
                 case 0 -> continuar = false;
-                default -> System.out.println("Opción inválida.");
+                default -> System.out.println(RED + "Opción no válida." + RESET);
             }
         }
     }
 
     private void cambiarProfesor(ComisionMateria comision) {
-        System.out.println("\n--- Cambiar Profesor ---");
-        List<Profesor> profesores = this.profesorController.findAll();
-        if(profesores.isEmpty()){
-            System.out.println("No hay profesores registrados en el sistema.");
+        List<Profesor> profesores = profesorController.findAll();
+        if (profesores.isEmpty()) {
+            System.out.println(RED + "No hay profesores registrados." + RESET);
             return;
         }
-        System.out.println("Profesores disponibles:");
+
+        System.out.println("\n" + CYAN + "PROFESORES DISPONIBLES:" + RESET);
         for (int i = 0; i < profesores.size(); i++) {
             Profesor p = profesores.get(i);
             System.out.println((i + 1) + ". " + p.getApellido() + ", " + p.getNombre());
         }
-        System.out.print("Seleccione un profesor: ");
-        int index = leerEntero() - 1;
-        if (index < 0 || index >= profesores.size()) {
-            System.out.println("Opción inválida.");
-            return;
+
+        System.out.print("Seleccione (0 para cancelar): ");
+        int seleccion = leerEntero();
+
+        if (seleccion > 0 && seleccion <= profesores.size()) {
+            comision.setProfesor(profesores.get(seleccion - 1));
+            comisionController.updateComision(comision);
+            System.out.println(GREEN + "✓ Profesor actualizado." + RESET);
         }
-        comision.setProfesor(profesores.get(index));
-        comisionController.updateComision(comision);
-        System.out.println("Profesor actualizado correctamente.");
     }
 
     private void modificarHorarios(ComisionMateria comision) {
         boolean seguir = true;
         while (seguir) {
-            System.out.println("\n--- Modificar Horarios ---");
+            System.out.println("\n" + CYAN + "GESTIÓN DE HORARIOS:" + RESET);
             System.out.println("1. Agregar horario");
             System.out.println("2. Eliminar horario");
-            System.out.println("0. Volver");
+            System.out.println(YELLOW + "0. Volver" + RESET);
             System.out.print("Opción: ");
+
             int opcion = leerEntero();
+
             switch (opcion) {
-                case 1 -> agregarHorarioAComision(comision);
-                case 2 -> eliminarHorarioDeComision(comision);
+                case 1 -> agregarHorario(comision);
+                case 2 -> eliminarHorario(comision);
                 case 0 -> seguir = false;
-                default -> System.out.println("Opción inválida.");
+                default -> System.out.println(RED + "Opción no válida." + RESET);
             }
         }
     }
 
-    private Horario crearHorario() {
-        System.out.println("\n--- Crear Horario ---");
-        System.out.println("Seleccione el día:");
+    private void agregarHorario(ComisionMateria comision) {
+        System.out.println("\n" + CYAN + "NUEVO HORARIO:" + RESET);
+
+        System.out.println("Días:");
         Dia[] dias = Dia.values();
         for (int i = 0; i < dias.length; i++) {
             System.out.println((i + 1) + ". " + dias[i]);
         }
-        int opcionDia = leerEntero() - 1;
-        if (opcionDia < 0 || opcionDia >= dias.length) {
-            System.out.println("Día inválido.");
-            return null;
-        }
-        Dia dia = dias[opcionDia];
+        System.out.print("Seleccione día: ");
+        int diaIdx = leerEnteroEnRango(1, dias.length) - 1;
+        Dia dia = dias[diaIdx];
 
-        System.out.print("Ingrese hora de inicio (HH:mm): ");
-        String horaInicioStr = leerString();
+        System.out.print("Hora inicio (HH:mm): ");
+        String horaInicioStr = scanner.nextLine();
         LocalTime inicio;
         try {
             inicio = LocalTime.parse(horaInicioStr);
         } catch (Exception e) {
-            System.out.println("Formato de hora inválido. Use HH:mm (ej. 14:30)");
-            return null;
+            System.out.println(RED + "Formato de hora inválido. Use HH:mm" + RESET);
+            return;
         }
 
-        System.out.print("Ingrese hora de fin (HH:mm): ");
-        String horaFinStr = leerString();
+        System.out.print("Hora fin (HH:mm): ");
+        String horaFinStr = scanner.nextLine();
         LocalTime fin;
         try {
             fin = LocalTime.parse(horaFinStr);
         } catch (Exception e) {
-            System.out.println("Formato de hora inválido. Use HH:mm (ej. 16:30)");
-            return null;
+            System.out.println(RED + "Formato de hora inválido. Use HH:mm" + RESET);
+            return;
         }
 
         if (!fin.isAfter(inicio)) {
-            System.out.println("La hora de fin debe ser posterior a la de inicio.");
-            return null;
+            System.out.println(RED + "La hora fin debe ser posterior a inicio." + RESET);
+            return;
         }
 
         Modulo modulo = new Modulo();
@@ -447,190 +467,193 @@ public class ComisionView {
         horario.setModulo(modulo);
         horario.setDisponible(true);
 
-        System.out.println("Horario creado: " + dia + " " + inicio + " - " + fin);
-        return horario;
+        comision.getHorarios().add(horario);
+        comisionController.updateComision(comision);
+        System.out.println(GREEN + "✓ Horario agregado." + RESET);
     }
 
-    private void agregarHorarioAComision(ComisionMateria comision) {
-        System.out.println("\n--- Agregar Horario ---");
-        Horario nuevo = crearHorario();
-        if (nuevo != null) {
-            comision.getHorarios().add(nuevo);
-            comisionController.updateComision(comision);
-            System.out.println("Horario agregado correctamente.");
-        }
-    }
-
-    private void eliminarHorarioDeComision(ComisionMateria comision) {
+    private void eliminarHorario(ComisionMateria comision) {
         List<Horario> horarios = comision.getHorarios();
         if (horarios.isEmpty()) {
-            System.out.println("La comisión no tiene horarios.");
+            System.out.println(YELLOW + "No hay horarios para eliminar." + RESET);
             return;
         }
-        System.out.println("\n--- Horarios actuales ---");
+
+        System.out.println("\n" + CYAN + "HORARIOS ACTUALES:" + RESET);
         for (int i = 0; i < horarios.size(); i++) {
             Horario h = horarios.get(i);
-            System.out.println((i + 1) + ". " + h.getDia() + " | De: " +
-                    h.getModulo().getInicio() + " a " + h.getModulo().getFin());
+            System.out.println((i + 1) + ". " + h.getDia() + " " + h.getModulo().getInicio() + " - " + h.getModulo().getFin());
         }
-        System.out.print("Seleccione un horario para eliminar: ");
-        int index = leerEntero() - 1;
-        if (index < 0 || index >= horarios.size()) {
-            System.out.println("Índice inválido.");
-            return;
+
+        System.out.print("Seleccione horario a eliminar (0 para cancelar): ");
+        int seleccion = leerEntero();
+
+        if (seleccion > 0 && seleccion <= horarios.size()) {
+            horarios.remove(seleccion - 1);
+            comisionController.updateComision(comision);
+            System.out.println(GREEN + "✓ Horario eliminado." + RESET);
         }
-        horarios.remove(index);
-        comisionController.updateComision(comision);
-        System.out.println("Horario eliminado correctamente.");
     }
 
     private void actualizarAlumnos(ComisionMateria comision) {
         gestionarAlumnosInscriptos(comision.getAlumnosInscriptos(), comision);
         comisionController.updateComision(comision);
-        System.out.println("Actualización de alumnos completada.");
+        System.out.println(GREEN + "✓ Actualización de alumnos completada." + RESET);
     }
 
     private void actualizarExamenes(ComisionMateria comision) {
         gestionExamenes(comision.getExamenes(), comision);
         comisionController.updateComision(comision);
-        System.out.println("Actualización de exámenes completada.");
+        System.out.println(GREEN + "✓ Actualización de exámenes completada." + RESET);
     }
 
     private void eliminarAsistencia(ComisionMateria comision) {
         List<Asistencia> asistencias = comision.getAsistencias();
         if (asistencias == null || asistencias.isEmpty()) {
-            System.out.println("No hay asistencias registradas en esta comisión.");
+            System.out.println(YELLOW + "No hay asistencias registradas." + RESET);
             return;
         }
-        System.out.println("\n--- Asistencias registradas ---");
+
+        System.out.println("\n" + CYAN + "ASISTENCIAS REGISTRADAS:" + RESET);
         for (int i = 0; i < asistencias.size(); i++) {
-            Asistencia as = asistencias.get(i);
-            Alumno al = as.getAlumno();
+            Asistencia a = asistencias.get(i);
+            Alumno al = a.getAlumno();
             System.out.println((i + 1) + ". " + al.getApellido() + ", " + al.getNombre() +
-                    " | DNI: " + al.getDni() + " | Fecha: " + as.getFecha());
+                    " | Fecha: " + a.getFecha() + " | " + (a.isPresente() ? "Presente" : "Ausente"));
         }
-        System.out.print("\nSeleccione número de asistencia a eliminar: ");
-        int index = leerEntero() - 1;
-        if (index < 0 || index >= asistencias.size()) {
-            System.out.println("Índice inválido.");
-            return;
+
+        System.out.print("Seleccione asistencia a eliminar (0 para cancelar): ");
+        int seleccion = leerEntero();
+
+        if (seleccion > 0 && seleccion <= asistencias.size()) {
+            asistencias.remove(seleccion - 1);
+            comisionController.updateComision(comision);
+            System.out.println(GREEN + "✓ Asistencia eliminada." + RESET);
         }
-        Asistencia eliminada = asistencias.remove(index);
-        comisionController.updateComision(comision);
-        System.out.println("Asistencia del alumno " + eliminada.getAlumno().getApellido() +
-                " " + eliminada.getAlumno().getNombre() + " eliminada correctamente.");
     }
 
     private void registrarAsistencias() {
-        System.out.println("\n--- Registrar Asistencia ---");
-        System.out.print("Ingrese DNI del alumno: ");
-        String dni = scanner.nextLine().trim();
-        System.out.print("Ingrese código de la comisión: ");
-        String codigoCom = scanner.nextLine().trim();
+        System.out.println("\n" + BLUE + BOLD + "REGISTRAR ASISTENCIA" + RESET);
+        System.out.println("=====================");
 
-        if (!comisionController.puedeRegistrarAsistencia(codigoCom, dni)) {
-            System.out.println("No se puede registrar la asistencia. Verifique:");
-            System.out.println("- Que el alumno esté inscrito en la comisión");
-            System.out.println("- Que no tenga asistencia registrada hoy");
+        System.out.print("DNI del alumno: ");
+        String dni = scanner.nextLine().trim();
+
+        System.out.print("Código de comisión: ");
+        String codigo = scanner.nextLine().trim();
+
+        if (!comisionController.puedeRegistrarAsistencia(codigo, dni)) {
+            System.out.println(RED + "No se puede registrar la asistencia. Verifique:" + RESET);
+            System.out.println("- Que el alumno esté inscrito");
+            System.out.println("- Que no tenga asistencia hoy");
             System.out.println("- Que haya clase en este horario");
+            pausa();
             return;
         }
+
+        System.out.println("\n" + CYAN + "TIPO DE ASISTENCIA:" + RESET);
+        System.out.println("1. Presente");
+        System.out.println("2. Ausente");
+        System.out.print("Seleccione: ");
+
+        int tipo = leerEnteroEnRango(1, 2);
 
         Asistencia asistencia = new Asistencia();
         asistencia.setFecha(LocalDate.now());
+        asistencia.setPresente(tipo == 1);
         asistencia.setActivo(true);
 
-        System.out.println("\nSeleccione asistencia:");
-        System.out.println("1. Presente");
-        System.out.println("2. Ausente");
-        int opcion;
-        do {
-            opcion = leerEntero();
-        } while (opcion < 1 || opcion > 2);
-        asistencia.setPresente(opcion == 1);
-
-        String resultado = comisionController.registrarAsistencia(codigoCom, dni, asistencia);
+        String resultado = comisionController.registrarAsistencia(codigo, dni, asistencia);
         if (resultado.startsWith("SUCCESS")) {
-            System.out.println("✓ " + resultado.substring(8));
+            System.out.println(GREEN + "✓ Asistencia registrada." + RESET);
         } else {
-            System.out.println("✗ " + resultado.substring(6));
+            System.out.println(RED + "✗ " + resultado.substring(6) + RESET);
         }
+        pausa();
     }
 
     private void listarAlumnosInscriptos(ComisionMateria comision) {
-        System.out.println("\n--- Alumnos inscriptos a la comisión " + comision.getCodigo() + " ---");
+        System.out.println("\n" + BLUE + BOLD + "ALUMNOS INSCRIPTOS - " + comision.getCodigo() + RESET);
+        System.out.println("================================");
+
         List<AlumnoInscriptoMateria> lista = comision.getAlumnosInscriptos();
         if (lista == null || lista.isEmpty()) {
             System.out.println("No hay alumnos inscriptos.");
-            return;
+        } else {
+            for (int i = 0; i < lista.size(); i++) {
+                Alumno a = lista.get(i).getAlumnoInscriptoCarrera().getAlumno();
+                System.out.println((i + 1) + ". " + a.getApellido() + ", " + a.getNombre() + " (DNI: " + a.getDni() + ")");
+            }
         }
-        for (AlumnoInscriptoMateria aim : lista) {
-            Alumno alumno = aim.getAlumnoInscriptoCarrera().getAlumno();
-            System.out.println("- " + alumno.getApellido() + ", " + alumno.getNombre() +
-                    " | DNI: " + alumno.getDni());
-        }
+        pausa();
     }
 
     private void listarExamenes(ComisionMateria comision) {
-        System.out.println("\n--- Exámenes de la comisión " + comision.getCodigo() + " ---");
+        System.out.println("\n" + BLUE + BOLD + "EXÁMENES - " + comision.getCodigo() + RESET);
+        System.out.println("======================");
+
         List<Examen> examenes = comision.getExamenes();
         if (examenes == null || examenes.isEmpty()) {
             System.out.println("No hay exámenes registrados.");
-            return;
+        } else {
+            for (Examen e : examenes) {
+                String estado = e.isActivo() ? "ACTIVO" : "INACTIVO";
+                System.out.println("  • " + e.getAlumno().getApellido() + ": " + e.getTipo() +
+                        " - Nota: " + e.getNota() + " - Fecha: " + e.getFecha() + " (" + estado + ")");
+            }
         }
-        for (Examen ex : examenes) {
-            System.out.println("- Fecha: " + ex.getFecha() + " | Tipo: " + ex.getTipo() +
-                    " | Nota: " + ex.getNota() +
-                    " | Alumno: " + ex.getAlumno().getApellido() +
-                    " | Estado: " + (ex.isActivo() ? "ACTIVO" : "INACTIVO"));
-        }
+        pausa();
     }
 
     private void listarAsistencias(ComisionMateria comision) {
-        System.out.println("\n--- Asistencias registradas en la comisión " + comision.getCodigo() + " ---");
+        System.out.println("\n" + BLUE + BOLD + "ASISTENCIAS - " + comision.getCodigo() + RESET);
+        System.out.println("========================");
+
         List<Asistencia> asistencias = comision.getAsistencias();
         if (asistencias == null || asistencias.isEmpty()) {
             System.out.println("No hay asistencias registradas.");
-            return;
+        } else {
+            for (Asistencia a : asistencias) {
+                String presente = a.isPresente() ? GREEN + "Presente" + RESET : RED + "Ausente" + RESET;
+                System.out.println("  • " + a.getAlumno().getApellido() + " - " + a.getFecha() + " - " + presente);
+            }
         }
-        for (Asistencia as : asistencias) {
-            Alumno alumno = as.getAlumno();
-            System.out.println("- " + alumno.getApellido() + ", " + alumno.getNombre() +
-                    " | DNI: " + alumno.getDni() + " | Fecha: " + as.getFecha() +
-                    " | Presente: " + (as.isPresente() ? "Sí" : "No"));
-        }
+        pausa();
     }
 
     private void listarHorarios(ComisionMateria comision) {
-        System.out.println("\n--- Horarios registrados en la comisión " + comision.getCodigo() + " ---");
+        System.out.println("\n" + BLUE + BOLD + "HORARIOS - " + comision.getCodigo() + RESET);
+        System.out.println("======================");
+
         List<Horario> horarios = comision.getHorarios();
         if (horarios == null || horarios.isEmpty()) {
             System.out.println("No hay horarios registrados.");
-            return;
+        } else {
+            for (Horario h : horarios) {
+                System.out.println("  • " + h.getDia() + " " + h.getModulo().getInicio() + " - " + h.getModulo().getFin());
+            }
         }
-        for (Horario h : horarios) {
-            System.out.println(" - " + h.getDia() + " | De: " +
-                    h.getModulo().getInicio() + " a " + h.getModulo().getFin());
-        }
+        pausa();
     }
 
     private void gestionarAlumnosInscriptos(List<AlumnoInscriptoMateria> listaInscriptos, ComisionMateria comision) {
         boolean gestionando = true;
+
         while (gestionando) {
-            System.out.println("\n--- Gestor de Alumnos Inscriptos ---");
-            System.out.println("1. Inscribir un alumno");
-            System.out.println("2. Dar de baja un alumno");
+            System.out.println("\n" + CYAN + "GESTIÓN DE ALUMNOS:" + RESET);
+            System.out.println("1. Inscribir alumno");
+            System.out.println("2. Dar de baja alumno");
             System.out.println("3. Ver alumnos inscriptos");
-            System.out.println("4. Terminar gestión");
+            System.out.println(YELLOW + "4. Terminar" + RESET);
             System.out.print("Opción: ");
-            String opcion = scanner.nextLine().trim();
+
+            int opcion = leerEnteroEnRango(1, 4);
 
             switch (opcion) {
-                case "1" -> inscribirAlumno(listaInscriptos, comision);
-                case "2" -> darDeBajaAlumno(listaInscriptos);
-                case "3" -> verAlumnosInscriptos(listaInscriptos);
-                case "4" -> gestionando = false;
-                default -> System.out.println("Opción inválida.");
+                case 1 -> inscribirAlumno(listaInscriptos, comision);
+                case 2 -> darDeBajaAlumno(listaInscriptos);
+                case 3 -> verAlumnosInscriptos(listaInscriptos);
+                case 4 -> gestionando = false;
             }
         }
     }
@@ -638,131 +661,127 @@ public class ComisionView {
     private void inscribirAlumno(List<AlumnoInscriptoMateria> listaInscriptos, ComisionMateria comision) {
         List<AlumnoInscriptoCarrera> inscriptosCarrera = alumnoInscriptoCarreraController.findAll();
         if (inscriptosCarrera == null || inscriptosCarrera.isEmpty()) {
-            System.out.println("No hay alumnos inscriptos a la(s) carrera(s).");
+            System.out.println(RED + "No hay alumnos inscriptos a carreras." + RESET);
             return;
         }
 
-        System.out.println("\nAlumnos inscriptos en carreras:");
-        boolean hayAlumnos = false;
+        System.out.println("\n" + CYAN + "ALUMNOS DISPONIBLES:" + RESET);
+        List<AlumnoInscriptoCarrera> disponibles = new ArrayList<>();
+
         for (AlumnoInscriptoCarrera aic : inscriptosCarrera) {
             if (aic.getCarrera().getNombre().equals(comision.getCarrera().getNombre())) {
-                System.out.println("DNI: " + aic.getAlumno().getDni() + " | " +
-                        aic.getAlumno().getApellido() + " " + aic.getAlumno().getNombre());
-                hayAlumnos = true;
+                disponibles.add(aic);
+                System.out.println(disponibles.size() + ". " + aic.getAlumno().getApellido() + ", " +
+                        aic.getAlumno().getNombre() + " (DNI: " + aic.getAlumno().getDni() + ")");
             }
         }
 
-        if (!hayAlumnos) {
-            System.out.println("No hay alumnos inscriptos en la carrera " + comision.getCarrera().getNombre());
+        if (disponibles.isEmpty()) {
+            System.out.println(YELLOW + "No hay alumnos disponibles para esta carrera." + RESET);
             return;
         }
 
-        System.out.print("\nIngrese DNI del alumno a inscribir: ");
-        String dni = scanner.nextLine().trim();
+        System.out.print("Seleccione (0 para cancelar): ");
+        int seleccion = leerEntero();
 
-        AlumnoInscriptoCarrera aicSeleccionado = null;
-        for (AlumnoInscriptoCarrera a : inscriptosCarrera) {
-            if (a.getAlumno().getDni().equals(dni) &&
-                    a.getCarrera().getNombre().equals(comision.getCarrera().getNombre())) {
-                aicSeleccionado = a;
-                break;
-            }
-        }
+        if (seleccion > 0 && seleccion <= disponibles.size()) {
+            AlumnoInscriptoCarrera aic = disponibles.get(seleccion - 1);
 
-        if (aicSeleccionado == null) {
-            System.out.println("No existe alumno inscripto a esa carrera con ese DNI.");
-            return;
-        }
+            // Verificar si ya está inscripto
+            boolean yaInscripto = listaInscriptos.stream()
+                    .anyMatch(a -> a.getAlumnoInscriptoCarrera().getAlumno().getDni()
+                            .equals(aic.getAlumno().getDni()));
 
-        for (AlumnoInscriptoMateria a : listaInscriptos) {
-            if (a.getAlumnoInscriptoCarrera().getAlumno().getDni().equals(dni)) {
-                System.out.println("El alumno ya está inscripto en esta comisión.");
+            if (yaInscripto) {
+                System.out.println(RED + "El alumno ya está inscripto en esta comisión." + RESET);
                 return;
             }
-        }
 
-        AlumnoInscriptoMateria aim = new AlumnoInscriptoMateria();
-        aim.setAlumnoInscriptoCarrera(aicSeleccionado);
-        aim.setExamenes(new ArrayList<>());
-        aim.setEstado(Estado.REGULAR);
-        aim.setActivo(true);
+            AlumnoInscriptoMateria aim = new AlumnoInscriptoMateria();
+            aim.setAlumnoInscriptoCarrera(aic);
+            aim.setExamenes(new ArrayList<>());
+            aim.setEstado(Estado.REGULAR);
+            aim.setActivo(true);
 
-        System.out.println("\nVista previa:");
-        System.out.println("Alumno: " + aicSeleccionado.getAlumno().getApellido() + " " +
-                aicSeleccionado.getAlumno().getNombre());
-        System.out.println("DNI: " + aicSeleccionado.getAlumno().getDni());
+            System.out.println("\n" + CYAN + "VISTA PREVIA:" + RESET);
+            System.out.println("  Alumno: " + aic.getAlumno().getApellido() + ", " + aic.getAlumno().getNombre());
+            System.out.println("  DNI: " + aic.getAlumno().getDni());
 
-        if (confirmarAccion("¿Confirmar inscripción?")) {
-            String resultado = comisionController.inscribirAlumno(comision.getCodigo(), dni, aim);
-            if (resultado.startsWith("SUCCESS")) {
-                System.out.println("✓ " + resultado.substring(8));
-            } else {
-                System.out.println("✗ " + resultado.substring(6));
+            if (confirmarAccion("¿Confirmar inscripción?")) {
+                String resultado = comisionController.inscribirAlumno(comision.getCodigo(),
+                        aic.getAlumno().getDni(), aim);
+                if (resultado.startsWith("SUCCESS")) {
+                    System.out.println(GREEN + "✓ Alumno inscrito." + RESET);
+                    listaInscriptos.add(aim);
+                } else {
+                    System.out.println(RED + "✗ " + resultado.substring(6) + RESET);
+                }
             }
         }
     }
 
     private void darDeBajaAlumno(List<AlumnoInscriptoMateria> listaInscriptos) {
         if (listaInscriptos.isEmpty()) {
-            System.out.println("No hay alumnos inscriptos en la comisión.");
+            System.out.println(YELLOW + "No hay alumnos inscriptos." + RESET);
             return;
         }
-        System.out.println("\nAlumnos inscriptos:");
+
+        System.out.println("\n" + CYAN + "ALUMNOS INSCRIPTOS:" + RESET);
         for (int i = 0; i < listaInscriptos.size(); i++) {
             Alumno a = listaInscriptos.get(i).getAlumnoInscriptoCarrera().getAlumno();
-            System.out.println((i + 1) + ". " + a.getApellido() + ", " + a.getNombre() +
-                    " | DNI: " + a.getDni());
+            System.out.println((i + 1) + ". " + a.getApellido() + ", " + a.getNombre());
         }
-        System.out.print("\nSeleccione número del alumno a dar de baja: ");
-        int index = leerEntero() - 1;
-        if (index < 0 || index >= listaInscriptos.size()) {
-            System.out.println("Índice inválido.");
-            return;
+
+        System.out.print("Seleccione (0 para cancelar): ");
+        int seleccion = leerEntero();
+
+        if (seleccion > 0 && seleccion <= listaInscriptos.size()) {
+            AlumnoInscriptoMateria eliminado = listaInscriptos.remove(seleccion - 1);
+            eliminado.setActivo(false);
+            System.out.println(GREEN + "✓ Alumno dado de baja." + RESET);
         }
-        AlumnoInscriptoMateria eliminado = listaInscriptos.remove(index);
-        eliminado.setActivo(false);
-        System.out.println("Alumno dado de baja.");
     }
 
     private void verAlumnosInscriptos(List<AlumnoInscriptoMateria> listaInscriptos) {
-        System.out.println("\nAlumnos inscriptos:");
         if (listaInscriptos.isEmpty()) {
-            System.out.println("No hay alumnos inscriptos.");
+            System.out.println(YELLOW + "No hay alumnos inscriptos." + RESET);
         } else {
+            System.out.println("\n" + CYAN + "ALUMNOS INSCRIPTOS:" + RESET);
             for (AlumnoInscriptoMateria aim : listaInscriptos) {
                 Alumno a = aim.getAlumnoInscriptoCarrera().getAlumno();
-                System.out.println("- " + a.getApellido() + ", " + a.getNombre() +
-                        " | DNI: " + a.getDni());
+                System.out.println("  • " + a.getApellido() + ", " + a.getNombre() + " (DNI: " + a.getDni() + ")");
             }
         }
     }
 
     private void gestionExamenes(List<Examen> examenes, ComisionMateria comision) {
         boolean gestionando = true;
+
         while (gestionando) {
-            System.out.println("\n--- Gestor de Exámenes ---");
+            System.out.println("\n" + CYAN + "GESTIÓN DE EXÁMENES:" + RESET);
             System.out.println("1. Crear examen");
             System.out.println("2. Cambiar nota");
             System.out.println("3. Eliminar examen");
             System.out.println("4. Ver exámenes");
-            System.out.println("0. Terminar");
+            System.out.println(YELLOW + "0. Terminar" + RESET);
             System.out.print("Opción: ");
-            String opcion = scanner.nextLine().trim();
+
+            int opcion = leerEntero();
 
             switch (opcion) {
-                case "1" -> crearExamen(examenes, comision);
-                case "2" -> cambiarNota(examenes);
-                case "3" -> eliminarExamen(examenes);
-                case "4" -> verExamenes(examenes);
-                case "0" -> gestionando = false;
-                default -> System.out.println("Opción inválida.");
+                case 1 -> crearExamen(examenes, comision);
+                case 2 -> cambiarNota(examenes);
+                case 3 -> eliminarExamen(examenes);
+                case 4 -> verExamenes(examenes);
+                case 0 -> gestionando = false;
+                default -> System.out.println(RED + "Opción no válida." + RESET);
             }
         }
     }
 
     private void crearExamen(List<Examen> examenes, ComisionMateria comision) {
         if (comision.getAlumnosInscriptos().isEmpty()) {
-            System.out.println("No hay alumnos inscriptos en la comisión.");
+            System.out.println(RED + "No hay alumnos inscriptos en la comisión." + RESET);
             return;
         }
 
@@ -771,154 +790,143 @@ public class ComisionView {
         int nextId = (todos == null ? 0 : todos.size()) + 1;
         nuevo.setId(String.valueOf(nextId));
 
-        System.out.println("\nTipos de examen:");
+        System.out.println("\n" + CYAN + "TIPOS DE EXAMEN:" + RESET);
         Tipo[] tipos = Tipo.values();
         for (int i = 0; i < tipos.length; i++) {
             System.out.println((i + 1) + ". " + tipos[i]);
         }
-        System.out.print("Seleccione tipo: ");
-        int tipoIdx = leerEntero() - 1;
-        if (tipoIdx < 0 || tipoIdx >= tipos.length) {
-            System.out.println("Tipo inválido.");
-            return;
-        }
-        Tipo tipoSeleccionado = tipos[tipoIdx];
-        nuevo.setTipo(tipoSeleccionado);
+        System.out.print("Seleccione: ");
+        int tipoIdx = leerEnteroEnRango(1, tipos.length) - 1;
+        Tipo tipo = tipos[tipoIdx];
+        nuevo.setTipo(tipo);
 
         System.out.print("Nota (0-10): ");
-        double nota = leerEntero();
+        double nota = scanner.nextDouble();
+        scanner.nextLine();
         if (nota < 0 || nota > 10) {
-            System.out.println("Nota inválida.");
+            System.out.println(RED + "Nota inválida." + RESET);
             return;
         }
         nuevo.setNota(nota);
 
         System.out.print("Fecha (AAAA-MM-DD): ");
         try {
-            nuevo.setFecha(LocalDate.parse(scanner.nextLine().trim()));
+            nuevo.setFecha(LocalDate.parse(scanner.nextLine()));
         } catch (Exception e) {
-            System.out.println("Fecha inválida.");
+            System.out.println(RED + "Fecha inválida." + RESET);
             return;
         }
 
-        System.out.println("\nAlumnos inscriptos:");
-        for (int i = 0; i < comision.getAlumnosInscriptos().size(); i++) {
-            Alumno a = comision.getAlumnosInscriptos().get(i).getAlumnoInscriptoCarrera().getAlumno();
-            System.out.println((i + 1) + ". " + a.getApellido() + ", " + a.getNombre() +
-                    " | DNI: " + a.getDni());
+        System.out.println("\n" + CYAN + "ALUMNOS INSCRIPTOS:" + RESET);
+        List<AlumnoInscriptoMateria> alumnos = comision.getAlumnosInscriptos();
+        for (int i = 0; i < alumnos.size(); i++) {
+            Alumno a = alumnos.get(i).getAlumnoInscriptoCarrera().getAlumno();
+            System.out.println((i + 1) + ". " + a.getApellido() + ", " + a.getNombre());
         }
+
         System.out.print("Seleccione alumno: ");
-        int alumnoIdx = leerEntero() - 1;
-        if (alumnoIdx < 0 || alumnoIdx >= comision.getAlumnosInscriptos().size()) {
-            System.out.println("Alumno inválido.");
-            return;
-        }
+        int alumnoIdx = leerEnteroEnRango(1, alumnos.size()) - 1;
 
-        AlumnoInscriptoMateria aim = comision.getAlumnosInscriptos().get(alumnoIdx);
+        AlumnoInscriptoMateria aim = alumnos.get(alumnoIdx);
         nuevo.setAlumno(aim.getAlumnoInscriptoCarrera().getAlumno());
         nuevo.setMateria(comision.getMateria());
 
-        if (tipoSeleccionado == Tipo.FINAL) {
-            double porcentajeAsistencia = comisionController.calcularPorcentajeAsistencia(
-                    comision.getCodigo(),
-                    nuevo.getAlumno().getDni()
-            );
+        // Validar requisitos para examen final
+        if (tipo == Tipo.FINAL) {
+            double asistencia = comisionController.calcularPorcentajeAsistencia(
+                    comision.getCodigo(), nuevo.getAlumno().getDni());
+            boolean tieneParcial = comisionController.tieneParcialAprobado(
+                    comision.getCodigo(), nuevo.getAlumno().getDni());
 
-            boolean tieneParcialAprobado = comisionController.tieneParcialAprobado(
-                    comision.getCodigo(),
-                    nuevo.getAlumno().getDni()
-            );
+            System.out.println("\n" + YELLOW + "REQUISITOS:" + RESET);
+            System.out.printf("  Asistencia: %.1f%% (mínimo 70%%) %s%n",
+                    asistencia, asistencia >= 70 ? GREEN + "✅" + RESET : RED + "❌" + RESET);
+            System.out.println("  Parcial aprobado: " + (tieneParcial ? GREEN + "✅" + RESET : RED + "❌" + RESET));
 
-            System.out.println("\n📊 VERIFICACIÓN DE REQUISITOS PARA EXAMEN FINAL:");
-            System.out.printf("   Asistencia: %.1f%% (mínimo 70%%) %s%n",
-                    porcentajeAsistencia,
-                    porcentajeAsistencia >= 70 ? "✅" : "❌");
-            System.out.println("   Parcial aprobado: " +
-                    (tieneParcialAprobado ? "✅ Sí" : "❌ No"));
-
-            if (porcentajeAsistencia < 70 || !tieneParcialAprobado) {
-                System.out.println("\n❌ El alumno NO cumple con los requisitos para rendir examen final.");
-                if (!confirmarAccion("¿Crear examen de todas formas?")) {
-                    System.out.println("Creación cancelada.");
+            if (asistencia < 70 || !tieneParcial) {
+                if (!confirmarAccion(RED + "¿Crear examen de todas formas?" + RESET)) {
                     return;
                 }
             }
         }
 
         if (confirmarAccion("¿Confirmar creación?")) {
-            String resultado = comisionController.crearExamenConValidaciones(
-                    comision.getCodigo(),
-                    nuevo
-            );
+            String resultado = comisionController.crearExamenConValidaciones(comision.getCodigo(), nuevo);
 
             if (resultado.startsWith("SUCCESS")) {
-                System.out.println("✓ " + resultado.substring(8));
+                System.out.println(GREEN + "✓ Examen creado." + RESET);
                 aim.getExamenes().add(nuevo);
                 examenes.add(nuevo);
             } else {
-                System.out.println("✗ " + resultado.substring(6));
+                System.out.println(RED + "✗ " + resultado.substring(6) + RESET);
             }
         }
     }
 
     private void cambiarNota(List<Examen> examenes) {
         if (examenes.isEmpty()) {
-            System.out.println("No hay exámenes.");
+            System.out.println(YELLOW + "No hay exámenes." + RESET);
             return;
         }
-        System.out.println("\nExámenes:");
+
+        System.out.println("\n" + CYAN + "EXÁMENES:" + RESET);
         for (int i = 0; i < examenes.size(); i++) {
             Examen e = examenes.get(i);
-            System.out.println((i + 1) + ". " + e.getAlumno().getApellido() +
-                    " | Nota: " + e.getNota());
+            System.out.println((i + 1) + ". " + e.getAlumno().getApellido() + " - Nota: " + e.getNota());
         }
-        System.out.print("Seleccione examen: ");
-        int idx = leerEntero() - 1;
-        if (idx < 0 || idx >= examenes.size()) {
-            System.out.println("Índice inválido.");
-            return;
+
+        System.out.print("Seleccione examen (0 para cancelar): ");
+        int seleccion = leerEntero();
+
+        if (seleccion > 0 && seleccion <= examenes.size()) {
+            System.out.print("Nueva nota: ");
+            double nuevaNota = scanner.nextDouble();
+            scanner.nextLine();
+
+            if (nuevaNota >= 0 && nuevaNota <= 10) {
+                examenes.get(seleccion - 1).setNota(nuevaNota);
+                System.out.println(GREEN + "✓ Nota actualizada." + RESET);
+            } else {
+                System.out.println(RED + "Nota inválida." + RESET);
+            }
         }
-        System.out.print("Nueva nota: ");
-        double nota = leerEntero();
-        if (nota < 0 || nota > 10) {
-            System.out.println("Nota inválida.");
-            return;
-        }
-        examenes.get(idx).setNota(nota);
-        System.out.println("Nota actualizada.");
     }
 
     private void eliminarExamen(List<Examen> examenes) {
         if (examenes.isEmpty()) {
-            System.out.println("No hay exámenes.");
+            System.out.println(YELLOW + "No hay exámenes." + RESET);
             return;
         }
-        System.out.println("\nExámenes:");
+
+        System.out.println("\n" + CYAN + "EXÁMENES:" + RESET);
         for (int i = 0; i < examenes.size(); i++) {
             Examen e = examenes.get(i);
-            System.out.println((i + 1) + ". " + e.getAlumno().getApellido());
+            System.out.println((i + 1) + ". " + e.getAlumno().getApellido() + " - " + e.getTipo());
         }
-        System.out.print("Seleccione examen a eliminar: ");
-        int idx = leerEntero() - 1;
-        if (idx < 0 || idx >= examenes.size()) {
-            System.out.println("Índice inválido.");
-            return;
+
+        System.out.print("Seleccione examen a eliminar (0 para cancelar): ");
+        int seleccion = leerEntero();
+
+        if (seleccion > 0 && seleccion <= examenes.size()) {
+            examenes.remove(seleccion - 1);
+            System.out.println(GREEN + "✓ Examen eliminado." + RESET);
         }
-        examenes.remove(idx);
-        System.out.println("Examen eliminado.");
     }
 
     private void verExamenes(List<Examen> examenes) {
-        System.out.println("\nExámenes:");
         if (examenes.isEmpty()) {
-            System.out.println("No hay exámenes.");
+            System.out.println(YELLOW + "No hay exámenes." + RESET);
         } else {
+            System.out.println("\n" + CYAN + "EXÁMENES:" + RESET);
             for (Examen e : examenes) {
-                System.out.println("- " + e.getAlumno().getApellido() + ", " +
-                        e.getAlumno().getNombre() + " | " +
-                        e.getTipo() + " | Nota: " + e.getNota() +
-                        " | Fecha: " + e.getFecha());
+                System.out.println("  • " + e.getAlumno().getApellido() + ", " + e.getAlumno().getNombre() +
+                        " | " + e.getTipo() + " | Nota: " + e.getNota() + " | Fecha: " + e.getFecha());
             }
         }
+    }
+
+    private void pausa() {
+        System.out.print("\n" + CYAN + "Presione ENTER para continuar..." + RESET);
+        scanner.nextLine();
     }
 }

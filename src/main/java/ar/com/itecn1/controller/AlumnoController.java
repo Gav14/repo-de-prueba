@@ -26,11 +26,18 @@ public class AlumnoController {
     }
 
     public void updateAlumno(Alumno alumno){
-        this.alumnoService.save(alumno);
+        this.alumnoService.update(alumno);
     }
 
     public void deleteAlumno(Alumno alumno){
         this.alumnoService.delete(alumno);
     }
 
+    public boolean validarDni(String dni) {
+        return alumnoService.validarFormatoDni(dni);
+    }
+
+    public boolean validarCampos(Alumno alumno) {
+        return alumnoService.validarCamposObligatorios(alumno);
+    }
 }

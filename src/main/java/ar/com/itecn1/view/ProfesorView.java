@@ -143,6 +143,8 @@ public class ProfesorView {
 
         Profesor profesor = profesorController.findByDni(dni);
 
+        Profesor profesor = profesorController.findByDni(dni);
+        
         if (profesor == null) {
             System.out.println(RED + "Profesor no encontrado." + RESET);
         } else {
@@ -159,6 +161,14 @@ public class ProfesorView {
         System.out.print("DNI: ");
         String dni = scanner.nextLine();
 
+        // ✅ VALIDACIÓN DE FORMATO (8 dígitos numéricos)
+        if (!profesorController.validarFormatoDni(dni)) {
+            System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine(); // Pausa para que el usuario vea el mensaje
+            return;             // Sale del método y vuelve al menú
+        }
+
         if (profesorController.findByDni(dni) != null) {
             System.out.println(RED + "Ese DNI ya está registrado." + RESET);
             pausa();
@@ -166,13 +176,13 @@ public class ProfesorView {
         }
 
         System.out.print("Nombre: ");
-        String nombre = scanner.nextLine();
+        String nombre = scanner.nextLine().trim();
         System.out.print("Apellido: ");
-        String apellido = scanner.nextLine();
+        String apellido = scanner.nextLine().trim();
         System.out.print("Teléfono: ");
-        String telefono = scanner.nextLine();
+        String telefono = scanner.nextLine().trim();
         System.out.print("Email: ");
-        String email = scanner.nextLine();
+        String email = scanner.nextLine().trim();
 
         Profesor profesor = new Profesor(dni, nombre, apellido, telefono, email);
 
@@ -195,8 +205,14 @@ public class ProfesorView {
         System.out.print("Ingrese el DNI: ");
         String dni = scanner.nextLine();
 
-        Profesor profesor = profesorController.findByDni(dni);
+        if (!profesorController.validarFormatoDni(dni)) {
+            System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
+            return;
+        }
 
+        Profesor profesor = profesorController.findByDni(dni);
         if (profesor == null) {
             System.out.println(RED + "Profesor no encontrado." + RESET);
             pausa();
@@ -209,16 +225,13 @@ public class ProfesorView {
         System.out.println("\n" + YELLOW + "NUEVOS DATOS (dejar en blanco para no cambiar):" + RESET);
 
         System.out.print("Nuevo nombre (" + profesor.getNombre() + "): ");
-        String nuevoNombre = scanner.nextLine();
-
+        String nuevoNombre = scanner.nextLine().trim();
         System.out.print("Nuevo apellido (" + profesor.getApellido() + "): ");
-        String nuevoApellido = scanner.nextLine();
-
+        String nuevoApellido = scanner.nextLine().trim();
         System.out.print("Nuevo teléfono (" + profesor.getTelefono() + "): ");
-        String nuevoTelefono = scanner.nextLine();
-
+        String nuevoTelefono = scanner.nextLine().trim();
         System.out.print("Nuevo email (" + profesor.getEmail() + "): ");
-        String nuevoEmail = scanner.nextLine();
+        String nuevoEmail = scanner.nextLine().trim();
 
         System.out.println("\n" + CYAN + "Vista previa:" + RESET);
         System.out.println("  Nombre: " + (nuevoNombre.isBlank() ? profesor.getNombre() : nuevoNombre) +
@@ -247,8 +260,14 @@ public class ProfesorView {
         System.out.print("Ingrese el DNI: ");
         String dni = scanner.nextLine();
 
-        Profesor profesor = profesorController.findByDni(dni);
+        if (!profesorController.validarFormatoDni(dni)) {
+            System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
+            return;
+        }
 
+        Profesor profesor = profesorController.findByDni(dni);
         if (profesor == null) {
             System.out.println(RED + "Profesor no encontrado." + RESET);
             pausa();

@@ -63,7 +63,6 @@ public class AlumnoView {
         System.out.println(YELLOW + "0. Volver" + RESET);
         System.out.print("\nSeleccione: ");
     }
-
     private void mostrarAlumno(Alumno alumno) {
         String estado = alumno.isActivo() ? GREEN + "ACTIVO" + RESET : RED + "INACTIVO" + RESET;
         System.out.printf("│ %-8s │ %-15s │ %-15s │ %-25s │ %-12s │ %-8s │%n",
@@ -138,7 +137,14 @@ public class AlumnoView {
         System.out.println("\n" + BLUE + BOLD + "BUSCAR ALUMNO" + RESET);
         System.out.println("==============");
         System.out.print("Ingrese el DNI: ");
-        String dni = scanner.nextLine();
+        String dni = scanner.nextLine().trim();
+
+        if (!alumnoController.validarDni(dni)) {
+            System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
+            return;
+        }
 
         Alumno alumno = alumnoController.findByDni(dni);
 
@@ -156,7 +162,14 @@ public class AlumnoView {
         System.out.println("=================");
 
         System.out.print("DNI: ");
-        String dni = scanner.nextLine();
+        String dni = scanner.nextLine().trim();
+
+        if (!alumnoController.validarDni(dni)) {
+            System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
+            return;
+        }
 
         if (alumnoController.findByDni(dni) != null) {
             System.out.println(RED + "Ese DNI ya está registrado." + RESET);
@@ -165,13 +178,16 @@ public class AlumnoView {
         }
 
         System.out.print("Nombre: ");
-        String nombre = scanner.nextLine();
+        String nombre = scanner.nextLine().trim();
+
         System.out.print("Apellido: ");
-        String apellido = scanner.nextLine();
+        String apellido = scanner.nextLine().trim();
+
         System.out.print("Teléfono: ");
-        String telefono = scanner.nextLine();
+        String telefono = scanner.nextLine().trim();
+
         System.out.print("Email: ");
-        String email = scanner.nextLine();
+        String email = scanner.nextLine().trim();
 
         Alumno alumno = new Alumno(dni, nombre, apellido, telefono, email);
 
@@ -192,7 +208,14 @@ public class AlumnoView {
         System.out.println("=================");
 
         System.out.print("Ingrese el DNI: ");
-        String dni = scanner.nextLine();
+        String dni = scanner.nextLine().trim(); // Limpiar espacios
+
+        if (!alumnoController.validarDni(dni)) {
+            System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
+            return;
+        }
 
         Alumno alumno = alumnoController.findByDni(dni);
 
@@ -208,16 +231,16 @@ public class AlumnoView {
         System.out.println("\n" + YELLOW + "NUEVOS DATOS (dejar en blanco para no cambiar):" + RESET);
 
         System.out.print("Nuevo nombre (" + alumno.getNombre() + "): ");
-        String nuevoNombre = scanner.nextLine();
+        String nuevoNombre = scanner.nextLine().trim();
 
         System.out.print("Nuevo apellido (" + alumno.getApellido() + "): ");
-        String nuevoApellido = scanner.nextLine();
+        String nuevoApellido = scanner.nextLine().trim();
 
         System.out.print("Nuevo teléfono (" + alumno.getTelefono() + "): ");
-        String nuevoTelefono = scanner.nextLine();
+        String nuevoTelefono = scanner.nextLine().trim();
 
         System.out.print("Nuevo email (" + alumno.getEmail() + "): ");
-        String nuevoEmail = scanner.nextLine();
+        String nuevoEmail = scanner.nextLine().trim();
 
         System.out.println("\n" + CYAN + "Vista previa:" + RESET);
         System.out.println("  Nombre: " + (nuevoNombre.isBlank() ? alumno.getNombre() : nuevoNombre) +
@@ -244,7 +267,14 @@ public class AlumnoView {
         System.out.println("================");
 
         System.out.print("Ingrese el DNI: ");
-        String dni = scanner.nextLine();
+        String dni = scanner.nextLine().trim();
+
+        if (!alumnoController.validarDni(dni)) {
+            System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
+            return;
+        }
 
         Alumno alumno = alumnoController.findByDni(dni);
 

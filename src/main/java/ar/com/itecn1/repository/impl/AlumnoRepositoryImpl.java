@@ -28,7 +28,7 @@ public class AlumnoRepositoryImpl implements AlumnoRepository {
         Alumno alumno1 = new Alumno("43563697", "Gavilan", "Mauro", "3764738002", "mauro.gavilan@gmail.com");
         Alumno alumno2 = new Alumno("47426591", "Cuello", "Julio", "3765050155", "julio.cuello@gmail.com");
         Alumno alumno3 = new Alumno("44231908", "Godoy", "Efrain", "3764552845", "efrain.godoy@gmail.com");
-        Alumno alumno4 = new Alumno("46023942", "Arieli", "Mayra", "3764091001", "mayra.arieli@gmail.com");
+        Alumno alumno4 = new Alumno("46023942", "Arieli", "Michael", "3764091001", "michael.arieli@gmail.com");
         Alumno alumno5 = new Alumno("48472019", "Mendoza", "Armando", "3764238420", "armando.mendoza@gmail.com");
 
         Alumno alumno6 = new Alumno("33125487", "Acosta", "Lucas", "3764982143", "lucas.acosta@gmail.com");

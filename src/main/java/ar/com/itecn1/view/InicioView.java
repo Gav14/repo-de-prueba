@@ -4,23 +4,29 @@ import ar.com.itecn1.controller.*;
 import java.util.Scanner;
 
 public class InicioView {
+
+    // Códigos de color ANSI (solo los básicos)
+    public static final String RESET = "\u001B[0m";
+    public static final String GREEN = "\u001B[32m";
+    public static final String YELLOW = "\u001B[33m";
+    public static final String BLUE = "\u001B[34m";
+    public static final String PURPLE = "\u001B[35m";
+    public static final String CYAN = "\u001B[36m";
+    public static final String RED = "\u001B[31m";
+    public static final String BOLD = "\u001B[1m";
+
     private final Scanner scanner = new Scanner(System.in);
 
-    // --- INSTANCIACIÓN DE CONTROLADORES Y VISTAS (IGUAL QUE ANTES) ---
-    // Entidades básicas
+    // --- CONTROLADORES ---
     private final AlumnoController alumnoController = new AlumnoController();
     private final ProfesorController profesorController = new ProfesorController();
     private final CarreraController carreraController = new CarreraController();
     private final CuatrimestreController cuatrimestreController = new CuatrimestreController();
     private final ModuloController moduloController = new ModuloController();
     private final ExamenController examenController = new ExamenController();
-
-    // Entidades con dependencias
     private final MateriaController materiaController = new MateriaController();
     private final PlanEstudioController planEstudioController = new PlanEstudioController();
     private final HorarioController horarioController = new HorarioController();
-
-    // Controladores de Relaciones
     private final AlumnoInscriptoCarreraController alumnoInscriptoCarreraController = new AlumnoInscriptoCarreraController();
     private final AlumnoInscriptoMateriaController alumnoInscriptoMateriaController = new AlumnoInscriptoMateriaController();
     private final ComisionController comisionController = new ComisionController();
@@ -34,152 +40,179 @@ public class InicioView {
     private final MateriaView materiaView = new MateriaView(materiaController, scanner);
     private final PlanEstudioView planEstudioView = new PlanEstudioView(planEstudioController, materiaController, scanner);
     private final HorarioView horarioView = new HorarioView(horarioController, carreraController, cuatrimestreController, moduloController, scanner);
-
     private final AlumnoInscriptoCarreraView alumnoInscriptoCarreraView = new AlumnoInscriptoCarreraView(
             alumnoInscriptoCarreraController, alumnoController, carreraController, planEstudioController, scanner
     );
-
     private final ComisionView comisionView = new ComisionView(
             comisionController, cuatrimestreController, profesorController,
-            horarioController, examenController, alumnoInscriptoMateriaController, alumnoInscriptoCarreraController, carreraController, scanner
+            horarioController, examenController, alumnoInscriptoMateriaController,
+            alumnoInscriptoCarreraController, carreraController, scanner
     );
 
-    // --- MÉTODO PRINCIPAL ---
     public void iniciar() {
         boolean continuar = true;
 
         while (continuar) {
             mostrarMenuPrincipal();
+
             if (scanner.hasNextInt()) {
                 int opcion = scanner.nextInt();
+                scanner.nextLine();
+
                 switch (opcion) {
-                    case 1:
-                        menuPersonas();
-                        break;
-                    case 2:
-                        menuAcademico();
-                        break;
-                    case 3:
-                        menuCursada();
-                        break;
-                    case 4:
-                        menuConfiguracion();
-                        break;
-                    case 5:
+                    case 1: menuPersonas(); break;
+                    case 2: menuAcademico(); break;
+                    case 3: menuCursada(); break;
+                    case 4: menuConfiguracion(); break;
+                    case 0:
                         continuar = false;
-                        System.out.println("Saliendo del sistema...");
+                        mostrarMensajeSalida();
                         break;
                     default:
-                        System.out.println("Opción no válida.");
+                        System.out.println(RED + "Opción no válida" + RESET);
+                        pausa();
                 }
             } else {
-                System.out.println("Debe ingresar un número.");
+                System.out.println(RED + "Debe ingresar un número" + RESET);
                 scanner.next();
             }
         }
     }
 
-    // --- SUB-MENÚS ---
-
-    // 1. PERSONAS
-    private void menuPersonas() {
-        boolean volver = false;
-        while (!volver) {
-            System.out.println("\n--- GESTIÓN DE PERSONAS ---");
-            System.out.println("1. Alumnos");
-            System.out.println("2. Profesores");
-            System.out.println("3. Volver al menú principal");
-            System.out.print("Seleccione: ");
-
-            if (scanner.hasNextInt()) {
-                int op = scanner.nextInt();
-                switch (op) {
-                    case 1: this.alumnoView.iniciar(); break;
-                    case 2: this.profesorView.iniciar(); break;
-                    case 3: volver = true; break;
-                    default: System.out.println("Opción inválida");
-                }
-            } else { scanner.next(); }
-        }
-    }
-
-    // 2. ACADÉMICO
-    private void menuAcademico() {
-        boolean volver = false;
-        while (!volver) {
-            System.out.println("\n--- ESTRUCTURA ACADÉMICA ---");
-            System.out.println("1. Carreras");
-            System.out.println("2. Planes de Estudio");
-            System.out.println("3. Materias");
-            System.out.println("4. Volver al menú principal");
-            System.out.print("Seleccione: ");
-
-            if (scanner.hasNextInt()) {
-                int op = scanner.nextInt();
-                switch (op) {
-                    case 1: this.carreraView.iniciar(); break;
-                    case 2: this.planEstudioView.iniciar(); break;
-                    case 3: this.materiaView.iniciar(); break;
-                    case 4: volver = true; break;
-                    default: System.out.println("Opción inválida");
-                }
-            } else { scanner.next(); }
-        }
-    }
-
-    // 3. CURSADA E INSCRIPCIONES
-    private void menuCursada() {
-        boolean volver = false;
-        while (!volver) {
-            System.out.println("\n--- GESTIÓN DE CURSADA ---");
-            System.out.println("1. Comisiones (Cursado actual)");
-            System.out.println("2. Inscripciones a Carreras");
-            System.out.println("3. Volver al menú principal");
-            System.out.print("Seleccione: ");
-
-            if (scanner.hasNextInt()) {
-                int op = scanner.nextInt();
-                switch (op) {
-                    case 1: this.comisionView.iniciar(); break;
-                    case 2: this.alumnoInscriptoCarreraView.iniciar(); break;
-                    case 3: volver = true; break;
-                    default: System.out.println("Opción inválida");
-                }
-            } else { scanner.next(); }
-        }
-    }
-
-    // 4. CONFIGURACIÓN
-    private void menuConfiguracion() {
-        boolean volver = false;
-        while (!volver) {
-            System.out.println("\n--- CONFIGURACIÓN Y CALENDARIO ---");
-            System.out.println("1. Cuatrimestres");
-            System.out.println("2. Horarios");
-            System.out.println("3. Módulos Horarios");
-            System.out.println("4. Volver al menú principal");
-            System.out.print("Seleccione: ");
-
-            if (scanner.hasNextInt()) {
-                int op = scanner.nextInt();
-                switch (op) {
-                    case 1: this.cuatrimestreView.iniciar(); break;
-                    case 2: this.horarioView.iniciar(); break;
-                    case 3: this.moduloView.iniciar(); break;
-                    case 4: volver = true; break;
-                    default: System.out.println("Opción inválida");
-                }
-            } else { scanner.next(); }
-        }
-    }
-
     private void mostrarMenuPrincipal() {
-        System.out.println("\n========= SISTEMA DE GESTIÓN =========");
-        System.out.println("1. Personas (Alumnos, Profesores)");
-        System.out.println("2. Estructura Académica (Carreras, Planes, Materias)");
-        System.out.println("3. Cursada e Inscripciones (Comisiones, Inscripcion a Carrera)");
-        System.out.println("4. Configuración (Cuatrimestres, Horarios)");
-        System.out.println("5. Salir");
-        System.out.print("Seleccione una categoría: ");
+        limpiarPantalla();
+        System.out.println("\n" + BOLD + "SISTEMA DE GESTIÓN ACADÉMICA" + RESET);
+        System.out.println("================================");
+        System.out.println(BLUE + "1. Personas" + RESET + " (Alumnos, Profesores)");
+        System.out.println(GREEN + "2. Estructura Académica" + RESET + " (Carreras, Planes, Materias)");
+        System.out.println(CYAN + "3. Cursada e Inscripciones" + RESET + " (Comisiones, Inscripciones)");
+        System.out.println(PURPLE + "4. Configuración" + RESET + " (Cuatrimestres, Horarios)");
+        System.out.println(YELLOW + "0. Salir" + RESET);
+        System.out.print("\nSeleccione: ");
+    }
+
+    private void menuPersonas() {
+        while (true) {
+            limpiarPantalla();
+            System.out.println("\n" + BLUE + BOLD + "PERSONAS" + RESET);
+            System.out.println("---------");
+            System.out.println(CYAN + "1. Alumnos" + RESET);
+            System.out.println(CYAN + "2. Profesores" + RESET);
+            System.out.println(YELLOW + "0. Volver" + RESET);
+            System.out.print("\nSeleccione: ");
+
+            if (scanner.hasNextInt()) {
+                int op = scanner.nextInt();
+                scanner.nextLine();
+                if (op == 1) alumnoView.iniciar();
+                else if (op == 2) profesorView.iniciar();
+                else if (op == 0) break;
+                else System.out.println(RED + "Opción inválida" + RESET);
+            } else {
+                System.out.println(RED + "Número inválido" + RESET);
+                scanner.next();
+            }
+        }
+    }
+
+    private void menuAcademico() {
+        while (true) {
+            limpiarPantalla();
+            System.out.println("\n" + GREEN + BOLD + "ESTRUCTURA ACADÉMICA" + RESET);
+            System.out.println("--------------------");
+            System.out.println(CYAN + "1. Carreras" + RESET);
+            System.out.println(CYAN + "2. Planes de Estudio" + RESET);
+            System.out.println(CYAN + "3. Materias" + RESET);
+            System.out.println(YELLOW + "0. Volver" + RESET);
+            System.out.print("\nSeleccione: ");
+
+            if (scanner.hasNextInt()) {
+                int op = scanner.nextInt();
+                scanner.nextLine();
+                if (op == 1) carreraView.iniciar();
+                else if (op == 2) planEstudioView.iniciar();
+                else if (op == 3) materiaView.iniciar();
+                else if (op == 0) break;
+                else System.out.println(RED + "Opción inválida" + RESET);
+            } else {
+                System.out.println(RED + "Número inválido" + RESET);
+                scanner.next();
+            }
+        }
+    }
+
+    private void menuCursada() {
+        while (true) {
+            limpiarPantalla();
+            System.out.println("\n" + CYAN + BOLD + "CURSADA E INSCRIPCIONES" + RESET);
+            System.out.println("------------------------");
+            System.out.println(CYAN + "1. Comisiones" + RESET);
+            System.out.println(CYAN + "2. Inscripciones a Carreras" + RESET);
+            System.out.println(YELLOW + "0. Volver" + RESET);
+            System.out.print("\nSeleccione: ");
+
+            if (scanner.hasNextInt()) {
+                int op = scanner.nextInt();
+                scanner.nextLine();
+                if (op == 1) comisionView.iniciar();
+                else if (op == 2) alumnoInscriptoCarreraView.iniciar();
+                else if (op == 0) break;
+                else System.out.println(RED + "Opción inválida" + RESET);
+            } else {
+                System.out.println(RED + "Número inválido" + RESET);
+                scanner.next();
+            }
+        }
+    }
+
+    private void menuConfiguracion() {
+        while (true) {
+            limpiarPantalla();
+            System.out.println("\n" + PURPLE + BOLD + "CONFIGURACIÓN" + RESET);
+            System.out.println("-------------");
+            System.out.println(CYAN + "1. Cuatrimestres" + RESET);
+            System.out.println(CYAN + "2. Horarios" + RESET);
+            System.out.println(CYAN + "3. Módulos Horarios" + RESET);
+            System.out.println(YELLOW + "0. Volver" + RESET);
+            System.out.print("\nSeleccione: ");
+
+            if (scanner.hasNextInt()) {
+                int op = scanner.nextInt();
+                scanner.nextLine();
+                if (op == 1) cuatrimestreView.iniciar();
+                else if (op == 2) horarioView.iniciar();
+                else if (op == 3) moduloView.iniciar();
+                else if (op == 0) break;
+                else System.out.println(RED + "Opción inválida" + RESET);
+            } else {
+                System.out.println(RED + "Número inválido" + RESET);
+                scanner.next();
+            }
+        }
+    }
+
+    private void limpiarPantalla() {
+        try {
+            if (System.getProperty("os.name").contains("Windows")) {
+                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+            } else {
+                System.out.print("\033[H\033[2J");
+                System.out.flush();
+            }
+        } catch (Exception e) {
+            for (int i = 0; i < 30; i++) System.out.println();
+        }
+    }
+
+    private void mostrarMensajeSalida() {
+        limpiarPantalla();
+        System.out.println("\n" + GREEN + "¡Hasta pronto!" + RESET);
+        System.out.println("Sistema de Gestión Académica");
+        System.out.println();
+    }
+
+    private void pausa() {
+        System.out.print("\nPresione ENTER para continuar...");
+        scanner.nextLine();
     }
 }

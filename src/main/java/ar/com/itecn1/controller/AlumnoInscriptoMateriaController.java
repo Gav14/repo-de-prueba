@@ -19,7 +19,7 @@ public class AlumnoInscriptoMateriaController {
 
     public void save(AlumnoInscriptoMateria alumnoInscriptoMateria){this.alumnoInscriptoMateriaService.save(alumnoInscriptoMateria);}
 
-    public void update(AlumnoInscriptoMateria alumnoInscriptoMateria){this.alumnoInscriptoMateriaService.save(alumnoInscriptoMateria);}
+    public void update(AlumnoInscriptoMateria alumnoInscriptoMateria){this.alumnoInscriptoMateriaService.update(alumnoInscriptoMateria);}
 
     public void delete(AlumnoInscriptoMateria alumnoInscriptoMateria){this.alumnoInscriptoMateriaService.delete(alumnoInscriptoMateria);}
 

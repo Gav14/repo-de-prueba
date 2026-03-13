@@ -322,12 +322,16 @@ public class AlumnoInscriptoCarreraView {
     public void iniciar() {
         boolean continuar = true;
         while (continuar) {
-            System.out.println("\nGESTIÓN DE INSCRIPCIONES A CARRERAS");
-            System.out.println("1. Inscribir alumno a carrera");
-            System.out.println("2. Listar inscripciones");
-            System.out.println("3. Actualizar inscripción");
-            System.out.println("4. Eliminar inscripción");
-            System.out.println("0. Volver");
+            System.out.println("\n┌──────────────────────────────────────┐");
+            System.out.println("│   GESTIÓN DE INSCRIPCIONES A CARRERAS │");
+            System.out.println("├───────────────────────────────────────┤");
+            System.out.println("│  1. Inscribir alumno a carrera        │");
+            System.out.println("│  2. Listar inscripciones              │");
+            System.out.println("│  3. Actualizar inscripción            │");
+            System.out.println("│  4. Eliminar inscripción              │");
+            System.out.println("│  0. Volver                            │");
+            System.out.println("└───────────────────────────────────────┘");
+            System.out.print("  Opción: ");
 
             int opcion = leerEntero();
             switch (opcion) {

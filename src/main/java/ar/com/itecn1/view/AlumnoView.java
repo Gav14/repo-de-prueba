@@ -47,16 +47,18 @@ public class AlumnoView {
     // -----------------------------
 
     private void mostrarMenu() {
-        System.out.println("\nGESTIÓN DE ALUMNOS");
-        System.out.println("1. Listar alumnos");
-        System.out.println("2. Buscar alumno por DNI");
-        System.out.println("3. Registrar alumno");
-        System.out.println("4. Actualizar datos de un alumno");
-        System.out.println("5. Dar de baja un alumno");
-        System.out.println("0. Volver atrás");
-        System.out.print("Seleccione una opción: ");
+        System.out.println("┌────────────────────────────────────┐");
+        System.out.println("│       GESTIÓN DE ALUMNOS           │");
+        System.out.println("├────────────────────────────────────┤");
+        System.out.println("│  1. Listar alumnos                 │");
+        System.out.println("│  2. Buscar alumno por DNI          │");
+        System.out.println("│  3. Registrar alumno               │");
+        System.out.println("│  4. Actualizar datos de un alumno  │");
+        System.out.println("│  5. Dar de baja un alumno          │");
+        System.out.println("│  0. Volver atrás                   │");
+        System.out.println("└────────────────────────────────────┘");
+        System.out.print("  Opción: ");
     }
-
     private void mostrarAlumno(Alumno alumno) {
         System.out.println(
             "DNI: " + alumno.getDni() +
@@ -71,10 +73,13 @@ public class AlumnoView {
     private int confirmarAccion() {
         int opcion = 0;
         while (opcion != 1 && opcion != 2) {
-            System.out.println("\nConfirmar:");
-            System.out.println("1. Sí");
-            System.out.println("2. No");
-            System.out.print("Opción: ");
+            System.out.println("\n┌────────────┐");
+            System.out.println("│ Confirmar  │");
+            System.out.println("├────────────┤");
+            System.out.println("│ 1. Sí      │");
+            System.out.println("│ 2. No      │");
+            System.out.println("└────────────┘");
+            System.out.print("  Opción: ");
 
             if (scanner.hasNextInt()) {
                 opcion = scanner.nextInt();
@@ -85,6 +90,7 @@ public class AlumnoView {
         pausa();
         return opcion;
     }
+
 
     private void pausa() {
         scanner.nextLine(); // limpia buffer luego de nextInt()

@@ -81,15 +81,30 @@ public class InicioView {
 
     private void mostrarMenuPrincipal() {
         limpiarPantalla();
-        System.out.println("\n" + BOLD + "SISTEMA DE GESTIÓN ACADÉMICA" + RESET);
-        System.out.println("================================");
-        System.out.println(BLUE + "1. Personas" + RESET + " (Alumnos, Profesores)");
-        System.out.println(GREEN + "2. Estructura Académica" + RESET + " (Carreras, Planes, Materias)");
-        System.out.println(CYAN + "3. Cursada e Inscripciones" + RESET + " (Comisiones, Inscripciones)");
-        System.out.println(PURPLE + "4. Configuración" + RESET + " (Cuatrimestres, Horarios)");
-        System.out.println(YELLOW + "0. Salir" + RESET);
-        System.out.print("\nSeleccione: ");
+
+        System.out.println(BOLD + "╔═══════════════════════════════════════╗" + RESET);
+        System.out.println(BOLD + " ║       SISTEMA DE GESTIÓN ACADÉMICA    ║" + RESET);
+        System.out.println(BOLD + " ╠═══════════════════════════════════════╣" + RESET);
+
+        System.out.println(" ║ " + BLUE   + "1. Personas" + RESET + "                           ║");
+        System.out.println(" ║    Alumnos - Profesores               ║");
+
+        System.out.println(" ║ " + GREEN  + "2. Estructura Académica" + RESET + "               ║");
+        System.out.println(" ║    Carreras - Planes - Materias       ║");
+
+        System.out.println(" ║ " + CYAN   + "3. Cursada e Inscripciones" + RESET + "            ║");
+        System.out.println(" ║    Comisiones - Inscripciones         ║");
+
+        System.out.println(" ║ " + PURPLE + "4. Configuración" + RESET + "                      ║");
+        System.out.println(" ║    Cuatrimestres - Horarios           ║");
+
+        System.out.println(" ║ " + YELLOW + "0. Salir" + RESET + "                              ║");
+
+        System.out.println(BOLD + " ╚═══════════════════════════════════════╝" + RESET);
+
+        System.out.print("\nSeleccione una opción: ");
     }
+
 
     private void menuPersonas() {
         while (true) {

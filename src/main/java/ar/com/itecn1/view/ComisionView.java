@@ -5,6 +5,7 @@ import ar.com.itecn1.model.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 
 public class ComisionView {
@@ -124,14 +125,25 @@ public class ComisionView {
         return num;
     }
 
-    private boolean confirmarAccion(String mensaje) {
+    private String leerString(String mensaje) {
+        System.out.print(mensaje);
+        String input = scanner.nextLine().trim();
+        if (input.equals("0")) {
+            return "0";
+        }
+        return input;
+    }
+
+    private Integer confirmarAccion(String mensaje) {
         System.out.println("\n" + mensaje);
         System.out.println(YELLOW + "1. Sí" + RESET);
         System.out.println(YELLOW + "2. No" + RESET);
+        System.out.println(YELLOW + "0. Cancelar" + RESET);
         System.out.print("Opción: ");
 
-        int opcion = leerEnteroEnRango(1, 2);
-        return opcion == 1;
+        int opcion = leerEnteroEnRango(0, 2);
+        if (opcion == 0) return null;
+        return opcion;
     }
 
     private void mostrarComision(ComisionMateria c) {
@@ -151,8 +163,12 @@ public class ComisionView {
     }
 
     private ComisionMateria buscarComisionPorCodigo() {
-        System.out.print("\nIngrese código de comisión: ");
+        System.out.print("\nIngrese código de comisión (0 para cancelar): ");
         String codigo = scanner.nextLine().trim();
+        if (codigo.equals("0")) {
+            System.out.println(YELLOW + "Búsqueda cancelada." + RESET);
+            return null;
+        }
         ComisionMateria com = comisionController.findByCode(codigo);
         if (com == null) {
             System.out.println(RED + "Comisión no encontrada." + RESET);
@@ -189,9 +205,16 @@ public class ComisionView {
     private void crearComision() {
         System.out.println("\n" + BLUE + BOLD + "REGISTRAR COMISIÓN" + RESET);
         System.out.println("===================");
+        System.out.println(YELLOW + "(Ingrese 0 en cualquier momento para cancelar)" + RESET);
 
         System.out.print("Código de comisión (ej. AN-MAT101-2025-1): ");
         String codigo = scanner.nextLine().trim();
+
+        if (codigo.equals("0")) {
+            System.out.println(YELLOW + "Registro cancelado." + RESET);
+            pausa();
+            return;
+        }
 
         if (codigo.isEmpty()) {
             System.out.println(RED + "Código vacío. Operación cancelada." + RESET);
@@ -233,13 +256,16 @@ public class ComisionView {
         System.out.println("\n" + CYAN + "VISTA PREVIA:" + RESET);
         mostrarComision(nueva);
 
-        if (confirmarAccion("¿Confirmar registro?")) {
+        Integer confirmacion = confirmarAccion("¿Confirmar registro?");
+        if (confirmacion != null && confirmacion == 1) {
             String resultado = comisionController.registrarComision(nueva);
             if (resultado.startsWith("SUCCESS")) {
                 System.out.println(GREEN + "✓ Comisión registrada exitosamente!" + RESET);
             } else {
                 System.out.println(RED + "✗ " + resultado.substring(6) + RESET);
             }
+        } else {
+            System.out.println(YELLOW + "Registro cancelado." + RESET);
         }
         pausa();
     }
@@ -257,8 +283,13 @@ public class ComisionView {
             Carrera c = lista.get(i);
             System.out.println((i + 1) + ". " + c.getNombre() + " (" + c.getTurno() + ")");
         }
+        System.out.println("0. Cancelar");
 
-        int op = leerEnteroEnRango(1, lista.size());
+        int op = leerEnteroEnRango(0, lista.size());
+        if (op == 0) {
+            System.out.println(YELLOW + "Selección cancelada." + RESET);
+            return null;
+        }
         return lista.get(op - 1);
     }
 
@@ -276,8 +307,13 @@ public class ComisionView {
             Materia m = materias.get(i);
             System.out.println((i + 1) + ". " + m.getCodigoMateria() + " - " + m.getNombre());
         }
+        System.out.println("0. Cancelar");
 
-        int op = leerEnteroEnRango(1, materias.size());
+        int op = leerEnteroEnRango(0, materias.size());
+        if (op == 0) {
+            System.out.println(YELLOW + "Selección cancelada." + RESET);
+            return null;
+        }
         return materias.get(op - 1);
     }
 
@@ -294,8 +330,13 @@ public class ComisionView {
             Profesor p = lista.get(i);
             System.out.println((i + 1) + ". " + p.getApellido() + ", " + p.getNombre());
         }
+        System.out.println("0. Cancelar");
 
-        int op = leerEnteroEnRango(1, lista.size());
+        int op = leerEnteroEnRango(0, lista.size());
+        if (op == 0) {
+            System.out.println(YELLOW + "Selección cancelada." + RESET);
+            return null;
+        }
         return lista.get(op - 1);
     }
 
@@ -324,6 +365,7 @@ public class ComisionView {
     private void eliminarComision() {
         System.out.println("\n" + BLUE + BOLD + "ELIMINAR COMISIÓN" + RESET);
         System.out.println("==================");
+        System.out.println(YELLOW + "(Ingrese 0 en cualquier momento para cancelar)" + RESET);
 
         ComisionMateria c = buscarComisionPorCodigo();
         if (c == null) {
@@ -333,9 +375,12 @@ public class ComisionView {
 
         mostrarComision(c);
 
-        if (confirmarAccion(RED + "¿Está seguro de eliminar esta comisión?" + RESET)) {
+        Integer confirmacion = confirmarAccion(RED + "¿Está seguro de eliminar esta comisión?" + RESET);
+        if (confirmacion != null && confirmacion == 1) {
             comisionController.deleteComision(c);
             System.out.println(GREEN + "✓ Comisión eliminada correctamente." + RESET);
+        } else {
+            System.out.println(YELLOW + "Eliminación cancelada." + RESET);
         }
         pausa();
     }
@@ -389,9 +434,15 @@ public class ComisionView {
             Profesor p = profesores.get(i);
             System.out.println((i + 1) + ". " + p.getApellido() + ", " + p.getNombre());
         }
+        System.out.println("0. Cancelar");
 
-        System.out.print("Seleccione (0 para cancelar): ");
+        System.out.print("Seleccione: ");
         int seleccion = leerEntero();
+
+        if (seleccion == 0) {
+            System.out.println(YELLOW + "Cambio cancelado." + RESET);
+            return;
+        }
 
         if (seleccion > 0 && seleccion <= profesores.size()) {
             comision.setProfesor(profesores.get(seleccion - 1));
@@ -422,32 +473,46 @@ public class ComisionView {
 
     private void agregarHorario(ComisionMateria comision) {
         System.out.println("\n" + CYAN + "NUEVO HORARIO:" + RESET);
+        System.out.println(YELLOW + "(Ingrese 0 para cancelar)" + RESET);
 
         System.out.println("Días:");
         Dia[] dias = Dia.values();
         for (int i = 0; i < dias.length; i++) {
             System.out.println((i + 1) + ". " + dias[i]);
         }
+        System.out.println("0. Cancelar");
         System.out.print("Seleccione día: ");
-        int diaIdx = leerEnteroEnRango(1, dias.length) - 1;
-        Dia dia = dias[diaIdx];
+        int diaIdx = leerEnteroEnRango(0, dias.length);
+        if (diaIdx == 0) {
+            System.out.println(YELLOW + "Operación cancelada." + RESET);
+            return;
+        }
+        Dia dia = dias[diaIdx - 1];
 
         System.out.print("Hora inicio (HH:mm): ");
         String horaInicioStr = scanner.nextLine();
+        if (horaInicioStr.equals("0")) {
+            System.out.println(YELLOW + "Operación cancelada." + RESET);
+            return;
+        }
         LocalTime inicio;
         try {
             inicio = LocalTime.parse(horaInicioStr);
-        } catch (Exception e) {
+        } catch (DateTimeParseException e) {
             System.out.println(RED + "Formato de hora inválido. Use HH:mm" + RESET);
             return;
         }
 
         System.out.print("Hora fin (HH:mm): ");
         String horaFinStr = scanner.nextLine();
+        if (horaFinStr.equals("0")) {
+            System.out.println(YELLOW + "Operación cancelada." + RESET);
+            return;
+        }
         LocalTime fin;
         try {
             fin = LocalTime.parse(horaFinStr);
-        } catch (Exception e) {
+        } catch (DateTimeParseException e) {
             System.out.println(RED + "Formato de hora inválido. Use HH:mm" + RESET);
             return;
         }
@@ -484,9 +549,15 @@ public class ComisionView {
             Horario h = horarios.get(i);
             System.out.println((i + 1) + ". " + h.getDia() + " " + h.getModulo().getInicio() + " - " + h.getModulo().getFin());
         }
+        System.out.println("0. Cancelar");
 
-        System.out.print("Seleccione horario a eliminar (0 para cancelar): ");
+        System.out.print("Seleccione horario a eliminar: ");
         int seleccion = leerEntero();
+
+        if (seleccion == 0) {
+            System.out.println(YELLOW + "Eliminación cancelada." + RESET);
+            return;
+        }
 
         if (seleccion > 0 && seleccion <= horarios.size()) {
             horarios.remove(seleccion - 1);
@@ -521,9 +592,15 @@ public class ComisionView {
             System.out.println((i + 1) + ". " + al.getApellido() + ", " + al.getNombre() +
                     " | Fecha: " + a.getFecha() + " | " + (a.isPresente() ? "Presente" : "Ausente"));
         }
+        System.out.println("0. Cancelar");
 
-        System.out.print("Seleccione asistencia a eliminar (0 para cancelar): ");
+        System.out.print("Seleccione asistencia a eliminar: ");
         int seleccion = leerEntero();
+
+        if (seleccion == 0) {
+            System.out.println(YELLOW + "Eliminación cancelada." + RESET);
+            return;
+        }
 
         if (seleccion > 0 && seleccion <= asistencias.size()) {
             asistencias.remove(seleccion - 1);
@@ -535,12 +612,23 @@ public class ComisionView {
     private void registrarAsistencias() {
         System.out.println("\n" + BLUE + BOLD + "REGISTRAR ASISTENCIA" + RESET);
         System.out.println("=====================");
+        System.out.println(YELLOW + "(Ingrese 0 en cualquier momento para cancelar)" + RESET);
 
         System.out.print("DNI del alumno: ");
         String dni = scanner.nextLine().trim();
+        if (dni.equals("0")) {
+            System.out.println(YELLOW + "Registro cancelado." + RESET);
+            pausa();
+            return;
+        }
 
         System.out.print("Código de comisión: ");
         String codigo = scanner.nextLine().trim();
+        if (codigo.equals("0")) {
+            System.out.println(YELLOW + "Registro cancelado." + RESET);
+            pausa();
+            return;
+        }
 
         if (!comisionController.puedeRegistrarAsistencia(codigo, dni)) {
             System.out.println(RED + "No se puede registrar la asistencia. Verifique:" + RESET);
@@ -554,9 +642,15 @@ public class ComisionView {
         System.out.println("\n" + CYAN + "TIPO DE ASISTENCIA:" + RESET);
         System.out.println("1. Presente");
         System.out.println("2. Ausente");
+        System.out.println("0. Cancelar");
         System.out.print("Seleccione: ");
 
-        int tipo = leerEnteroEnRango(1, 2);
+        int tipo = leerEnteroEnRango(0, 2);
+        if (tipo == 0) {
+            System.out.println(YELLOW + "Registro cancelado." + RESET);
+            pausa();
+            return;
+        }
 
         Asistencia asistencia = new Asistencia();
         asistencia.setFecha(LocalDate.now());
@@ -644,16 +738,16 @@ public class ComisionView {
             System.out.println("1. Inscribir alumno");
             System.out.println("2. Dar de baja alumno");
             System.out.println("3. Ver alumnos inscriptos");
-            System.out.println(YELLOW + "4. Terminar" + RESET);
+            System.out.println(YELLOW + "0. Terminar" + RESET);
             System.out.print("Opción: ");
 
-            int opcion = leerEnteroEnRango(1, 4);
+            int opcion = leerEnteroEnRango(0, 3);
 
             switch (opcion) {
                 case 1 -> inscribirAlumno(listaInscriptos, comision);
                 case 2 -> darDeBajaAlumno(listaInscriptos);
                 case 3 -> verAlumnosInscriptos(listaInscriptos);
-                case 4 -> gestionando = false;
+                case 0 -> gestionando = false;
             }
         }
     }
@@ -666,6 +760,7 @@ public class ComisionView {
         }
 
         System.out.println("\n" + CYAN + "ALUMNOS DISPONIBLES:" + RESET);
+        System.out.println(YELLOW + "(Ingrese 0 para cancelar)" + RESET);
         List<AlumnoInscriptoCarrera> disponibles = new ArrayList<>();
 
         for (AlumnoInscriptoCarrera aic : inscriptosCarrera) {
@@ -681,8 +776,13 @@ public class ComisionView {
             return;
         }
 
-        System.out.print("Seleccione (0 para cancelar): ");
+        System.out.print("Seleccione: ");
         int seleccion = leerEntero();
+
+        if (seleccion == 0) {
+            System.out.println(YELLOW + "Inscripción cancelada." + RESET);
+            return;
+        }
 
         if (seleccion > 0 && seleccion <= disponibles.size()) {
             AlumnoInscriptoCarrera aic = disponibles.get(seleccion - 1);
@@ -707,7 +807,8 @@ public class ComisionView {
             System.out.println("  Alumno: " + aic.getAlumno().getApellido() + ", " + aic.getAlumno().getNombre());
             System.out.println("  DNI: " + aic.getAlumno().getDni());
 
-            if (confirmarAccion("¿Confirmar inscripción?")) {
+            Integer confirmacion = confirmarAccion("¿Confirmar inscripción?");
+            if (confirmacion != null && confirmacion == 1) {
                 String resultado = comisionController.inscribirAlumno(comision.getCodigo(),
                         aic.getAlumno().getDni(), aim);
                 if (resultado.startsWith("SUCCESS")) {
@@ -716,6 +817,8 @@ public class ComisionView {
                 } else {
                     System.out.println(RED + "✗ " + resultado.substring(6) + RESET);
                 }
+            } else {
+                System.out.println(YELLOW + "Inscripción cancelada." + RESET);
             }
         }
     }
@@ -727,13 +830,19 @@ public class ComisionView {
         }
 
         System.out.println("\n" + CYAN + "ALUMNOS INSCRIPTOS:" + RESET);
+        System.out.println(YELLOW + "(Ingrese 0 para cancelar)" + RESET);
         for (int i = 0; i < listaInscriptos.size(); i++) {
             Alumno a = listaInscriptos.get(i).getAlumnoInscriptoCarrera().getAlumno();
             System.out.println((i + 1) + ". " + a.getApellido() + ", " + a.getNombre());
         }
 
-        System.out.print("Seleccione (0 para cancelar): ");
+        System.out.print("Seleccione: ");
         int seleccion = leerEntero();
+
+        if (seleccion == 0) {
+            System.out.println(YELLOW + "Baja cancelada." + RESET);
+            return;
+        }
 
         if (seleccion > 0 && seleccion <= listaInscriptos.size()) {
             AlumnoInscriptoMateria eliminado = listaInscriptos.remove(seleccion - 1);
@@ -795,9 +904,14 @@ public class ComisionView {
         for (int i = 0; i < tipos.length; i++) {
             System.out.println((i + 1) + ". " + tipos[i]);
         }
+        System.out.println("0. Cancelar");
         System.out.print("Seleccione: ");
-        int tipoIdx = leerEnteroEnRango(1, tipos.length) - 1;
-        Tipo tipo = tipos[tipoIdx];
+        int tipoIdx = leerEnteroEnRango(0, tipos.length);
+        if (tipoIdx == 0) {
+            System.out.println(YELLOW + "Creación cancelada." + RESET);
+            return;
+        }
+        Tipo tipo = tipos[tipoIdx - 1];
         nuevo.setTipo(tipo);
 
         System.out.print("Nota (0-10): ");
@@ -812,7 +926,7 @@ public class ComisionView {
         System.out.print("Fecha (AAAA-MM-DD): ");
         try {
             nuevo.setFecha(LocalDate.parse(scanner.nextLine()));
-        } catch (Exception e) {
+        } catch (DateTimeParseException e) {
             System.out.println(RED + "Fecha inválida." + RESET);
             return;
         }
@@ -823,11 +937,15 @@ public class ComisionView {
             Alumno a = alumnos.get(i).getAlumnoInscriptoCarrera().getAlumno();
             System.out.println((i + 1) + ". " + a.getApellido() + ", " + a.getNombre());
         }
-
+        System.out.println("0. Cancelar");
         System.out.print("Seleccione alumno: ");
-        int alumnoIdx = leerEnteroEnRango(1, alumnos.size()) - 1;
+        int alumnoIdx = leerEnteroEnRango(0, alumnos.size());
+        if (alumnoIdx == 0) {
+            System.out.println(YELLOW + "Creación cancelada." + RESET);
+            return;
+        }
 
-        AlumnoInscriptoMateria aim = alumnos.get(alumnoIdx);
+        AlumnoInscriptoMateria aim = alumnos.get(alumnoIdx - 1);
         nuevo.setAlumno(aim.getAlumnoInscriptoCarrera().getAlumno());
         nuevo.setMateria(comision.getMateria());
 
@@ -844,13 +962,16 @@ public class ComisionView {
             System.out.println("  Parcial aprobado: " + (tieneParcial ? GREEN + "✅" + RESET : RED + "❌" + RESET));
 
             if (asistencia < 70 || !tieneParcial) {
-                if (!confirmarAccion(RED + "¿Crear examen de todas formas?" + RESET)) {
+                Integer confirmacion = confirmarAccion(RED + "¿Crear examen de todas formas?" + RESET);
+                if (confirmacion == null || confirmacion != 1) {
+                    System.out.println(YELLOW + "Creación cancelada." + RESET);
                     return;
                 }
             }
         }
 
-        if (confirmarAccion("¿Confirmar creación?")) {
+        Integer confirmacion = confirmarAccion("¿Confirmar creación?");
+        if (confirmacion != null && confirmacion == 1) {
             String resultado = comisionController.crearExamenConValidaciones(comision.getCodigo(), nuevo);
 
             if (resultado.startsWith("SUCCESS")) {
@@ -860,6 +981,8 @@ public class ComisionView {
             } else {
                 System.out.println(RED + "✗ " + resultado.substring(6) + RESET);
             }
+        } else {
+            System.out.println(YELLOW + "Creación cancelada." + RESET);
         }
     }
 
@@ -874,9 +997,15 @@ public class ComisionView {
             Examen e = examenes.get(i);
             System.out.println((i + 1) + ". " + e.getAlumno().getApellido() + " - Nota: " + e.getNota());
         }
+        System.out.println("0. Cancelar");
 
-        System.out.print("Seleccione examen (0 para cancelar): ");
+        System.out.print("Seleccione examen: ");
         int seleccion = leerEntero();
+
+        if (seleccion == 0) {
+            System.out.println(YELLOW + "Cambio cancelado." + RESET);
+            return;
+        }
 
         if (seleccion > 0 && seleccion <= examenes.size()) {
             System.out.print("Nueva nota: ");
@@ -903,9 +1032,15 @@ public class ComisionView {
             Examen e = examenes.get(i);
             System.out.println((i + 1) + ". " + e.getAlumno().getApellido() + " - " + e.getTipo());
         }
+        System.out.println("0. Cancelar");
 
-        System.out.print("Seleccione examen a eliminar (0 para cancelar): ");
+        System.out.print("Seleccione examen a eliminar: ");
         int seleccion = leerEntero();
+
+        if (seleccion == 0) {
+            System.out.println(YELLOW + "Eliminación cancelada." + RESET);
+            return;
+        }
 
         if (seleccion > 0 && seleccion <= examenes.size()) {
             examenes.remove(seleccion - 1);

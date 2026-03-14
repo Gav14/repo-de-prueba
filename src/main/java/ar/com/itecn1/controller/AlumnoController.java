@@ -40,4 +40,25 @@ public class AlumnoController {
     public boolean validarCampos(Alumno alumno) {
         return alumnoService.validarCamposObligatorios(alumno);
     }
+
+    public boolean validarNombre(String nombre) {
+        return alumnoService.validarNombre(nombre);
+    }
+
+    public boolean validarApellido(String apellido) {
+        return alumnoService.validarApellido(apellido);
+    }
+
+    // NUEVO: Método para validar teléfono
+    public boolean validarTelefono(String telefono) {
+        return alumnoService.validarTelefono(telefono);
+    }
+
+    public boolean validarEmail(String email) {
+        return alumnoService.validarEmail(email);
+    }
+
+    public boolean validarAlumnoCompleto(Alumno alumno) {
+        return alumnoService.validarAlumnoCompleto(alumno);
+    }
 }

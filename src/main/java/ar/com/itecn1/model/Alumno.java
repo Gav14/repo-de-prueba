@@ -15,10 +15,10 @@ public class Alumno {
     private String email;
     private boolean activo;
 
-    public Alumno(String dni, String nombre, String apellido, String telefono, String email) {
+    public Alumno(String dni, String apellido,String nombre, String telefono, String email) {
         this.dni = dni;
-        this.nombre = nombre;
         this.apellido = apellido;
+        this.nombre = nombre;
         this.telefono = telefono;
         this.email = email;
         this.activo = true;

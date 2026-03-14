@@ -217,6 +217,9 @@ public class AlumnoView {
 
         System.out.println("\nNUEVOS DATOS (dejar en blanco para no cambiar):");
 
+        System.out.println("Nuevo DNI (" + dni + "):  ");
+        String nuevoDni = scanner.nextLine().trim();
+
         System.out.print("Nuevo nombre (" + alumno.getNombre() + "): ");
         String nuevoNombre = scanner.nextLine().trim();
 
@@ -231,6 +234,7 @@ public class AlumnoView {
 
         // Vista previa
         System.out.println("\nVista previa:");
+        System.out.println("DNI: " + (nuevoDni.isBlank()  ? alumno.getDni() : nuevoDni));
         System.out.println("Nombre: "   + (nuevoNombre.isBlank()    ? alumno.getNombre()    : nuevoNombre));
         System.out.println("Apellido: " + (nuevoApellido.isBlank()  ? alumno.getApellido()  : nuevoApellido));
         System.out.println("Teléfono: " + (nuevoTelefono.isBlank()  ? alumno.getTelefono()  : nuevoTelefono));
@@ -238,6 +242,7 @@ public class AlumnoView {
 
         if (confirmarAccion() == 1) {
             // Solo actualizar si el campo no está en blanco (después de trim)
+            if (!nuevoDni.isBlank())       alumno.setDni(nuevoDni);
             if (!nuevoNombre.isBlank())    alumno.setNombre(nuevoNombre);
             if (!nuevoApellido.isBlank())  alumno.setApellido(nuevoApellido);
             if (!nuevoTelefono.isBlank())  alumno.setTelefono(nuevoTelefono);

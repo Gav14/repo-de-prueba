@@ -28,7 +28,7 @@ public class AlumnoView {
             }
 
             int opcion = scanner.nextInt();
-            pausa();
+            pausa(); // Limpia el buffer después de nextInt()
 
             switch (opcion) {
                 case 1 -> listarAlumnos();
@@ -72,8 +72,8 @@ public class AlumnoView {
     }
 
     private int confirmarAccion() {
-        int opcion = 0;
-        while (opcion != 1 && opcion != 2 && opcion != 0) {
+        int opcion;
+        do {
             System.out.println("\n┌────────────┐");
             System.out.println("│ Confirmar  │");
             System.out.println("├────────────┤");
@@ -85,11 +85,14 @@ public class AlumnoView {
 
             if (scanner.hasNextInt()) {
                 opcion = scanner.nextInt();
+                scanner.nextLine(); // Consumir el Enter
             } else {
-                scanner.next();
+                System.out.println("Opción no válida. Intente de nuevo.");
+                scanner.next(); // Consumir entrada no numérica
+                scanner.nextLine(); // Limpiar
+                opcion = -1; // Valor para repetir el bucle
             }
-        }
-        pausa();
+        } while (opcion != 1 && opcion != 2 && opcion != 0);
         return opcion;
     }
 
@@ -107,6 +110,8 @@ public class AlumnoView {
 
         if (alumnos.isEmpty()) {
             System.out.println("No hay alumnos registrados.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
             return;
         }
 
@@ -213,13 +218,13 @@ public class AlumnoView {
             }
 
             if (alumnoController.findByDni(dni) != null) {
-                System.out.println("Error: Ese DNI ya está registrado.");
-                return; // Salimos del método si el DNI ya existe
+                System.out.println("Error: Ese DNI ya está registrado. Intente con otro.");
+                continue; // Permite reintentar en lugar de salir
             }
             break;
         } while (true);
 
-        // Solicitar nombre con validación (sin números)
+        // Solicitar nombre con validación
         String nombre = solicitarDato("Nombre: ", "nombre");
         if (nombre.equals("0")) {
             System.out.println("Registro cancelado.");
@@ -228,7 +233,7 @@ public class AlumnoView {
             return;
         }
 
-        // Solicitar apellido con validación (sin números)
+        // Solicitar apellido con validación
         String apellido = solicitarDato("Apellido: ", "apellido");
         if (apellido.equals("0")) {
             System.out.println("Registro cancelado.");
@@ -237,7 +242,7 @@ public class AlumnoView {
             return;
         }
 
-        // Solicitar teléfono con validación (solo números)
+        // Solicitar teléfono con validación
         String telefono = solicitarDato("Teléfono: ", "telefono");
         if (telefono.equals("0")) {
             System.out.println("Registro cancelado.");
@@ -263,9 +268,11 @@ public class AlumnoView {
         int confirmacion = confirmarAccion();
         if (confirmacion == 1) {
             alumnoController.createAlumno(alumno);
-            System.out.println("Alumno registrado!");
+            System.out.println("¡Alumno registrado!");
         } else if (confirmacion == 0) {
             System.out.println("Registro cancelado.");
+        } else {
+            System.out.println("Operación cancelada.");
         }
         System.out.println("Presione Enter para continuar...");
         scanner.nextLine();
@@ -306,7 +313,7 @@ public class AlumnoView {
 
         System.out.println("\nNUEVOS DATOS (dejar en blanco para no cambiar / 0 para cancelar):");
 
-        // Nuevo DNI (con validación)
+        // Nuevo DNI
         String nuevoDni;
         do {
             System.out.print("Nuevo DNI (" + dni + "): ");
@@ -331,7 +338,7 @@ public class AlumnoView {
             break;
         } while (true);
 
-        // Nuevo nombre (con validación)
+        // Nuevo nombre
         String nuevoNombre;
         do {
             System.out.print("Nuevo nombre (" + alumno.getNombre() + "): ");
@@ -351,7 +358,7 @@ public class AlumnoView {
             break;
         } while (true);
 
-        // Nuevo apellido (con validación)
+        // Nuevo apellido
         String nuevoApellido;
         do {
             System.out.print("Nuevo apellido (" + alumno.getApellido() + "): ");
@@ -371,7 +378,7 @@ public class AlumnoView {
             break;
         } while (true);
 
-        // Nuevo teléfono (con validación - solo números)
+        // Nuevo teléfono
         String nuevoTelefono;
         do {
             System.out.print("Nuevo teléfono (" + alumno.getTelefono() + "): ");
@@ -391,7 +398,7 @@ public class AlumnoView {
             break;
         } while (true);
 
-        // Nuevo email (con validación)
+        // Nuevo email
         String nuevoEmail;
         do {
             System.out.print("Nuevo email (" + alumno.getEmail() + "): ");
@@ -428,9 +435,11 @@ public class AlumnoView {
             if (!nuevoEmail.isEmpty()) alumno.setEmail(nuevoEmail);
 
             alumnoController.updateAlumno(alumno);
-            System.out.println("Alumno modificado!");
+            System.out.println("¡Alumno modificado!");
         } else if (confirmacion == 0) {
             System.out.println("Actualización cancelada.");
+        } else {
+            System.out.println("No se realizaron cambios.");
         }
         System.out.println("Presione Enter para continuar...");
         scanner.nextLine();
@@ -472,12 +481,13 @@ public class AlumnoView {
         int confirmacion = confirmarAccion();
         if (confirmacion == 1) {
             alumnoController.deleteAlumno(alumno);
-            System.out.println("Alumno eliminado!");
+            System.out.println("¡Alumno eliminado!");
         } else if (confirmacion == 0) {
             System.out.println("Eliminación cancelada.");
+        } else {
+            System.out.println("Operación cancelada.");
         }
         System.out.println("Presione Enter para continuar...");
         scanner.nextLine();
     }
-
 }

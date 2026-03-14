@@ -29,7 +29,7 @@ public class ProfesorView {
             }
 
             int opcion = scanner.nextInt();
-            pausa();
+            pausa(); // Limpia el buffer después de nextInt()
 
             switch (opcion) {
                 case 1 -> listarProfesores();
@@ -50,14 +50,14 @@ public class ProfesorView {
     private void mostrarMenu() {
         System.out.println("\n┌────────────────────────────────────┐");
         System.out.println("│      GESTIÓN DE PROFESORES          │");
-        System.out.println("├────────────────────────────────────┤");
+        System.out.println("├─────────────────────────────────────┤");
         System.out.println("│  1. Listar profesores               │");
         System.out.println("│  2. Buscar profesor por DNI         │");
         System.out.println("│  3. Registrar profesor              │");
         System.out.println("│  4. Actualizar datos de un profesor │");
         System.out.println("│  5. Dar de baja un profesor         │");
         System.out.println("│  0. Volver atrás                    │");
-        System.out.println("└────────────────────────────────────┘");
+        System.out.println("└─────────────────────────────────────┘");
         System.out.print("  Opción: ");
     }
 
@@ -73,9 +73,8 @@ public class ProfesorView {
     }
 
     private int confirmarAccion() {
-        int opcion = 0;
-
-        while (opcion != 1 && opcion != 2 && opcion != 0) {
+        int opcion;
+        do {
             System.out.println("\n┌────────────┐");
             System.out.println("│ Confirmar  │");
             System.out.println("├────────────┤");
@@ -87,12 +86,14 @@ public class ProfesorView {
 
             if (scanner.hasNextInt()) {
                 opcion = scanner.nextInt();
+                scanner.nextLine(); // Consumir el Enter
             } else {
-                scanner.next();
+                System.out.println("Opción no válida. Intente de nuevo.");
+                scanner.next(); // Consumir entrada no numérica
+                scanner.nextLine(); // Limpiar
+                opcion = -1; // Valor para repetir el bucle
             }
-        }
-
-        pausa();
+        } while (opcion != 1 && opcion != 2 && opcion != 0);
         return opcion;
     }
 
@@ -156,6 +157,8 @@ public class ProfesorView {
 
         if (profesores.isEmpty()) {
             System.out.println("No hay profesores registrados.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
             return;
         }
 
@@ -218,13 +221,13 @@ public class ProfesorView {
             }
 
             if (profesorController.findByDni(dni) != null) {
-                System.out.println("Error: Ese DNI ya está registrado.");
-                return; // Salimos del método si el DNI ya existe
+                System.out.println("Error: Ese DNI ya está registrado. Intente con otro.");
+                continue; // Permite reintentar
             }
             break;
         } while (true);
 
-        // Solicitar nombre con validación (sin números)
+        // Solicitar nombre con validación
         String nombre = solicitarDato("Nombre: ", "nombre");
         if (nombre.equals("0")) {
             System.out.println("Registro cancelado.");
@@ -233,7 +236,7 @@ public class ProfesorView {
             return;
         }
 
-        // Solicitar apellido con validación (sin números)
+        // Solicitar apellido con validación
         String apellido = solicitarDato("Apellido: ", "apellido");
         if (apellido.equals("0")) {
             System.out.println("Registro cancelado.");
@@ -242,7 +245,7 @@ public class ProfesorView {
             return;
         }
 
-        // Solicitar teléfono con validación (solo números)
+        // Solicitar teléfono con validación
         String telefono = solicitarDato("Teléfono: ", "telefono");
         if (telefono.equals("0")) {
             System.out.println("Registro cancelado.");
@@ -268,8 +271,10 @@ public class ProfesorView {
         int confirmacion = confirmarAccion();
         if (confirmacion == 1) {
             profesorController.crearProfesor(profesor);
-            System.out.println("Profesor registrado!");
-        } else if (confirmacion == 0) {
+            System.out.println("¡Profesor registrado!");
+        } else if (confirmacion == 2) {
+            System.out.println("No se registró el profesor.");
+        } else {
             System.out.println("Registro cancelado.");
         }
         System.out.println("Presione Enter para continuar...");
@@ -432,8 +437,10 @@ public class ProfesorView {
             if (!nuevoEmail.isEmpty()) profesor.setEmail(nuevoEmail);
 
             profesorController.editarProfesor(profesor);
-            System.out.println("Profesor modificado!");
-        } else if (confirmacion == 0) {
+            System.out.println("¡Profesor modificado!");
+        } else if (confirmacion == 2) {
+            System.out.println("No se realizaron cambios.");
+        } else {
             System.out.println("Actualización cancelada.");
         }
         System.out.println("Presione Enter para continuar...");
@@ -475,8 +482,10 @@ public class ProfesorView {
         int confirmacion = confirmarAccion();
         if (confirmacion == 1) {
             profesorController.eliminarProfesor(profesor);
-            System.out.println("Profesor eliminado!");
-        } else if (confirmacion == 0) {
+            System.out.println("¡Profesor eliminado!");
+        } else if (confirmacion == 2) {
+            System.out.println("No se eliminó el profesor.");
+        } else {
             System.out.println("Eliminación cancelada.");
         }
         System.out.println("Presione Enter para continuar...");

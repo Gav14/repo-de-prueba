@@ -74,6 +74,7 @@ public class CarreraView {
         System.out.println("\n" + mensaje);
         System.out.println(YELLOW + "1. Sí" + RESET);
         System.out.println(YELLOW + "2. No" + RESET);
+        System.out.println(YELLOW + "0. Cancelar" + RESET);
         System.out.print("Opción: ");
 
         int opcion;
@@ -84,7 +85,7 @@ public class CarreraView {
             }
             opcion = scanner.nextInt();
             scanner.nextLine();
-        } while (opcion < 1 || opcion > 2);
+        } while (opcion < 0 || opcion > 2);
 
         return opcion == 1;
     }
@@ -155,8 +156,14 @@ public class CarreraView {
     private void buscarCarrera() {
         System.out.println("\n" + BLUE + BOLD + "BUSCAR CARRERA" + RESET);
         System.out.println("===============");
-        System.out.print("Ingrese el nombre o parte del nombre: ");
+        System.out.print("Ingrese el nombre o parte del nombre (0 para cancelar): ");
         String texto = scanner.nextLine();
+
+        if (texto.equals("0")) {
+            System.out.println(YELLOW + "Búsqueda cancelada." + RESET);
+            pausa();
+            return;
+        }
 
         try {
             List<Carrera> resultados = carreraController.buscarCarreras(texto);
@@ -179,9 +186,16 @@ public class CarreraView {
     private void registrarCarrera() {
         System.out.println("\n" + BLUE + BOLD + "REGISTRAR CARRERA" + RESET);
         System.out.println("==================");
+        System.out.println(YELLOW + "(Ingrese 0 en cualquier momento para cancelar)" + RESET);
 
         System.out.print("Nombre de la carrera: ");
         String nombre = scanner.nextLine();
+
+        if (nombre.equals("0")) {
+            System.out.println(YELLOW + "Registro cancelado." + RESET);
+            pausa();
+            return;
+        }
 
         if (nombre.trim().isEmpty()) {
             System.out.println(RED + "El nombre no puede estar vacío." + RESET);
@@ -207,19 +221,25 @@ public class CarreraView {
             }
 
             Turno turno = seleccionarTurno();
+            if (turno == null) return;
+
             Carrera carrera = new Carrera(nombre, turno);
 
             System.out.println("\n¿Desea asignar un plan de estudio?");
-            if (confirmarAccion("")) {
-                asignarPlanEstudio(carrera);
+            Boolean asignarPlan = confirmarAccion("");
+            if (asignarPlan != null && asignarPlan) {
+                if (!asignarPlanEstudio(carrera)) return;
             }
 
             System.out.println("\n" + CYAN + "Vista previa:" + RESET);
             mostrarCarreraSimple(carrera);
 
-            if (confirmarAccion("¿Confirmar registro?")) {
+            Boolean confirmacion = confirmarAccion("¿Confirmar registro?");
+            if (confirmacion != null && confirmacion) {
                 carreraController.createCarrera(carrera);
                 System.out.println(GREEN + "✓ Carrera registrada!" + RESET);
+            } else if (confirmacion == null) {
+                System.out.println(YELLOW + "Registro cancelado." + RESET);
             }
         } catch (IllegalArgumentException e) {
             System.out.println(RED + "Error: " + e.getMessage() + RESET);
@@ -230,9 +250,16 @@ public class CarreraView {
     private void modificarCarrera() {
         System.out.println("\n" + BLUE + BOLD + "MODIFICAR CARRERA" + RESET);
         System.out.println("==================");
+        System.out.println(YELLOW + "(Ingrese 0 en cualquier momento para cancelar)" + RESET);
 
         System.out.print("Ingrese el nombre o parte del nombre: ");
         String texto = scanner.nextLine();
+
+        if (texto.equals("0")) {
+            System.out.println(YELLOW + "Modificación cancelada." + RESET);
+            pausa();
+            return;
+        }
 
         try {
             List<Carrera> resultados = carreraController.buscarCarreras(texto);
@@ -258,21 +285,44 @@ public class CarreraView {
             PlanEstudio planOriginal = carrera.getPlanEstudio();
 
             System.out.println("\nTurno actual: " + carrera.getTurno());
-            if (confirmarAccion("¿Cambiar turno?")) {
+            Boolean cambiarTurno = confirmarAccion("¿Cambiar turno?");
+            if (cambiarTurno == null) {
+                System.out.println(YELLOW + "Modificación cancelada." + RESET);
+                pausa();
+                return;
+            }
+            if (cambiarTurno) {
                 Turno nuevoTurno = seleccionarTurno();
+                if (nuevoTurno == null) return;
                 carrera.setTurno(nuevoTurno);
             }
 
             System.out.println("\nPlan actual: " + (carrera.getPlanEstudio() != null ?
                     carrera.getPlanEstudio().getNombre() : "NO POSEE"));
-            if (confirmarAccion("¿Modificar plan de estudio?")) {
+            Boolean modificarPlan = confirmarAccion("¿Modificar plan de estudio?");
+            if (modificarPlan == null) {
+                System.out.println(YELLOW + "Modificación cancelada." + RESET);
+                carrera.setTurno(turnoOriginal);
+                carrera.setPlanEstudio(planOriginal);
+                pausa();
+                return;
+            }
+            if (modificarPlan) {
                 if (carrera.getPlanEstudio() == null) {
-                    asignarPlanEstudio(carrera);
+                    if (!asignarPlanEstudio(carrera)) return;
                 } else {
-                    if (confirmarAccion("¿Quitar plan actual?")) {
+                    Boolean quitarPlan = confirmarAccion("¿Quitar plan actual?");
+                    if (quitarPlan == null) {
+                        System.out.println(YELLOW + "Modificación cancelada." + RESET);
+                        carrera.setTurno(turnoOriginal);
+                        carrera.setPlanEstudio(planOriginal);
+                        pausa();
+                        return;
+                    }
+                    if (quitarPlan) {
                         carrera.setPlanEstudio(null);
                     } else {
-                        asignarPlanEstudio(carrera);
+                        if (!asignarPlanEstudio(carrera)) return;
                     }
                 }
             }
@@ -280,13 +330,14 @@ public class CarreraView {
             System.out.println("\n" + CYAN + "Vista previa:" + RESET);
             mostrarCarreraSimple(carrera);
 
-            if (confirmarAccion("¿Confirmar cambios?")) {
+            Boolean confirmacion = confirmarAccion("¿Confirmar cambios?");
+            if (confirmacion != null && confirmacion) {
                 carreraController.updateCarrera(carrera);
                 System.out.println(GREEN + "✓ Carrera modificada!" + RESET);
             } else {
                 carrera.setTurno(turnoOriginal);
                 carrera.setPlanEstudio(planOriginal);
-                System.out.println("Modificación cancelada.");
+                System.out.println(YELLOW + "Modificación cancelada." + RESET);
             }
         } catch (IllegalArgumentException e) {
             System.out.println(RED + "Error: " + e.getMessage() + RESET);
@@ -297,9 +348,16 @@ public class CarreraView {
     private void eliminarCarrera() {
         System.out.println("\n" + BLUE + BOLD + "ELIMINAR CARRERA" + RESET);
         System.out.println("=================");
+        System.out.println(YELLOW + "(Ingrese 0 en cualquier momento para cancelar)" + RESET);
 
         System.out.print("Ingrese el nombre o parte del nombre: ");
         String texto = scanner.nextLine();
+
+        if (texto.equals("0")) {
+            System.out.println(YELLOW + "Eliminación cancelada." + RESET);
+            pausa();
+            return;
+        }
 
         try {
             List<Carrera> resultados = carreraController.buscarCarreras(texto);
@@ -322,9 +380,12 @@ public class CarreraView {
             System.out.println("\n" + YELLOW + "Carrera a eliminar:" + RESET);
             mostrarCarreraSimple(carrera);
 
-            if (confirmarAccion(RED + "¿Está seguro de eliminar esta carrera?" + RESET)) {
+            Boolean confirmacion = confirmarAccion(RED + "¿Está seguro de eliminar esta carrera?" + RESET);
+            if (confirmacion != null && confirmacion) {
                 carreraController.deleteCarrera(carrera);
                 System.out.println(GREEN + "✓ Carrera eliminada (estado: INACTIVA)" + RESET);
+            } else if (confirmacion == null) {
+                System.out.println(YELLOW + "Eliminación cancelada." + RESET);
             }
         } catch (IllegalArgumentException e) {
             System.out.println(RED + "Error: " + e.getMessage() + RESET);
@@ -335,9 +396,16 @@ public class CarreraView {
     private void reactivarCarrera() {
         System.out.println("\n" + BLUE + BOLD + "REACTIVAR CARRERA" + RESET);
         System.out.println("==================");
+        System.out.println(YELLOW + "(Ingrese 0 en cualquier momento para cancelar)" + RESET);
 
         System.out.print("Ingrese el nombre o parte del nombre: ");
         String texto = scanner.nextLine();
+
+        if (texto.equals("0")) {
+            System.out.println(YELLOW + "Reactivación cancelada." + RESET);
+            pausa();
+            return;
+        }
 
         try {
             List<Carrera> resultados = carreraController.buscarCarreras(texto);
@@ -360,9 +428,12 @@ public class CarreraView {
             System.out.println("\n" + CYAN + "Carrera a reactivar:" + RESET);
             mostrarCarreraSimple(carrera);
 
-            if (confirmarAccion("¿Confirmar reactivación?")) {
+            Boolean confirmacion = confirmarAccion("¿Confirmar reactivación?");
+            if (confirmacion != null && confirmacion) {
                 carreraController.reactivarCarrera(carrera.getNombre());
                 System.out.println(GREEN + "✓ Carrera reactivada!" + RESET);
+            } else if (confirmacion == null) {
+                System.out.println(YELLOW + "Reactivación cancelada." + RESET);
             }
         } catch (IllegalArgumentException e) {
             System.out.println(RED + "Error: " + e.getMessage() + RESET);
@@ -386,12 +457,12 @@ public class CarreraView {
             }
             seleccion = scanner.nextInt();
             scanner.nextLine();
-        } while (seleccion < 0 || seleccion > carreras.size());
+            if (seleccion == 0) {
+                System.out.println(YELLOW + "Operación cancelada." + RESET);
+                return null;
+            }
+        } while (seleccion < 1 || seleccion > carreras.size());
 
-        if (seleccion == 0) {
-            System.out.println("Operación cancelada.");
-            return null;
-        }
         return carreras.get(seleccion - 1);
     }
 
@@ -400,7 +471,8 @@ public class CarreraView {
         System.out.println("1. MAÑANA");
         System.out.println("2. TARDE");
         System.out.println("3. NOCHE");
-        System.out.print("Seleccione (1-3): ");
+        System.out.println("0. Cancelar");
+        System.out.print("Seleccione (1-3, 0 para cancelar): ");
 
         int opcion;
         do {
@@ -410,6 +482,10 @@ public class CarreraView {
             }
             opcion = scanner.nextInt();
             scanner.nextLine();
+            if (opcion == 0) {
+                System.out.println(YELLOW + "Selección cancelada." + RESET);
+                return null;
+            }
         } while (opcion < 1 || opcion > 3);
 
         return switch (opcion) {
@@ -419,22 +495,23 @@ public class CarreraView {
         };
     }
 
-    private void asignarPlanEstudio(Carrera carrera) {
+    private boolean asignarPlanEstudio(Carrera carrera) {
         try {
             List<PlanEstudio> planes = planEstudioController.findAll();
             List<PlanEstudio> activos = planes.stream().filter(PlanEstudio::isActivo).toList();
 
             if (activos.isEmpty()) {
                 System.out.println(YELLOW + "No hay planes de estudio activos." + RESET);
-                return;
+                return true; // No hay planes pero no es error
             }
 
             System.out.println("\nPlanes disponibles:");
             for (int i = 0; i < activos.size(); i++) {
                 System.out.println((i + 1) + ". " + activos.get(i).getNombre());
             }
+            System.out.println("0. Cancelar");
 
-            System.out.print("Seleccione (0 para cancelar): ");
+            System.out.print("Seleccione: ");
             int seleccion;
             do {
                 while (!scanner.hasNextInt()) {
@@ -443,14 +520,18 @@ public class CarreraView {
                 }
                 seleccion = scanner.nextInt();
                 scanner.nextLine();
-            } while (seleccion < 0 || seleccion > activos.size());
+                if (seleccion == 0) {
+                    System.out.println(YELLOW + "Asignación cancelada." + RESET);
+                    return false;
+                }
+            } while (seleccion < 1 || seleccion > activos.size());
 
-            if (seleccion > 0) {
-                carrera.setPlanEstudio(activos.get(seleccion - 1));
-                System.out.println(GREEN + "✓ Plan asignado." + RESET);
-            }
+            carrera.setPlanEstudio(activos.get(seleccion - 1));
+            System.out.println(GREEN + "✓ Plan asignado." + RESET);
+            return true;
         } catch (Exception e) {
             System.out.println(RED + "Error al asignar plan." + RESET);
+            return false;
         }
     }
 

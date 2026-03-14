@@ -50,7 +50,7 @@ public class AlumnoInscriptoCarreraView {
             System.out.println(CYAN + "2. Listar inscripciones" + RESET);
             System.out.println(CYAN + "3. Actualizar inscripción" + RESET);
             System.out.println(CYAN + "4. Eliminar inscripción" + RESET);
-            System.out.println(YELLOW + "0. Volver" + RESET);
+            System.out.println(YELLOW + "0. Volver al menú principal" + RESET);
 
             int opcion = leerEntero();
             switch (opcion) {
@@ -70,10 +70,17 @@ public class AlumnoInscriptoCarreraView {
 
     private void crearInscripcion() {
         System.out.println("\n" + BLUE + BOLD + "---------- NUEVA INSCRIPCIÓN ----------" + RESET);
+        System.out.println(YELLOW + "(Ingrese 0 en cualquier momento para cancelar)" + RESET);
 
         scanner.nextLine();
         System.out.print("Ingrese el año de ingreso (ej. 2024): ");
         String anio = scanner.nextLine();
+
+        if (anio.equals("0")) {
+            System.out.println(YELLOW + "Operación cancelada." + RESET);
+            pausa();
+            return;
+        }
 
         Alumno alumno = seleccionarAlumno();
         if (alumno == null) return;
@@ -103,10 +110,13 @@ public class AlumnoInscriptoCarreraView {
 
         mostrarResumenInscripcion(inscripcion);
 
-        System.out.println("\n" + YELLOW + "¿Confirmar inscripción? (1.Sí / 2.No)" + RESET);
-        if (leerEntero() == 1) {
+        System.out.println("\n" + YELLOW + "¿Confirmar inscripción? (1.Sí / 2.No / 0.Cancelar)" + RESET);
+        int opcion = leerEnteroOpcion();
+        if (opcion == 1) {
             inscripcionController.save(inscripcion);
             System.out.println(GREEN + "Inscripción registrada con éxito." + RESET);
+        } else if (opcion == 0) {
+            System.out.println(YELLOW + "Operación cancelada." + RESET);
         }
         pausa();
     }
@@ -146,6 +156,7 @@ public class AlumnoInscriptoCarreraView {
 
     private void actualizarInscripcion() {
         System.out.println("\n" + BLUE + BOLD + "---------- ACTUALIZAR INSCRIPCIÓN ----------" + RESET);
+        System.out.println(YELLOW + "(Ingrese 0 en cualquier momento para cancelar)" + RESET);
 
         AlumnoInscriptoCarrera ins = seleccionarInscripcion();
         if (ins == null) {
@@ -163,8 +174,14 @@ public class AlumnoInscriptoCarreraView {
         scanner.nextLine();
 
         System.out.println("Año de ingreso actual: " + ins.getAnioIngreso());
-        System.out.print("Nuevo año de ingreso (Enter para dejar igual): ");
+        System.out.print("Nuevo año de ingreso (Enter para dejar igual / 0 para cancelar): ");
         String nuevoAnio = scanner.nextLine();
+
+        if (nuevoAnio.equals("0")) {
+            System.out.println(YELLOW + "Operación cancelada." + RESET);
+            pausa();
+            return;
+        }
 
         if (!nuevoAnio.isBlank()) insAuxi.setAnioIngreso(nuevoAnio);
 
@@ -174,9 +191,18 @@ public class AlumnoInscriptoCarreraView {
                 YELLOW + " (No puede modificarse)" + RESET);
 
         // CAMBIO DE CARRERA SÍ ESTÁ PERMITIDO
-        System.out.println("\n" + YELLOW + "¿Desea cambiar la carrera? (1.Sí / 2.No)" + RESET);
-        if (leerEntero() == 1) {
+        System.out.println("\n" + YELLOW + "¿Desea cambiar la carrera? (1.Sí / 2.No / 0.Cancelar)" + RESET);
+        int opcionCarrera = leerEnteroOpcion();
+        if (opcionCarrera == 0) {
+            System.out.println(YELLOW + "Operación cancelada." + RESET);
+            pausa();
+            return;
+        }
+
+        if (opcionCarrera == 1) {
             Carrera nuevaCarrera = seleccionarCarrera();
+            if (nuevaCarrera == null) return;
+
             //validaciones para que no haya duplicados
             boolean bandera = false;
             for(AlumnoInscriptoCarrera alu : inscripcionController.findAll()){
@@ -193,7 +219,6 @@ public class AlumnoInscriptoCarreraView {
             }
             if (nuevaCarrera != null) {
                 insAuxi.setCarrera(nuevaCarrera);
-
                 // PLAN DE ESTUDIO SE ACTUALIZA AUTOMÁTICAMENTE
                 insAuxi.setPlanEstudio(nuevaCarrera.getPlanEstudio());
             }
@@ -201,10 +226,13 @@ public class AlumnoInscriptoCarreraView {
 
         mostrarResumenInscripcion(insAuxi);
 
-        System.out.println("\n" + YELLOW + "¿Guardar cambios? (1.Sí / 2.No)" + RESET);
-        if (leerEntero() == 1) {
+        System.out.println("\n" + YELLOW + "¿Guardar cambios? (1.Sí / 2.No / 0.Cancelar)" + RESET);
+        int opcionGuardar = leerEnteroOpcion();
+        if (opcionGuardar == 1) {
             inscripcionController.update(insAuxi);
             System.out.println(GREEN + "Inscripción actualizada." + RESET);
+        } else if (opcionGuardar == 0) {
+            System.out.println(YELLOW + "Operación cancelada." + RESET);
         }
         pausa();
     }
@@ -215,6 +243,7 @@ public class AlumnoInscriptoCarreraView {
 
     private void eliminarInscripcion() {
         System.out.println("\n" + BLUE + BOLD + "---------- ELIMINAR INSCRIPCIÓN ----------" + RESET);
+        System.out.println(YELLOW + "(Ingrese 0 en cualquier momento para cancelar)" + RESET);
 
         AlumnoInscriptoCarrera ins = seleccionarInscripcion();
         if (ins == null) {
@@ -224,10 +253,13 @@ public class AlumnoInscriptoCarreraView {
 
         mostrarResumenInscripcion(ins);
 
-        System.out.println("\n" + YELLOW + "¿Confirmar baja? (1.Sí / 2.No)" + RESET);
-        if (leerEntero() == 1) {
+        System.out.println("\n" + YELLOW + "¿Confirmar baja? (1.Sí / 2.No / 0.Cancelar)" + RESET);
+        int opcion = leerEnteroOpcion();
+        if (opcion == 1) {
             inscripcionController.delete(ins);
             System.out.println(GREEN + "Inscripción eliminada." + RESET);
+        } else if (opcion == 0) {
+            System.out.println(YELLOW + "Operación cancelada." + RESET);
         }
         pausa();
     }
@@ -243,7 +275,7 @@ public class AlumnoInscriptoCarreraView {
             return null;
         }
 
-        System.out.println("\n" + CYAN + "--- Seleccione un Alumno ---" + RESET);
+        System.out.println("\n" + CYAN + "--- Seleccione un Alumno (0 para cancelar) ---" + RESET);
 
         for (int i = 0; i < lista.size(); i++) {
             Alumno a = lista.get(i);
@@ -251,6 +283,10 @@ public class AlumnoInscriptoCarreraView {
         }
 
         int op = seleccionarDeLista(lista.size());
+        if (op == 0) {
+            System.out.println(YELLOW + "Selección cancelada." + RESET);
+            return null;
+        }
         return lista.get(op - 1);
     }
 
@@ -261,7 +297,7 @@ public class AlumnoInscriptoCarreraView {
             return null;
         }
 
-        System.out.println("\n" + CYAN + "--- Seleccione una Carrera ---" + RESET);
+        System.out.println("\n" + CYAN + "--- Seleccione una Carrera (0 para cancelar) ---" + RESET);
 
         for (int i = 0; i < lista.size(); i++) {
             Carrera c = lista.get(i);
@@ -269,6 +305,10 @@ public class AlumnoInscriptoCarreraView {
         }
 
         int op = seleccionarDeLista(lista.size());
+        if (op == 0) {
+            System.out.println(YELLOW + "Selección cancelada." + RESET);
+            return null;
+        }
         return lista.get(op - 1);
     }
 
@@ -279,7 +319,7 @@ public class AlumnoInscriptoCarreraView {
             return null;
         }
 
-        System.out.println("\n" + CYAN + "--- Seleccione una Inscripción ---" + RESET);
+        System.out.println("\n" + CYAN + "--- Seleccione una Inscripción (0 para cancelar) ---" + RESET);
 
         for (int i = 0; i < lista.size(); i++) {
             AlumnoInscriptoCarrera a = lista.get(i);
@@ -290,6 +330,10 @@ public class AlumnoInscriptoCarreraView {
         }
 
         int op = seleccionarDeLista(lista.size());
+        if (op == 0) {
+            System.out.println(YELLOW + "Selección cancelada." + RESET);
+            return null;
+        }
         return lista.get(op - 1);
     }
 
@@ -316,8 +360,9 @@ public class AlumnoInscriptoCarreraView {
     private int seleccionarDeLista(int max) {
         int op;
         do {
-            System.out.print("Seleccione opción: ");
+            System.out.print("Seleccione opción (0 para cancelar): ");
             op = leerEntero();
+            if (op == 0) return 0;
         } while (op < 1 || op > max);
         return op;
     }
@@ -330,6 +375,23 @@ public class AlumnoInscriptoCarreraView {
         int n = scanner.nextInt();
         scanner.nextLine();
         return n;
+    }
+
+    private int leerEnteroOpcion() {
+        int opcion;
+        do {
+            System.out.print("Opción: ");
+            while (!scanner.hasNextInt()) {
+                scanner.next();
+                System.out.print(RED + "Debe ingresar un número (1, 2 o 0): " + RESET);
+            }
+            opcion = scanner.nextInt();
+            scanner.nextLine();
+            if (opcion < 0 || opcion > 2) {
+                System.out.print(RED + "Opción inválida. Ingrese 1, 2 o 0: " + RESET);
+            }
+        } while (opcion < 0 || opcion > 2);
+        return opcion;
     }
 
     private void pausa() {

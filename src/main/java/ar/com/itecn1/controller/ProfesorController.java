@@ -37,10 +37,6 @@ public class ProfesorController {
         return profesorService.validarFormatoDni(dni);
     }
 
-    public boolean validarCampos(Profesor profesor) {
-        return profesorService.validarCamposObligatorios(profesor);
-    }
-
     public boolean validarNombre(String nombre) {
         return profesorService.validarNombre(nombre);
     }
@@ -57,7 +53,11 @@ public class ProfesorController {
         return profesorService.validarEmail(email);
     }
 
-    public boolean validarProfesorCompleto(Profesor profesor) {
-        return profesorService.validarProfesorCompleto(profesor);
-    }
+//    public boolean validarProfesorCompleto(Profesor profesor) {
+//        return profesorService.validarProfesorCompleto(profesor);
+//    }
+//
+//    public boolean validarCampos(Profesor profesor) {
+//        return profesorService.validarCamposObligatorios(profesor);
+//    }
 }

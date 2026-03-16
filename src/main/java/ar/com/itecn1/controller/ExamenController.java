@@ -21,15 +21,4 @@ public class ExamenController {
         return this.examenService.findById(idExamen);
     }
 
-    public void createExamen(Examen examen){
-        this.examenService.save(examen);
-    }
-
-    public void updateExamen(Examen examen){
-        this.examenService.update(examen);
-    }
-
-    public void deleteExamen(Examen examen){
-        this.examenService.delete(examen);
-    }
 }

@@ -52,12 +52,4 @@ public class ProfesorController {
     public boolean validarEmail(String email) {
         return profesorService.validarEmail(email);
     }
-
-//    public boolean validarProfesorCompleto(Profesor profesor) {
-//        return profesorService.validarProfesorCompleto(profesor);
-//    }
-//
-//    public boolean validarCampos(Profesor profesor) {
-//        return profesorService.validarCamposObligatorios(profesor);
-//    }
 }

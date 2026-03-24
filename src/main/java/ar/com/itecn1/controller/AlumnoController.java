@@ -33,25 +33,4 @@ public class AlumnoController {
         this.alumnoService.delete(alumno);
     }
 
-    public boolean validarDni(String dni) {
-        return alumnoService.validarFormatoDni(dni);
-    }
-
-    public boolean validarNombre(String nombre) {
-        return alumnoService.validarNombre(nombre);
-    }
-
-    public boolean validarApellido(String apellido) {
-        return alumnoService.validarApellido(apellido);
-    }
-
-    // NUEVO: Método para validar teléfono
-    public boolean validarTelefono(String telefono) {
-        return alumnoService.validarTelefono(telefono);
-    }
-
-    public boolean validarEmail(String email) {
-        return alumnoService.validarEmail(email);
-    }
-
 }

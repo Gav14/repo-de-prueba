@@ -2,12 +2,12 @@ package ar.com.itecn1.view;
 
 import ar.com.itecn1.controller.ProfesorController;
 import ar.com.itecn1.model.Profesor;
+import ar.com.itecn1.view.utils.ValidacionesView;
 
 import java.util.List;
 import java.util.Scanner;
 
 public class ProfesorView {
-
     private final ProfesorController profesorController;
     private final Scanner scanner;
 
@@ -44,7 +44,7 @@ public class ProfesorView {
     }
 
     // ----------------------------------------------------------------
-    // Métodos auxiliares reutilizables
+    // Métodos auxiliares
     // ----------------------------------------------------------------
 
     private void mostrarMenu() {
@@ -101,52 +101,6 @@ public class ProfesorView {
         scanner.nextLine(); // Limpia buffer tras nextInt()
     }
 
-    private String solicitarDato(String mensaje, String tipo) {
-        String dato;
-        boolean valido;
-
-        do {
-            System.out.print(mensaje);
-            dato = scanner.nextLine().trim();
-
-            // Verificar si el usuario quiere cancelar
-            if (dato.equals("0")) {
-                return "0";
-            }
-
-            valido = true;
-
-            switch (tipo) {
-                case "nombre":
-                    if (!profesorController.validarNombre(dato)) {
-                        System.out.println("Error: El nombre no puede contener números y no debe estar vacío.");
-                        valido = false;
-                    }
-                    break;
-                case "apellido":
-                    if (!profesorController.validarApellido(dato)) {
-                        System.out.println("Error: El apellido no puede contener números y no debe estar vacío.");
-                        valido = false;
-                    }
-                    break;
-                case "email":
-                    if (!profesorController.validarEmail(dato)) {
-                        System.out.println("Error: El email debe tener un formato válido (ej: usuario@dominio.com) y no debe estar vacío.");
-                        valido = false;
-                    }
-                    break;
-                case "telefono":
-                    if (!profesorController.validarTelefono(dato)) {
-                        System.out.println("Error: El teléfono debe contener solo números y no debe estar vacío.");
-                        valido = false;
-                    }
-                    break;
-            }
-        } while (!valido);
-
-        return dato;
-    }
-
     // ----------------------------------------------------------------
     // Funcionalidades
     // ----------------------------------------------------------------
@@ -179,8 +133,7 @@ public class ProfesorView {
             return;
         }
 
-        // Validar formato
-        if (!profesorController.validarFormatoDni(dni)) {
+        if (!ValidacionesView.validarDni(dni)) {
             System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
             System.out.println("Presione Enter para continuar...");
             scanner.nextLine();
@@ -202,33 +155,25 @@ public class ProfesorView {
         System.out.println("----------Registrar Profesor----------");
         System.out.println("(Ingrese 0 en cualquier momento para cancelar)");
 
-        // Solicitar DNI con validación
+        // Solicitar DNI con validación y verificar duplicado
         String dni;
         do {
-            System.out.print("DNI: ");
-            dni = scanner.nextLine().trim();
-
+            dni = ValidacionesView.solicitarDato(scanner, "DNI: ", "dni");
             if (dni.equals("0")) {
                 System.out.println("Registro cancelado.");
                 System.out.println("Presione Enter para continuar...");
                 scanner.nextLine();
                 return;
             }
-
-            if (!profesorController.validarFormatoDni(dni)) {
-                System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
-                continue;
-            }
-
             if (profesorController.findByDni(dni) != null) {
                 System.out.println("Error: Ese DNI ya está registrado. Intente con otro.");
-                continue; // Permite reintentar
+                continue;
             }
             break;
         } while (true);
 
-        // Solicitar nombre con validación
-        String nombre = solicitarDato("Nombre: ", "nombre");
+        // Solicitar nombre
+        String nombre = ValidacionesView.solicitarDato(scanner, "Nombre: ", "nombre");
         if (nombre.equals("0")) {
             System.out.println("Registro cancelado.");
             System.out.println("Presione Enter para continuar...");
@@ -236,8 +181,8 @@ public class ProfesorView {
             return;
         }
 
-        // Solicitar apellido con validación
-        String apellido = solicitarDato("Apellido: ", "apellido");
+        // Solicitar apellido
+        String apellido = ValidacionesView.solicitarDato(scanner, "Apellido: ", "apellido");
         if (apellido.equals("0")) {
             System.out.println("Registro cancelado.");
             System.out.println("Presione Enter para continuar...");
@@ -245,8 +190,8 @@ public class ProfesorView {
             return;
         }
 
-        // Solicitar teléfono con validación
-        String telefono = solicitarDato("Teléfono: ", "telefono");
+        // Solicitar teléfono
+        String telefono = ValidacionesView.solicitarDato(scanner, "Teléfono: ", "telefono");
         if (telefono.equals("0")) {
             System.out.println("Registro cancelado.");
             System.out.println("Presione Enter para continuar...");
@@ -254,8 +199,8 @@ public class ProfesorView {
             return;
         }
 
-        // Solicitar email con validación
-        String email = solicitarDato("Email: ", "email");
+        // Solicitar email
+        String email = ValidacionesView.solicitarDato(scanner, "Email: ", "email");
         if (email.equals("0")) {
             System.out.println("Registro cancelado.");
             System.out.println("Presione Enter para continuar...");
@@ -295,7 +240,7 @@ public class ProfesorView {
             return;
         }
 
-        if (!profesorController.validarFormatoDni(dni)) {
+        if (!ValidacionesView.validarDni(dni)) {
             System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
             System.out.println("Presione Enter para continuar...");
             scanner.nextLine();
@@ -315,24 +260,16 @@ public class ProfesorView {
 
         System.out.println("\nNUEVOS DATOS (dejar en blanco para no cambiar / 0 para cancelar):");
 
-        // Nuevo DNI (con validación)
+        // Nuevo DNI
         String nuevoDni;
         do {
-            System.out.print("Nuevo DNI (" + dni + "): ");
-            nuevoDni = scanner.nextLine().trim();
-
+            nuevoDni = ValidacionesView.solicitarDatoActualizacion(scanner, "Nuevo DNI", profesor.getDni(), "dni");
             if (nuevoDni.equals("0")) {
                 System.out.println("Actualización cancelada.");
                 System.out.println("Presione Enter para continuar...");
                 scanner.nextLine();
                 return;
             }
-
-            if (!nuevoDni.isEmpty() && !profesorController.validarFormatoDni(nuevoDni)) {
-                System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
-                continue;
-            }
-
             if (!nuevoDni.isEmpty() && profesorController.findByDni(nuevoDni) != null && !nuevoDni.equals(dni)) {
                 System.out.println("Error: Ese DNI ya está registrado por otro profesor.");
                 continue;
@@ -340,85 +277,41 @@ public class ProfesorView {
             break;
         } while (true);
 
-        // Nuevo nombre (con validación)
-        String nuevoNombre;
-        do {
-            System.out.print("Nuevo nombre (" + profesor.getNombre() + "): ");
-            nuevoNombre = scanner.nextLine().trim();
+        // Nuevo nombre
+        String nuevoNombre = ValidacionesView.solicitarDatoActualizacion(scanner, "Nuevo nombre", profesor.getNombre(), "nombre");
+        if (nuevoNombre.equals("0")) {
+            System.out.println("Actualización cancelada.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
+            return;
+        }
 
-            if (nuevoNombre.equals("0")) {
-                System.out.println("Actualización cancelada.");
-                System.out.println("Presione Enter para continuar...");
-                scanner.nextLine();
-                return;
-            }
+        // Nuevo apellido
+        String nuevoApellido = ValidacionesView.solicitarDatoActualizacion(scanner, "Nuevo apellido", profesor.getApellido(), "apellido");
+        if (nuevoApellido.equals("0")) {
+            System.out.println("Actualización cancelada.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
+            return;
+        }
 
-            if (!nuevoNombre.isEmpty() && !profesorController.validarNombre(nuevoNombre)) {
-                System.out.println("Error: El nombre no puede contener números.");
-                continue;
-            }
-            break;
-        } while (true);
+        // Nuevo teléfono
+        String nuevoTelefono = ValidacionesView.solicitarDatoActualizacion(scanner, "Nuevo teléfono", profesor.getTelefono(), "telefono");
+        if (nuevoTelefono.equals("0")) {
+            System.out.println("Actualización cancelada.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
+            return;
+        }
 
-        // Nuevo apellido (con validación)
-        String nuevoApellido;
-        do {
-            System.out.print("Nuevo apellido (" + profesor.getApellido() + "): ");
-            nuevoApellido = scanner.nextLine().trim();
-
-            if (nuevoApellido.equals("0")) {
-                System.out.println("Actualización cancelada.");
-                System.out.println("Presione Enter para continuar...");
-                scanner.nextLine();
-                return;
-            }
-
-            if (!nuevoApellido.isEmpty() && !profesorController.validarApellido(nuevoApellido)) {
-                System.out.println("Error: El apellido no puede contener números.");
-                continue;
-            }
-            break;
-        } while (true);
-
-        // Nuevo teléfono (con validación - solo números)
-        String nuevoTelefono;
-        do {
-            System.out.print("Nuevo teléfono (" + profesor.getTelefono() + "): ");
-            nuevoTelefono = scanner.nextLine().trim();
-
-            if (nuevoTelefono.equals("0")) {
-                System.out.println("Actualización cancelada.");
-                System.out.println("Presione Enter para continuar...");
-                scanner.nextLine();
-                return;
-            }
-
-            if (!nuevoTelefono.isEmpty() && !profesorController.validarTelefono(nuevoTelefono)) {
-                System.out.println("Error: El teléfono debe contener solo números.");
-                continue;
-            }
-            break;
-        } while (true);
-
-        // Nuevo email (con validación)
-        String nuevoEmail;
-        do {
-            System.out.print("Nuevo email (" + profesor.getEmail() + "): ");
-            nuevoEmail = scanner.nextLine().trim();
-
-            if (nuevoEmail.equals("0")) {
-                System.out.println("Actualización cancelada.");
-                System.out.println("Presione Enter para continuar...");
-                scanner.nextLine();
-                return;
-            }
-
-            if (!nuevoEmail.isEmpty() && !profesorController.validarEmail(nuevoEmail)) {
-                System.out.println("Error: El email debe tener un formato válido.");
-                continue;
-            }
-            break;
-        } while (true);
+        // Nuevo email
+        String nuevoEmail = ValidacionesView.solicitarDatoActualizacion(scanner, "Nuevo email", profesor.getEmail(), "email");
+        if (nuevoEmail.equals("0")) {
+            System.out.println("Actualización cancelada.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
+            return;
+        }
 
         // Vista previa
         System.out.println("\nVista previa:");
@@ -461,7 +354,7 @@ public class ProfesorView {
             return;
         }
 
-        if (!profesorController.validarFormatoDni(dni)) {
+        if (!ValidacionesView.validarDni(dni)) {
             System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
             System.out.println("Presione Enter para continuar...");
             scanner.nextLine();

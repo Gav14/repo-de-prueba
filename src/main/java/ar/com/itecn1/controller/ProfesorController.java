@@ -32,24 +32,4 @@ public class ProfesorController {
     public void eliminarProfesor(Profesor profesor) {
         this.profesorService.delete(profesor);
     }
-
-    public boolean validarFormatoDni(String dni) {
-        return profesorService.validarFormatoDni(dni);
-    }
-
-    public boolean validarNombre(String nombre) {
-        return profesorService.validarNombre(nombre);
-    }
-
-    public boolean validarApellido(String apellido) {
-        return profesorService.validarApellido(apellido);
-    }
-
-    public boolean validarTelefono(String telefono) {
-        return profesorService.validarTelefono(telefono);
-    }
-
-    public boolean validarEmail(String email) {
-        return profesorService.validarEmail(email);
-    }
 }

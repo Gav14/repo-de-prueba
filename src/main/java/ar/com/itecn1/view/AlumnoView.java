@@ -1,14 +1,15 @@
 package ar.com.itecn1.view;
 
 import ar.com.itecn1.controller.AlumnoController;
+import ar.com.itecn1.view.utils.ValidacionesView;
 import ar.com.itecn1.model.Alumno;
 
 import java.util.List;
 import java.util.Scanner;
 
 public class AlumnoView {
-    private final AlumnoController alumnoController;
     private final Scanner scanner;
+    private final AlumnoController alumnoController;
 
     public AlumnoView(AlumnoController alumnoController, Scanner scanner) {
         this.alumnoController = alumnoController;
@@ -132,7 +133,8 @@ public class AlumnoView {
             return;
         }
 
-        if (!alumnoController.validarDni(dni)) {
+        // Usar la nueva validación
+        if (!ValidacionesView.validarDni(dni)) {
             System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
             System.out.println("Presione Enter para continuar...");
             scanner.nextLine();
@@ -150,82 +152,29 @@ public class AlumnoView {
         scanner.nextLine();
     }
 
-    private String solicitarDato(String mensaje, String tipo) {
-        String dato;
-        boolean valido;
-
-        do {
-            System.out.print(mensaje);
-            dato = scanner.nextLine().trim();
-
-            if (dato.equals("0")) {
-                return "0";
-            }
-
-            valido = true;
-
-            switch (tipo) {
-                case "nombre":
-                    if (!alumnoController.validarNombre(dato)) {
-                        System.out.println("Error: El nombre no puede contener números y no debe estar vacío.");
-                        valido = false;
-                    }
-                    break;
-                case "apellido":
-                    if (!alumnoController.validarApellido(dato)) {
-                        System.out.println("Error: El apellido no puede contener números y no debe estar vacío.");
-                        valido = false;
-                    }
-                    break;
-                case "email":
-                    if (!alumnoController.validarEmail(dato)) {
-                        System.out.println("Error: El email debe tener un formato válido (ej: usuario@dominio.com) y no debe estar vacío.");
-                        valido = false;
-                    }
-                    break;
-                case "telefono":
-                    if (!alumnoController.validarTelefono(dato)) {
-                        System.out.println("Error: El teléfono debe contener solo números y no debe estar vacío.");
-                        valido = false;
-                    }
-                    break;
-            }
-        } while (!valido);
-
-        return dato;
-    }
-
     private void crearAlumno() {
         System.out.println("----------Registrar alumno----------");
         System.out.println("(Ingrese 0 en cualquier momento para cancelar)");
 
-        // Solicitar DNI con validación
+        // Solicitar DNI con validación y verificar duplicado
         String dni;
         do {
-            System.out.print("DNI: ");
-            dni = scanner.nextLine().trim();
-
+            dni = ValidacionesView.solicitarDato(scanner, "DNI: ", "dni");
             if (dni.equals("0")) {
                 System.out.println("Registro cancelado.");
                 System.out.println("Presione Enter para continuar...");
                 scanner.nextLine();
                 return;
             }
-
-            if (!alumnoController.validarDni(dni)) {
-                System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
-                continue;
-            }
-
             if (alumnoController.findByDni(dni) != null) {
                 System.out.println("Error: Ese DNI ya está registrado. Intente con otro.");
-                continue; // Permite reintentar en lugar de salir
+                continue;
             }
             break;
         } while (true);
 
-        // Solicitar nombre con validación
-        String nombre = solicitarDato("Nombre: ", "nombre");
+        // Solicitar nombre
+        String nombre = ValidacionesView.solicitarDato(scanner, "Nombre: ", "nombre");
         if (nombre.equals("0")) {
             System.out.println("Registro cancelado.");
             System.out.println("Presione Enter para continuar...");
@@ -233,8 +182,8 @@ public class AlumnoView {
             return;
         }
 
-        // Solicitar apellido con validación
-        String apellido = solicitarDato("Apellido: ", "apellido");
+        // Solicitar apellido
+        String apellido = ValidacionesView.solicitarDato(scanner, "Apellido: ", "apellido");
         if (apellido.equals("0")) {
             System.out.println("Registro cancelado.");
             System.out.println("Presione Enter para continuar...");
@@ -242,8 +191,8 @@ public class AlumnoView {
             return;
         }
 
-        // Solicitar teléfono con validación
-        String telefono = solicitarDato("Teléfono: ", "telefono");
+        // Solicitar teléfono
+        String telefono = ValidacionesView.solicitarDato(scanner, "Teléfono: ", "telefono");
         if (telefono.equals("0")) {
             System.out.println("Registro cancelado.");
             System.out.println("Presione Enter para continuar...");
@@ -251,8 +200,8 @@ public class AlumnoView {
             return;
         }
 
-        // Solicitar email con validación
-        String email = solicitarDato("Email: ", "email");
+        // Solicitar email
+        String email = ValidacionesView.solicitarDato(scanner, "Email: ", "email");
         if (email.equals("0")) {
             System.out.println("Registro cancelado.");
             System.out.println("Presione Enter para continuar...");
@@ -292,7 +241,7 @@ public class AlumnoView {
             return;
         }
 
-        if (!alumnoController.validarDni(dni)) {
+        if (!ValidacionesView.validarDni(dni)) {
             System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
             System.out.println("Presione Enter para continuar...");
             scanner.nextLine();
@@ -300,7 +249,6 @@ public class AlumnoView {
         }
 
         Alumno alumno = alumnoController.findByDni(dni);
-
         if (alumno == null) {
             System.out.println("Alumno no encontrado.");
             System.out.println("Presione Enter para continuar...");
@@ -316,21 +264,13 @@ public class AlumnoView {
         // Nuevo DNI
         String nuevoDni;
         do {
-            System.out.print("Nuevo DNI (" + dni + "): ");
-            nuevoDni = scanner.nextLine().trim();
-
+            nuevoDni = ValidacionesView.solicitarDatoActualizacion(scanner, "Nuevo DNI", alumno.getDni(), "dni");
             if (nuevoDni.equals("0")) {
                 System.out.println("Actualización cancelada.");
                 System.out.println("Presione Enter para continuar...");
                 scanner.nextLine();
                 return;
             }
-
-            if (!nuevoDni.isEmpty() && !alumnoController.validarDni(nuevoDni)) {
-                System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
-                continue;
-            }
-
             if (!nuevoDni.isEmpty() && alumnoController.findByDni(nuevoDni) != null && !nuevoDni.equals(dni)) {
                 System.out.println("Error: Ese DNI ya está registrado por otro alumno.");
                 continue;
@@ -339,84 +279,40 @@ public class AlumnoView {
         } while (true);
 
         // Nuevo nombre
-        String nuevoNombre;
-        do {
-            System.out.print("Nuevo nombre (" + alumno.getNombre() + "): ");
-            nuevoNombre = scanner.nextLine().trim();
-
-            if (nuevoNombre.equals("0")) {
-                System.out.println("Actualización cancelada.");
-                System.out.println("Presione Enter para continuar...");
-                scanner.nextLine();
-                return;
-            }
-
-            if (!nuevoNombre.isEmpty() && !alumnoController.validarNombre(nuevoNombre)) {
-                System.out.println("Error: El nombre no puede contener números.");
-                continue;
-            }
-            break;
-        } while (true);
+        String nuevoNombre = ValidacionesView.solicitarDatoActualizacion(scanner, "Nuevo nombre", alumno.getNombre(), "nombre");
+        if (nuevoNombre.equals("0")) {
+            System.out.println("Actualización cancelada.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
+            return;
+        }
 
         // Nuevo apellido
-        String nuevoApellido;
-        do {
-            System.out.print("Nuevo apellido (" + alumno.getApellido() + "): ");
-            nuevoApellido = scanner.nextLine().trim();
-
-            if (nuevoApellido.equals("0")) {
-                System.out.println("Actualización cancelada.");
-                System.out.println("Presione Enter para continuar...");
-                scanner.nextLine();
-                return;
-            }
-
-            if (!nuevoApellido.isEmpty() && !alumnoController.validarApellido(nuevoApellido)) {
-                System.out.println("Error: El apellido no puede contener números.");
-                continue;
-            }
-            break;
-        } while (true);
+        String nuevoApellido = ValidacionesView.solicitarDatoActualizacion(scanner, "Nuevo apellido", alumno.getApellido(), "apellido");
+        if (nuevoApellido.equals("0")) {
+            System.out.println("Actualización cancelada.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
+            return;
+        }
 
         // Nuevo teléfono
-        String nuevoTelefono;
-        do {
-            System.out.print("Nuevo teléfono (" + alumno.getTelefono() + "): ");
-            nuevoTelefono = scanner.nextLine().trim();
-
-            if (nuevoTelefono.equals("0")) {
-                System.out.println("Actualización cancelada.");
-                System.out.println("Presione Enter para continuar...");
-                scanner.nextLine();
-                return;
-            }
-
-            if (!nuevoTelefono.isEmpty() && !alumnoController.validarTelefono(nuevoTelefono)) {
-                System.out.println("Error: El teléfono debe contener solo números.");
-                continue;
-            }
-            break;
-        } while (true);
+        String nuevoTelefono = ValidacionesView.solicitarDatoActualizacion(scanner, "Nuevo teléfono", alumno.getTelefono(), "telefono");
+        if (nuevoTelefono.equals("0")) {
+            System.out.println("Actualización cancelada.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
+            return;
+        }
 
         // Nuevo email
-        String nuevoEmail;
-        do {
-            System.out.print("Nuevo email (" + alumno.getEmail() + "): ");
-            nuevoEmail = scanner.nextLine().trim();
-
-            if (nuevoEmail.equals("0")) {
-                System.out.println("Actualización cancelada.");
-                System.out.println("Presione Enter para continuar...");
-                scanner.nextLine();
-                return;
-            }
-
-            if (!nuevoEmail.isEmpty() && !alumnoController.validarEmail(nuevoEmail)) {
-                System.out.println("Error: El email debe tener un formato válido.");
-                continue;
-            }
-            break;
-        } while (true);
+        String nuevoEmail = ValidacionesView.solicitarDatoActualizacion(scanner, "Nuevo email", alumno.getEmail(), "email");
+        if (nuevoEmail.equals("0")) {
+            System.out.println("Actualización cancelada.");
+            System.out.println("Presione Enter para continuar...");
+            scanner.nextLine();
+            return;
+        }
 
         // Vista previa
         System.out.println("\nVista previa:");
@@ -459,7 +355,7 @@ public class AlumnoView {
             return;
         }
 
-        if (!alumnoController.validarDni(dni)) {
+        if (!ValidacionesView.validarDni(dni)) {
             System.out.println("Error: El DNI debe tener 8 dígitos numéricos.");
             System.out.println("Presione Enter para continuar...");
             scanner.nextLine();

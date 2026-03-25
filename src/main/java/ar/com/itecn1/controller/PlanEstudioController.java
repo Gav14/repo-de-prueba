@@ -26,18 +26,6 @@ public class PlanEstudioController {
         return planEstudioService.buscarPlanes(texto);
     }
 
-    public List<PlanEstudio> findActivos() {
-        return planEstudioService.findActivos();
-    }
-
-    public List<PlanEstudio> findInactivos() {
-        return planEstudioService.findInactivos();
-    }
-
-    public List<PlanEstudio> findPlanesPorAnio(int anio) {
-        return planEstudioService.findPlanesPorAnio(anio);
-    }
-
     public void crearPlanEstudio(PlanEstudio planEstudio) {
         planEstudioService.save(planEstudio);
     }
@@ -54,11 +42,4 @@ public class PlanEstudioController {
         planEstudioService.reactivarPlan(nombre);
     }
 
-    public void agregarMateria(String nombrePlan, String codigoMateria) {
-        planEstudioService.agregarMateria(nombrePlan, codigoMateria);
-    }
-
-    public void quitarMateria(String nombrePlan, String codigoMateria) {
-        planEstudioService.quitarMateria(nombrePlan, codigoMateria);
-    }
 }

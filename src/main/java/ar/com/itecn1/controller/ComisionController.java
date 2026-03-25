@@ -26,22 +26,6 @@ public class ComisionController {
         return comisionService.findAll();
     }
 
-    public List<ComisionMateria> findByCarrera(String nombreCarrera) {
-        return comisionService.findByCarrera(nombreCarrera);
-    }
-
-    public List<ComisionMateria> findByMateria(String codigoMateria) {
-        return comisionService.findByMateria(codigoMateria);
-    }
-
-    public List<ComisionMateria> findByCuatrimestre(String numeroCuatrimestre) {
-        return comisionService.findByCuatrimestre(numeroCuatrimestre);
-    }
-
-    public List<ComisionMateria> findByProfesor(int dniProfesor) {
-        return comisionService.findByProfesor(dniProfesor);
-    }
-
     public String registrarComision(ComisionMateria comision) {
         return comisionService.registrarComision(comision);
     }
@@ -58,9 +42,6 @@ public class ComisionController {
         return comisionService.puedeRegistrarAsistencia(codigoComision, dniAlumno);
     }
 
-    public boolean puedeRendirExamen(String codigoComision, String dniAlumno, Tipo tipoExamen) {
-        return comisionService.puedeRendirExamen(codigoComision, dniAlumno, tipoExamen);
-    }
 
     public double calcularPorcentajeAsistencia(String codigoComision, String dniAlumno) {
         return comisionService.calcularPorcentajeAsistencia(codigoComision, dniAlumno);
@@ -70,16 +51,8 @@ public class ComisionController {
         return comisionService.tieneParcialAprobado(codigoComision, dniAlumno);
     }
 
-    public List<Examen> getExamenesAprobados(String codigoComision, String dniAlumno) {
-        return comisionService.getExamenesAprobados(codigoComision, dniAlumno);
-    }
-
     public String crearExamenConValidaciones(String codigoComision, Examen examen) {
         return comisionService.crearExamenConValidaciones(codigoComision, examen);
-    }
-
-    public void createComision(ComisionMateria comision) {
-        comisionService.save(comision);
     }
 
     public void updateComision(ComisionMateria comision) {

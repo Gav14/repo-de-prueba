@@ -13,8 +13,6 @@ public class AlumnoInscriptoMateriaController {
 
     public AlumnoInscriptoMateriaController(){this.alumnoInscriptoMateriaService = new AlumnoInscriptoMateriaServImpl();}
 
-    public AlumnoInscriptoMateria findByAlumnoDni(String dni){return this.alumnoInscriptoMateriaService.findByAlumnoDni(dni);}
-
     public List<AlumnoInscriptoMateria> findAll(){return this.alumnoInscriptoMateriaService.findAll();}
 
     public void save(AlumnoInscriptoMateria alumnoInscriptoMateria){this.alumnoInscriptoMateriaService.save(alumnoInscriptoMateria);}
